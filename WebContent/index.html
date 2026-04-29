@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Planification de Mariage</title>
+	<link rel="stylesheet" href="css/styles.css?v=5">
+	<style>
+	/* ====== INLINE OVERRIDE - Pricing ====== */
+	.pricing-section{padding:80px 40px 100px;max-width:960px;margin:0 auto;position:relative;z-index:1}
+	.pricing-subtitle{text-align:center;font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#B8922F;margin-bottom:8px}
+	.pricing-title{text-align:center;font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:600;color:#1A0A10;margin-bottom:50px}
+	.pricing-cards{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+	.pricing-card{background:#fff;border-radius:20px;overflow:visible;border:1px solid #F3ECF0;transition:all .4s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;position:relative;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+	.pricing-card:hover{transform:translateY(-8px);box-shadow:0 16px 48px rgba(139,26,43,.12)}
+	.pricing-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4A853,#B8922F);color:#fff;padding:6px 24px;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;box-shadow:0 4px 15px rgba(212,168,83,.4);z-index:3}
+	.pricing-card-header{text-align:center;padding:40px 30px 30px}
+	.pricing-plan-name{display:block;font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:#7A6B74;margin-bottom:12px;letter-spacing:1px}
+	.pricing-amount{display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:6px}
+	.pricing-value{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:700;line-height:1;color:#1A0A10}
+	.pricing-currency{font-size:1.2rem;font-weight:600;color:#7A6B74}
+	.pricing-period{display:block;font-size:13px;color:#AEA0A8}
+	.pricing-card-body{padding:10px 30px 20px;flex:1}
+	.pricing-features{list-style:none;padding:0;margin:0}
+	.pricing-features li{padding:12px 0 12px 32px;position:relative;font-size:14.5px;color:#3D2232;border-bottom:1px solid #F3ECF0}
+	.pricing-features li:last-child{border-bottom:none}
+	.pricing-features li::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:#E2F5EB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%233D8B5E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") no-repeat center/10px}
+	.pricing-card-footer{padding:20px 30px 30px}
+	.btn-pricing{width:100%;padding:14px 24px;border-radius:12px;font-size:15px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .3s ease}
+	.pricing-free .pricing-value{color:#8B1A2B}
+	.pricing-free .btn-pricing{background:#fff;border:2px solid #E8D8DE;color:#1A0A10}
+	.pricing-free .btn-pricing:hover{background:#F5EDE3;border-color:#8B1A2B;color:#8B1A2B}
+	.pricing-premium{border:2px solid #D4A853!important;box-shadow:0 8px 32px rgba(212,168,83,.2);transform:scale(1.03)}
+	.pricing-premium:hover{transform:scale(1.03) translateY(-8px);box-shadow:0 20px 60px rgba(212,168,83,.25)}
+	.pricing-premium .pricing-card-header{background:linear-gradient(160deg,#5C0E1B,#8B1A2B,#B83B5E);color:#fff;border-radius:18px 18px 0 0;padding-top:48px}
+	.pricing-premium .pricing-plan-name{color:rgba(255,255,255,.7)}
+	.pricing-premium .pricing-value{color:#fff}
+	.pricing-premium .pricing-currency{color:rgba(255,255,255,.7)}
+	.pricing-premium .pricing-period{color:rgba(255,255,255,.6)}
+	.pricing-premium .btn-pricing{background:linear-gradient(135deg,#D4A853,#B8922F);border:none;color:#fff;box-shadow:0 4px 15px rgba(212,168,83,.3)}
+	.pricing-premium .btn-pricing:hover{box-shadow:0 6px 25px rgba(212,168,83,.5);transform:translateY(-2px)}
+
+	/* ====== INLINE OVERRIDE - Icons SVG ====== */
+	.icon::before,.icon::after{content:none!important;display:none!important}
+	.icon-questionnaire{background:linear-gradient(135deg,#FDE8ED,#F5CCD5);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%238B1A2B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/%3E%3Crect x='8' y='2' width='8' height='4' rx='1' ry='1'/%3E%3Cline x1='8' y1='10' x2='16' y2='10'/%3E%3Cline x1='8' y1='14' x2='16' y2='14'/%3E%3Cline x1='8' y1='18' x2='12' y2='18'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:30px}
+	.icon-vendors{background:linear-gradient(135deg,#FEF9ED,#F0D590);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23B8922F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h18'/%3E%3Cpath d='M5 21V7l7-4 7 4v14'/%3E%3Cpath d='M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4'/%3E%3Cpath d='M10 9h4'/%3E%3Cpath d='M10 13h4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:30px}
+	.icon-ai{background:linear-gradient(135deg,#E8F0FA,#C5D9F0);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%235B7BA8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L9 12l-7 0 5.5 4.5L5 22l7-5 7 5-2.5-5.5L22 12h-7L12 2z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:28px}
+	.icon-invitations{background:linear-gradient(135deg,#F5E0F0,#E8BFE0);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23B83B5E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='14' rx='2'/%3E%3Cpath d='M2 8l10 6 10-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:30px}
+	.icon-budget{background:linear-gradient(135deg,#E2F5EB,#B5E0CA);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%233D8B5E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M14.5 9a3.5 3.5 0 0 0-5 0 2.5 2.5 0 0 0 0 3c.6.6 1.5 1 2.5 1s1.9.4 2.5 1a2.5 2.5 0 0 1 0 3 3.5 3.5 0 0 1-5 0'/%3E%3Cline x1='12' y1='3' x2='12' y2='5'/%3E%3Cline x1='12' y1='19' x2='12' y2='21'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:30px}
+	.icon-premium{background:linear-gradient(135deg,#FFF0C8,#F0D590);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23B8922F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 18l3-10 5 6 2-10 2 10 5-6 3 10'/%3E%3Cpath d='M2 18h20'/%3E%3Cpath d='M4 21h16'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:30px}
+
+	@media(max-width:768px){.pricing-cards{grid-template-columns:1fr;max-width:400px;margin:0 auto}.pricing-premium{transform:scale(1)}.pricing-premium:hover{transform:translateY(-8px)}}
+	</style>
+</head>
+<body>
+
+	<!-- NAVIGATION -->
+	<div class="menu-bar">
+		<div class="logo">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='login.html'">Connexion</span>
+			<span onclick="location.href='register.html'" class="active">Inscription</span>
+		</nav>
+	</div>
+
+	<!-- HERO -->
+	<section class="hero">
+		<div class="ring-diamond"></div>
+		<h1>Planifiez votre mariage de <span>rêve</span></h1>
+		<p>Ayora vous accompagne dans chaque étape de votre mariage : prestataires, invitations, budget et recommandations personnalisées.</p>
+		<div class="hero-buttons">
+			<button class="btn btn-primary" onclick="location.href='register.html'">Commencer gratuitement</button>
+			<button class="btn btn-outline" onclick="location.href='login.html'">Se connecter</button>
+		</div>
+	</section>
+
+	<!-- FEATURES -->
+	<section>
+		<div class="features-grid">
+			<div class="feature-card">
+				<div class="icon icon-questionnaire"></div>
+				<h3>Questionnaire personnalisé</h3>
+				<p>Répondez à notre questionnaire détaillé et recevez des recommandations sur mesure pour votre mariage.</p>
+			</div>
+			<div class="feature-card">
+				<div class="icon icon-vendors"></div>
+				<h3>Prestataires de qualite</h3>
+				<p>Découvrez les meilleurs prestataires : neggafa, photographes, salles, traiteurs et plus encore.</p>
+			</div>
+			<div class="feature-card">
+				<div class="icon icon-ai"></div>
+				<h3>Recommandations intelligentes</h3>
+				<p>Notre système analyse vos préférences et votre budget pour vous proposer les meilleurs choix.</p>
+			</div>
+			<div class="feature-card">
+				<div class="icon icon-invitations"></div>
+				<h3>Invitations élégantes</h3>
+				<p>Créez et envoyez des invitations personnalisées à vos proches. 10 invitations offertes.</p>
+			</div>
+			<div class="feature-card">
+				<div class="icon icon-budget"></div>
+				<h3>Gestion du budget</h3>
+				<p>Suivez votre budget en temps réel et optimisez vos dépenses pour un mariage serein.</p>
+			</div>
+			<div class="feature-card">
+				<div class="icon icon-premium"></div>
+				<h3>Expérience Premium</h3>
+				<p>Passez en Premium pour des invitations illimitées, des recommandations avancées et un accompagnement VIP.</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- PRICING -->
+	<section class="pricing-section">
+		<p class="pricing-subtitle">Choisissez le plan qui vous convient</p>
+		<h2 class="pricing-title">Nos offres</h2>
+		<div class="pricing-cards">
+			<article class="pricing-card pricing-free">
+				<div class="pricing-card-header">
+					<span class="pricing-plan-name">Gratuit</span>
+					<div class="pricing-amount">
+						<span class="pricing-value">0</span>
+						<span class="pricing-currency">DHS</span>
+					</div>
+					<span class="pricing-period">Pour toujours</span>
+				</div>
+				<div class="pricing-card-body">
+					<ul class="pricing-features">
+						<li>Questionnaire personnalise</li>
+						<li>Recommandations de base</li>
+						<li>Liste d'invites</li>
+						<li>10 invitations</li>
+						<li>Acces aux prestataires</li>
+					</ul>
+				</div>
+				<div class="pricing-card-footer">
+					<button class="btn btn-secondary btn-pricing" onclick="location.href='register.html'">S'inscrire</button>
+				</div>
+			</article>
+			<article class="pricing-card pricing-premium">
+				<div class="pricing-badge">Populaire</div>
+				<div class="pricing-card-header">
+					<span class="pricing-plan-name">Premium</span>
+					<div class="pricing-amount">
+						<span class="pricing-value">299</span>
+						<span class="pricing-currency">DHS</span>
+					</div>
+					<span class="pricing-period">par mois</span>
+				</div>
+				<div class="pricing-card-body">
+					<ul class="pricing-features">
+						<li>Tout le plan gratuit</li>
+						<li>Invitations illimitees</li>
+						<li>Recommandations avancees</li>
+						<li>Templates premium</li>
+						<li>Support prioritaire</li>
+					</ul>
+				</div>
+				<div class="pricing-card-footer">
+					<button class="btn btn-premium btn-pricing" onclick="location.href='register.html'">Commencer</button>
+				</div>
+			</article>
+		</div>
+	</section>
+
+	<!-- FOOTER -->
+	<footer>
+		<p>&copy; 2026 Ayora.ma - Planification de mariage</p>
+	</footer>
+
+</body>
+</html>
