@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Passer Premium</title>
+	<link rel="stylesheet" href="css/styles.css?v=3">
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userBadge" class="badge-free">FREE</span>
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+		</div>
+	</div>
+
+	<!-- HERO -->
+	<div class="premium-page-hero" id="heroSection">
+		<h1>Passez à Ayora Premium</h1>
+		<p>Offrez-vous l'expérience complète pour un mariage parfaitement planifié</p>
+	</div>
+
+	<!-- PLANS -->
+	<div class="plans-container" id="plansSection">
+		<div class="plan-card">
+			<h3>Gratuit</h3>
+			<div class="plan-price-display">0 DHS <span>/ toujours</span></div>
+			<ul class="plan-features-list">
+				<li class="plan-feature-included">Questionnaire personnalisé</li>
+				<li class="plan-feature-included">Recommandations de base</li>
+				<li class="plan-feature-included">Liste d'invités</li>
+				<li class="plan-feature-included">10 invitations</li>
+				<li class="plan-feature-included">Accès catalogue prestataires</li>
+				<li class="plan-feature-excluded">Templates premium</li>
+				<li class="plan-feature-excluded">Invitations illimitées</li>
+				<li class="plan-feature-excluded">Support prioritaire</li>
+			</ul>
+			<button class="btn btn-secondary" style="width:100%;" disabled>Plan actuel</button>
+		</div>
+
+		<div class="plan-card plan-card-recommended">
+			<div class="plan-recommended-label">Recommandé</div>
+			<h3>Premium</h3>
+			<div class="plan-price-display">299 DHS <span>/ mois</span></div>
+			<ul class="plan-features-list">
+				<li class="plan-feature-included">Tout le plan gratuit</li>
+				<li class="plan-feature-included">Invitations illimitées</li>
+				<li class="plan-feature-included">Recommandations avancées</li>
+				<li class="plan-feature-included">Templates premium exclusifs</li>
+				<li class="plan-feature-included">Support prioritaire 24/7</li>
+				<li class="plan-feature-included">Statistiques détaillées</li>
+				<li class="plan-feature-included">Export liste invités</li>
+				<li class="plan-feature-included">Badge Premium</li>
+			</ul>
+			<button class="btn btn-premium" style="width:100%;" onclick="showPayment()">Choisir Premium</button>
+		</div>
+	</div>
+
+	<!-- PAYMENT FORM -->
+	<div class="payment-section" id="paymentSection">
+		<div class="payment-box">
+			<h3>Informations de paiement</h3>
+
+			<!-- Order Summary -->
+			<div class="order-summary">
+				<div class="order-line"><span>Ayora Premium - Abonnement mensuel</span><span>299 DHS</span></div>
+				<div class="order-line order-total"><span>Total à payer</span><span>299,00 DHS</span></div>
+			</div>
+
+			<!-- Card Preview -->
+			<div class="card-visual" id="cardPreview">
+				<div class="card-visual-chip"></div>
+				<div class="card-visual-number" id="cardNumberDisplay">---- ---- ---- ----</div>
+				<div class="card-visual-bottom">
+					<div><span class="card-visual-label">Titulaire</span><br><span id="cardNameDisplay">VOTRE NOM</span></div>
+					<div><span class="card-visual-label">Expire</span><br><span id="cardExpDisplay">MM/AA</span></div>
+				</div>
+			</div>
+
+			<!-- Form -->
+			<form onsubmit="handlePayment(event)">
+				<div class="form-group">
+					<label for="cardName">Nom sur la carte</label>
+					<input type="text" id="cardName" placeholder="Nom complet" required
+						oninput="document.getElementById('cardNameDisplay').textContent = this.value.toUpperCase() || 'VOTRE NOM'">
+				</div>
+
+				<div class="form-group">
+					<label for="cardNumber">Numéro de carte</label>
+					<input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19"
+						oninput="formatCardNumber(this)">
+				</div>
+
+				<div class="form-row">
+					<div class="form-group">
+						<label for="cardExp">Expiration</label>
+						<input type="text" id="cardExp" placeholder="MM/AA" required maxlength="5"
+							oninput="formatExpiry(this)">
+					</div>
+					<div class="form-group">
+						<label for="cardCvv">CVV</label>
+						<input type="text" id="cardCvv" placeholder="123" required maxlength="3"
+							oninput="this.value = this.value.replace(/\D/g,'')">
+					</div>
+				</div>
+
+				<button type="submit" class="btn btn-premium" id="payBtn" style="width:100%;padding:14px;">
+					Payer 299 DHS
+				</button>
+			</form>
+
+			<div class="secure-badge">
+				Paiement sécurisé - Vos données sont protégées
+			</div>
+		</div>
+	</div>
+
+	<!-- SUCCESS -->
+	<div class="payment-success-section" id="successSection">
+		<div class="payment-success-icon"></div>
+		<h2>Bienvenue dans Ayora Premium</h2>
+		<p class="text-muted mb-20">Votre compte a été mis à niveau avec succès. Profitez de toutes les fonctionnalités premium.</p>
+		<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+			<button class="btn btn-primary" onclick="location.href='dashboard.html'">Aller au tableau de bord</button>
+			<button class="btn btn-secondary" onclick="location.href='recommendations.html'">Voir mes recommandations</button>
+		</div>
+	</div>
+
+	<footer>
+		<p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p>
+	</footer>
+
+	<script src="js/api.js"></script>
+	<script>
+		var user = checkAuth();
+		if (user) {
+			document.getElementById('userName').textContent = user.firstName + ' ' + user.lastName;
+			if (user.subscriptionType === 'PREMIUM') {
+				document.getElementById('userBadge').textContent = 'PREMIUM';
+				document.getElementById('userBadge').className = 'badge-premium';
+				document.getElementById('plansSection').innerHTML =
+					'<div class="panel" style="max-width:500px;margin:0 auto;text-align:center;">' +
+					'<div class="content"><h3 class="text-navy">Vous êtes déjà Premium</h3>' +
+					'<p class="text-muted mt-10">Profitez de toutes les fonctionnalités avancées d\'Ayora.</p>' +
+					'<button class="btn btn-primary mt-20" onclick="location.href=\'dashboard.html\'">Retour au tableau de bord</button></div></div>';
+			}
+		}
+
+		function showPayment() {
+			document.getElementById('plansSection').style.display = 'none';
+			document.getElementById('heroSection').style.display = 'none';
+			document.getElementById('paymentSection').classList.add('active');
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+
+		function formatCardNumber(input) {
+			var value = input.value.replace(/\D/g, '');
+			var formatted = '';
+			for (var i = 0; i < value.length && i < 16; i++) {
+				if (i > 0 && i % 4 === 0) formatted += ' ';
+				formatted += value[i];
+			}
+			input.value = formatted;
+			document.getElementById('cardNumberDisplay').textContent = formatted || '---- ---- ---- ----';
+		}
+
+		function formatExpiry(input) {
+			var value = input.value.replace(/\D/g, '');
+			if (value.length >= 2) {
+				value = value.substring(0, 2) + '/' + value.substring(2, 4);
+			}
+			input.value = value;
+			document.getElementById('cardExpDisplay').textContent = value || 'MM/AA';
+		}
+
+		function handlePayment(event) {
+			event.preventDefault();
+			var btn = document.getElementById('payBtn');
+			btn.textContent = 'Traitement en cours...';
+			btn.disabled = true;
+
+			api.post('/api/subscription/upgrade', {}).then(function(data) {
+				if (data.success) {
+					var u = JSON.parse(localStorage.getItem('user'));
+					u.subscriptionType = 'PREMIUM';
+					localStorage.setItem('user', JSON.stringify(u));
+
+					document.getElementById('paymentSection').style.display = 'none';
+					document.getElementById('successSection').classList.add('active');
+					document.getElementById('userBadge').textContent = 'PREMIUM';
+					document.getElementById('userBadge').className = 'badge-premium';
+				} else {
+					btn.textContent = 'Payer 299 DHS';
+					btn.disabled = false;
+					alert(data.error || 'Erreur lors du paiement');
+				}
+			}).catch(function() {
+				btn.textContent = 'Payer 299 DHS';
+				btn.disabled = false;
+				alert('Erreur de connexion au serveur');
+			});
+		}
+	</script>
+</body>
+</html>
