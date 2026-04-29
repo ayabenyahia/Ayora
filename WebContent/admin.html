@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Administration</title>
+	<link rel="stylesheet" href="css/styles.css?v=6">
+	<style>
+	/* ====== ADMIN DASHBOARD — WOW EDITION ====== */
+
+	/* --- Hero Header with animated gradient --- */
+	.admin-hero{
+		background:linear-gradient(135deg,#3D0814 0%,#8B1A2B 40%,#B83B5E 70%,#D4A853 100%);
+		background-size:300% 300%;
+		animation:heroShift 8s ease-in-out infinite;
+		padding:36px 48px 32px;
+		border-radius:0 0 32px 32px;
+		margin-bottom:32px;
+		position:relative;
+		overflow:hidden;
+		box-shadow:0 12px 40px rgba(139,26,43,.25);
+	}
+	@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+	.admin-hero::before{
+		content:'';position:absolute;top:-50%;right:-20%;width:500px;height:500px;
+		background:radial-gradient(circle,rgba(212,168,83,.15) 0%,transparent 70%);
+		border-radius:50%;pointer-events:none;
+	}
+	.admin-hero::after{
+		content:'';position:absolute;bottom:-40%;left:-10%;width:400px;height:400px;
+		background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%);
+		border-radius:50%;pointer-events:none;
+	}
+	.admin-hero h1{color:#fff;font-size:2.6rem;font-weight:700;margin-bottom:4px;position:relative;z-index:1}
+	.admin-hero h1 span{background:linear-gradient(135deg,#D4A853,#F0D590);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+	.admin-hero p{color:rgba(255,255,255,.7);font-size:14px;position:relative;z-index:1}
+
+	/* --- Stats Grid with glassmorphism --- */
+	.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:0 48px;margin-bottom:36px}
+	.stat-glass{
+		background:rgba(255,255,255,.85);
+		backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+		border-radius:20px;padding:28px 24px;
+		border:1px solid rgba(255,255,255,.6);
+		box-shadow:0 8px 32px rgba(139,26,43,.06),inset 0 1px 0 rgba(255,255,255,.8);
+		transition:all .4s cubic-bezier(.4,0,.2,1);
+		position:relative;overflow:hidden;
+		cursor:default;
+	}
+	.stat-glass:hover{
+		transform:translateY(-6px) scale(1.02);
+		box-shadow:0 20px 48px rgba(139,26,43,.14),inset 0 1px 0 rgba(255,255,255,.8);
+	}
+	.stat-glass::after{
+		content:'';position:absolute;top:0;right:0;width:80px;height:80px;
+		border-radius:0 20px 0 60px;opacity:.15;
+	}
+	.stat-glass.c1::after{background:linear-gradient(135deg,#8B1A2B,#B83B5E)}
+	.stat-glass.c2::after{background:linear-gradient(135deg,#D4A853,#F0D590)}
+	.stat-glass.c3::after{background:linear-gradient(135deg,#3D8B5E,#5EBD88)}
+	.stat-glass.c4::after{background:linear-gradient(135deg,#5B7BA8,#8BADD4)}
+
+	.stat-icon{
+		width:52px;height:52px;border-radius:16px;
+		display:flex;align-items:center;justify-content:center;
+		margin-bottom:16px;position:relative;z-index:1;
+	}
+	.stat-icon.c1{background:linear-gradient(135deg,#FDE8ED,#F5CCD5)}
+	.stat-icon.c2{background:linear-gradient(135deg,#FEF9ED,#F0D590)}
+	.stat-icon.c3{background:linear-gradient(135deg,#E2F5EB,#B5E0CA)}
+	.stat-icon.c4{background:linear-gradient(135deg,#E8F0FA,#C5D9F0)}
+
+	.stat-num{
+		font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;
+		line-height:1;margin-bottom:4px;position:relative;z-index:1;
+	}
+	.stat-num.c1{color:#8B1A2B}.stat-num.c2{color:#B8922F}.stat-num.c3{color:#3D8B5E}.stat-num.c4{color:#5B7BA8}
+	.stat-lbl{font-size:13px;color:#7A6B74;font-weight:500;position:relative;z-index:1;letter-spacing:.3px}
+
+	/* Animated counter */
+	@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+	.stat-num.loaded{animation:countUp .5s ease-out}
+
+	/* --- Content Area --- */
+	.admin-body{padding:0 48px 60px}
+
+	/* --- Tabs with pill style --- */
+	.pill-tabs{
+		display:flex;gap:6px;margin-bottom:28px;
+		background:rgba(255,255,255,.6);backdrop-filter:blur(12px);
+		padding:6px;border-radius:16px;width:fit-content;
+		border:1px solid #F3ECF0;
+	}
+	.pill-tab{
+		padding:10px 28px;border-radius:12px;font-size:14px;font-weight:600;
+		color:#7A6B74;cursor:pointer;transition:all .3s ease;
+		position:relative;
+	}
+	.pill-tab:hover{color:#8B1A2B}
+	.pill-tab.active{
+		background:linear-gradient(135deg,#8B1A2B,#B83B5E);
+		color:#fff;box-shadow:0 4px 16px rgba(139,26,43,.25);
+	}
+
+	/* --- Search Bar --- */
+	.search-row{display:flex;gap:14px;margin-bottom:24px}
+	.search-box{
+		flex:1;position:relative;
+	}
+	.search-box input{
+		width:100%;padding:14px 16px 14px 48px;
+		border:2px solid #F3ECF0;border-radius:14px;
+		font-size:14px;font-family:'Montserrat',sans-serif;
+		background:rgba(255,255,255,.9);backdrop-filter:blur(8px);
+		outline:none;transition:all .3s ease;
+	}
+	.search-box input:focus{border-color:#D4A853;box-shadow:0 0 0 4px rgba(212,168,83,.12)}
+	.search-box::before{
+		content:'';position:absolute;left:16px;top:50%;transform:translateY(-50%);
+		width:20px;height:20px;
+		background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%237A6B74' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+		background-size:contain;pointer-events:none;
+	}
+	.filter-select{
+		padding:14px 20px;border:2px solid #F3ECF0;border-radius:14px;
+		font-size:14px;font-family:'Montserrat',sans-serif;
+		background:rgba(255,255,255,.9);cursor:pointer;outline:none;
+		min-width:180px;transition:all .3s ease;
+	}
+	.filter-select:focus{border-color:#D4A853;box-shadow:0 0 0 4px rgba(212,168,83,.12)}
+
+	/* --- Table with modern design --- */
+	.data-table-wrap{
+		background:rgba(255,255,255,.9);backdrop-filter:blur(16px);
+		border-radius:20px;overflow:hidden;
+		border:1px solid rgba(243,236,240,.8);
+		box-shadow:0 8px 32px rgba(0,0,0,.04);
+	}
+	.data-table{width:100%;border-collapse:collapse}
+	.data-table thead{background:linear-gradient(135deg,#FAF5F7,#FDF9F5)}
+	.data-table th{
+		padding:16px 18px;text-align:left;font-size:11px;font-weight:700;
+		color:#7A6B74;text-transform:uppercase;letter-spacing:1px;
+	}
+	.data-table td{
+		padding:16px 18px;font-size:14px;color:#3D2232;
+		border-top:1px solid #F3ECF0;
+	}
+	.data-table tbody tr{transition:all .2s ease}
+	.data-table tbody tr:hover{background:linear-gradient(135deg,rgba(253,232,237,.15),rgba(254,249,237,.15))}
+
+	/* User avatar initials */
+	.user-avatar{
+		width:36px;height:36px;border-radius:10px;
+		display:inline-flex;align-items:center;justify-content:center;
+		font-size:13px;font-weight:700;color:#fff;margin-right:10px;
+		vertical-align:middle;
+	}
+	.user-avatar.c0{background:linear-gradient(135deg,#8B1A2B,#B83B5E)}
+	.user-avatar.c1{background:linear-gradient(135deg,#D4A853,#B8922F)}
+	.user-avatar.c2{background:linear-gradient(135deg,#3D8B5E,#5EBD88)}
+	.user-avatar.c3{background:linear-gradient(135deg,#5B7BA8,#8BADD4)}
+	.user-avatar.c4{background:linear-gradient(135deg,#B83B5E,#E8B4B8)}
+
+	.user-name{display:inline-block;vertical-align:middle}
+	.user-name strong{display:block;font-size:14px;color:#1A0A10}
+	.user-name small{font-size:12px;color:#AEA0A8}
+
+	/* Badges */
+	.badge-r{
+		display:inline-block;padding:5px 14px;border-radius:50px;
+		font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+	}
+	.badge-r.client{background:#E8F0FA;color:#5B7BA8}
+	.badge-r.admin{background:linear-gradient(135deg,#FDE8ED,#F5CCD5);color:#8B1A2B}
+	.badge-r.prestataire{background:#E2F5EB;color:#3D8B5E}
+
+	.badge-s{
+		display:inline-block;padding:5px 14px;border-radius:50px;
+		font-size:10px;font-weight:700;letter-spacing:.5px;
+	}
+	.badge-s.free{background:#F3ECF0;color:#7A6B74}
+	.badge-s.premium{
+		background:linear-gradient(135deg,#D4A853,#B8922F);color:#fff;
+		box-shadow:0 2px 8px rgba(212,168,83,.3);
+	}
+
+	.badge-g{
+		display:inline-block;padding:5px 14px;border-radius:50px;
+		font-size:10px;font-weight:700;letter-spacing:.5px;
+	}
+	.badge-g.eco{background:#E2F5EB;color:#3D8B5E}
+	.badge-g.moyen{background:#FEF9ED;color:#B8922F}
+	.badge-g.prem{background:linear-gradient(135deg,#FDE8ED,#F5CCD5);color:#8B1A2B}
+
+	.quest-ok{
+		display:inline-flex;align-items:center;gap:6px;
+		padding:5px 12px;border-radius:50px;font-size:11px;font-weight:600;
+	}
+	.quest-ok.yes{background:#E2F5EB;color:#3D8B5E}
+	.quest-ok.no{background:#F3ECF0;color:#AEA0A8}
+
+	.rating-s{color:#D4A853;font-size:14px;letter-spacing:1px}
+
+	/* Tab panels */
+	.tab-panel{display:none}
+	.tab-panel.active{display:block}
+
+	/* Empty state */
+	.empty-row td{text-align:center;padding:60px 20px!important;color:#AEA0A8;font-size:15px}
+
+	/* Loading shimmer */
+	@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+	.loading-row td{
+		background:linear-gradient(90deg,#F3ECF0 25%,#FDF9F5 50%,#F3ECF0 75%);
+		background-size:200% 100%;animation:shimmer 1.5s infinite;
+		height:20px;border-radius:8px;
+	}
+
+	/* --- Count badge on tab --- */
+	.tab-count{
+		display:inline-flex;align-items:center;justify-content:center;
+		min-width:22px;height:22px;padding:0 6px;
+		border-radius:50px;font-size:10px;font-weight:700;
+		margin-left:6px;
+	}
+	.pill-tab.active .tab-count{background:rgba(255,255,255,.25);color:#fff}
+	.pill-tab:not(.active) .tab-count{background:#F3ECF0;color:#7A6B74}
+
+	/* Vendor card inside table */
+	.vendor-cell{display:flex;align-items:center;gap:12px}
+	.vendor-thumb{
+		width:40px;height:40px;border-radius:12px;
+		display:flex;align-items:center;justify-content:center;
+		font-size:18px;
+	}
+	.vendor-thumb.cat-salle{background:linear-gradient(135deg,#FDE8ED,#F5CCD5)}
+	.vendor-thumb.cat-photo{background:linear-gradient(135deg,#E8F0FA,#C5D9F0)}
+	.vendor-thumb.cat-traiteur{background:linear-gradient(135deg,#E2F5EB,#B5E0CA)}
+	.vendor-thumb.cat-neggafa{background:linear-gradient(135deg,#F5E0F0,#E8BFE0)}
+	.vendor-thumb.cat-musique{background:linear-gradient(135deg,#FEF9ED,#F0D590)}
+	.vendor-thumb.cat-default{background:linear-gradient(135deg,#F3ECF0,#E8D8DE)}
+
+	/* Price range bar */
+	.price-range{font-size:13px;font-weight:600;color:#1A0A10}
+	.price-range small{color:#AEA0A8;font-weight:400}
+
+	/* --- Status badges for devis/rdv --- */
+	.badge-st{
+		display:inline-block;padding:5px 14px;border-radius:50px;
+		font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+	}
+	.badge-st.en_attente{background:#FEF9ED;color:#B8922F}
+	.badge-st.accepte,.badge-st.confirme{background:#E2F5EB;color:#3D8B5E}
+	.badge-st.refuse,.badge-st.annule{background:#FDE8ED;color:#8B1A2B}
+
+	/* Sub-section titles inside tab */
+	.section-title{
+		font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;
+		color:#1A0A10;margin:32px 0 16px;display:flex;align-items:center;gap:12px;
+	}
+	.section-title:first-child{margin-top:0}
+	.section-title .section-icon{
+		width:40px;height:40px;border-radius:12px;
+		display:flex;align-items:center;justify-content:center;
+	}
+	.section-title .section-icon.devis-icon{background:linear-gradient(135deg,#FEF9ED,#F0D590)}
+	.section-title .section-icon.rdv-icon{background:linear-gradient(135deg,#E8F0FA,#C5D9F0)}
+
+	/* Responsive */
+	@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+	@media(max-width:768px){
+		.stats-grid{grid-template-columns:1fr;padding:0 20px}
+		.admin-body{padding:0 20px 40px}
+		.admin-hero{padding:24px 20px;border-radius:0 0 20px 20px}
+		.admin-hero h1{font-size:1.8rem}
+		.search-row{flex-direction:column}
+		.data-table{font-size:12px}
+		.data-table th,.data-table td{padding:12px 10px}
+	}
+	</style>
+</head>
+<body>
+
+	<!-- NAVIGATION -->
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='admin.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span class="active">Administration</span>
+		</nav>
+		<div class="user-info">
+			<span class="badge-r admin">ADMIN</span>
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Deconnexion</span>
+		</div>
+	</div>
+
+	<!-- HERO -->
+	<div class="admin-hero">
+		<h1>Tableau de bord <span>Administration</span></h1>
+		<p>Vue d'ensemble de la plateforme Ayora — utilisateurs, prestataires, activite</p>
+	</div>
+
+	<!-- STATS -->
+	<div class="stats-grid">
+		<div class="stat-glass c1">
+			<div class="stat-icon c1">
+				<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8B1A2B" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+			</div>
+			<div class="stat-num c1" id="statUsers">0</div>
+			<div class="stat-lbl">Total utilisateurs</div>
+		</div>
+		<div class="stat-glass c2">
+			<div class="stat-icon c2">
+				<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B8922F" stroke-width="1.8" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/></svg>
+			</div>
+			<div class="stat-num c2" id="statVendors">0</div>
+			<div class="stat-lbl">Prestataires actifs</div>
+		</div>
+		<div class="stat-glass c3">
+			<div class="stat-icon c3">
+				<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3D8B5E" stroke-width="1.8" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>
+			</div>
+			<div class="stat-num c3" id="statClients">0</div>
+			<div class="stat-lbl">Clients inscrits</div>
+		</div>
+		<div class="stat-glass c4">
+			<div class="stat-icon c4">
+				<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5B7BA8" stroke-width="1.8" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+			</div>
+			<div class="stat-num c4" id="statPrestataires">0</div>
+			<div class="stat-lbl">Comptes prestataires</div>
+		</div>
+	</div>
+
+	<!-- MAIN CONTENT -->
+	<div class="admin-body">
+
+		<!-- TABS -->
+		<div class="pill-tabs">
+			<div class="pill-tab active" onclick="switchTab('users')">Utilisateurs <span class="tab-count" id="countUsers">0</span></div>
+			<div class="pill-tab" onclick="switchTab('vendors')">Prestataires <span class="tab-count" id="countVendors">0</span></div>
+			<div class="pill-tab" onclick="switchTab('devisrdv')">Devis & RDV <span class="tab-count" id="countDevisRdv">0</span></div>
+		</div>
+
+		<!-- USERS -->
+		<div id="tab-users" class="tab-panel active">
+			<div class="search-row">
+				<div class="search-box">
+					<input type="text" id="searchUsers" placeholder="Rechercher par nom ou email..." oninput="filterUsers()">
+				</div>
+				<select class="filter-select" id="filterRole" onchange="filterUsers()">
+					<option value="">Tous les roles</option>
+					<option value="CLIENT">Client</option>
+					<option value="ADMIN">Admin</option>
+					<option value="PRESTATAIRE">Prestataire</option>
+				</select>
+			</div>
+			<div class="data-table-wrap">
+				<table class="data-table">
+					<thead>
+						<tr><th>Utilisateur</th><th>Email</th><th>Telephone</th><th>Role</th><th>Abonnement</th><th>Questionnaire</th></tr>
+					</thead>
+					<tbody id="usersBody">
+						<tr><td colspan="6" style="text-align:center;padding:50px;color:#AEA0A8">
+							<div style="font-size:32px;margin-bottom:12px;opacity:.3">
+								<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+							</div>
+							Chargement des donnees...
+						</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- VENDORS -->
+		<div id="tab-vendors" class="tab-panel">
+			<div class="search-row">
+				<div class="search-box">
+					<input type="text" id="searchVendors" placeholder="Rechercher un prestataire..." oninput="filterVendors()">
+				</div>
+				<select class="filter-select" id="filterGamme" onchange="filterVendors()">
+					<option value="">Toutes les gammes</option>
+					<option value="ECONOMIQUE">Economique</option>
+					<option value="MOYEN">Moyen</option>
+					<option value="PREMIUM">Premium</option>
+				</select>
+			</div>
+			<div class="data-table-wrap">
+				<table class="data-table">
+					<thead>
+						<tr><th>Prestataire</th><th>Categorie</th><th>Gamme</th><th>Prix</th><th>Note</th><th>Contact</th></tr>
+					</thead>
+					<tbody id="vendorsBody">
+						<tr><td colspan="6" style="text-align:center;padding:50px;color:#AEA0A8">Chargement...</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- DEVIS & RDV -->
+		<div id="tab-devisrdv" class="tab-panel">
+
+			<!-- DEVIS SECTION -->
+			<div class="section-title">
+				<span class="section-icon devis-icon">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B8922F" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+				</span>
+				Demandes de devis
+			</div>
+			<div class="search-row">
+				<div class="search-box">
+					<input type="text" id="searchDevis" placeholder="Rechercher par client ou prestataire..." oninput="filterDevis()">
+				</div>
+				<select class="filter-select" id="filterDevisStatut" onchange="filterDevis()">
+					<option value="">Tous les statuts</option>
+					<option value="EN_ATTENTE">En attente</option>
+					<option value="ACCEPTE">Accepte</option>
+					<option value="REFUSE">Refuse</option>
+				</select>
+			</div>
+			<div class="data-table-wrap" style="margin-bottom:40px">
+				<table class="data-table">
+					<thead>
+						<tr><th>Client</th><th>Prestataire</th><th>Budget</th><th>Date mariage</th><th>Invites</th><th>Statut</th><th>Date demande</th></tr>
+					</thead>
+					<tbody id="devisBody">
+						<tr><td colspan="7" style="text-align:center;padding:50px;color:#AEA0A8">Chargement des devis...</td></tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- RDV SECTION -->
+			<div class="section-title">
+				<span class="section-icon rdv-icon">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B7BA8" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+				</span>
+				Rendez-vous
+			</div>
+			<div class="search-row">
+				<div class="search-box">
+					<input type="text" id="searchRdv" placeholder="Rechercher par client ou prestataire..." oninput="filterRdv()">
+				</div>
+				<select class="filter-select" id="filterRdvStatut" onchange="filterRdv()">
+					<option value="">Tous les statuts</option>
+					<option value="EN_ATTENTE">En attente</option>
+					<option value="CONFIRME">Confirme</option>
+					<option value="ANNULE">Annule</option>
+				</select>
+			</div>
+			<div class="data-table-wrap">
+				<table class="data-table">
+					<thead>
+						<tr><th>Client</th><th>Prestataire</th><th>Date</th><th>Heure</th><th>Lieu</th><th>Statut</th><th>Date creation</th></tr>
+					</thead>
+					<tbody id="rdvBody">
+						<tr><td colspan="7" style="text-align:center;padding:50px;color:#AEA0A8">Chargement des rendez-vous...</td></tr>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="js/api.js?v=6"></script>
+	<script>
+	var allUsers = [];
+	var allVendors = [];
+	var allDevis = [];
+	var allRdv = [];
+	var avatarColors = ['c0','c1','c2','c3','c4'];
+
+	// Auth check
+	var user = checkAuth();
+	if (user) {
+		if (user.role !== 'ADMIN') {
+			location.href = 'dashboard.html';
+		} else {
+			document.getElementById('userName').textContent = user.firstName + ' ' + user.lastName;
+			loadAdminData();
+		}
+	}
+
+	function animateCounter(el, target) {
+		var duration = 600;
+		var start = 0;
+		var startTime = null;
+		function step(timestamp) {
+			if (!startTime) startTime = timestamp;
+			var progress = Math.min((timestamp - startTime) / duration, 1);
+			var eased = 1 - Math.pow(1 - progress, 3);
+			el.textContent = Math.floor(eased * target);
+			if (progress < 1) {
+				requestAnimationFrame(step);
+			} else {
+				el.textContent = target;
+				el.classList.add('loaded');
+			}
+		}
+		requestAnimationFrame(step);
+	}
+
+	function loadAdminData() {
+		// Stats
+		api.get('/api/auth/admin-stats').then(function(data) {
+			if (data && !data.error) {
+				animateCounter(document.getElementById('statUsers'), data.totalUsers || 0);
+				animateCounter(document.getElementById('statVendors'), data.totalVendors || 0);
+				animateCounter(document.getElementById('statClients'), data.totalClients || 0);
+				animateCounter(document.getElementById('statPrestataires'), data.totalPrestataires || 0);
+			} else {
+				console.error('Stats error:', data);
+			}
+		}).catch(function(err) {
+			console.error('Stats fetch error:', err);
+		});
+
+		// Users
+		api.get('/api/auth/admin-users').then(function(data) {
+			if (Array.isArray(data)) {
+				allUsers = data;
+				document.getElementById('countUsers').textContent = data.length;
+				renderUsers(data);
+			} else {
+				console.error('Users response not array:', data);
+				document.getElementById('usersBody').innerHTML = '<tr><td colspan="6" class="empty-row" style="text-align:center;padding:50px;color:#C94040">Erreur chargement: ' + (data.error || 'reponse invalide') + '</td></tr>';
+			}
+		}).catch(function(err) {
+			console.error('Users fetch error:', err);
+			document.getElementById('usersBody').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:50px;color:#C94040">Erreur de connexion au serveur</td></tr>';
+		});
+
+		// Vendors
+		api.get('/api/auth/admin-vendors').then(function(data) {
+			if (Array.isArray(data)) {
+				allVendors = data;
+				document.getElementById('countVendors').textContent = data.length;
+				renderVendors(data);
+			} else {
+				console.error('Vendors response not array:', data);
+			}
+		}).catch(function(err) {
+			console.error('Vendors fetch error:', err);
+		});
+
+		// Devis
+		api.get('/api/auth/devis-list').then(function(data) {
+			if (Array.isArray(data)) {
+				allDevis = data;
+				updateDevisRdvCount();
+				renderDevis(data);
+			} else {
+				console.error('Devis response:', data);
+				document.getElementById('devisBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:50px;color:#AEA0A8">Aucune demande de devis</td></tr>';
+			}
+		}).catch(function(err) {
+			console.error('Devis fetch error:', err);
+			document.getElementById('devisBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:50px;color:#AEA0A8">Aucune demande de devis</td></tr>';
+		});
+
+		// RDV
+		api.get('/api/auth/rdv-list').then(function(data) {
+			if (Array.isArray(data)) {
+				allRdv = data;
+				updateDevisRdvCount();
+				renderRdv(data);
+			} else {
+				console.error('RDV response:', data);
+				document.getElementById('rdvBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:50px;color:#AEA0A8">Aucun rendez-vous</td></tr>';
+			}
+		}).catch(function(err) {
+			console.error('RDV fetch error:', err);
+			document.getElementById('rdvBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:50px;color:#AEA0A8">Aucun rendez-vous</td></tr>';
+		});
+	}
+
+	function updateDevisRdvCount() {
+		var total = allDevis.length + allRdv.length;
+		document.getElementById('countDevisRdv').textContent = total;
+	}
+
+	function renderUsers(users) {
+		var tbody = document.getElementById('usersBody');
+		if (users.length === 0) {
+			tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:60px;color:#AEA0A8;font-size:15px">Aucun utilisateur ne correspond a votre recherche</td></tr>';
+			return;
+		}
+		var html = '';
+		for (var i = 0; i < users.length; i++) {
+			var u = users[i];
+			var initials = (u.firstName.charAt(0) + u.lastName.charAt(0)).toUpperCase();
+			var colorClass = avatarColors[u.id % avatarColors.length];
+			var roleClass = u.role ? u.role.toLowerCase() : 'client';
+			var subClass = u.subscriptionType ? u.subscriptionType.toLowerCase() : 'free';
+			var questClass = u.questionnaireCompleted ? 'yes' : 'no';
+			var questIcon = u.questionnaireCompleted
+				? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Oui'
+				: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Non';
+
+			html += '<tr>'
+				+ '<td><span class="user-avatar ' + colorClass + '">' + initials + '</span>'
+				+ '<span class="user-name"><strong>' + u.firstName + ' ' + u.lastName + '</strong>'
+				+ '<small>' + (u.city || '') + '</small></span></td>'
+				+ '<td>' + u.email + '</td>'
+				+ '<td>' + (u.phone || '<span style="color:#AEA0A8">—</span>') + '</td>'
+				+ '<td><span class="badge-r ' + roleClass + '">' + (u.role || 'CLIENT') + '</span></td>'
+				+ '<td><span class="badge-s ' + subClass + '">' + (u.subscriptionType || 'FREE') + '</span></td>'
+				+ '<td><span class="quest-ok ' + questClass + '">' + questIcon + '</span></td>'
+				+ '</tr>';
+		}
+		tbody.innerHTML = html;
+	}
+
+	function getCategoryIcon(catName) {
+		var cn = (catName || '').toLowerCase();
+		if (cn.indexOf('salle') !== -1) return {cls:'cat-salle',icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B1A2B" stroke-width="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/></svg>'};
+		if (cn.indexOf('photo') !== -1) return {cls:'cat-photo',icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B7BA8" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'};
+		if (cn.indexOf('trait') !== -1) return {cls:'cat-traiteur',icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D8B5E" stroke-width="1.5"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>'};
+		if (cn.indexOf('neggafa') !== -1 || cn.indexOf('negafa') !== -1) return {cls:'cat-neggafa',icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B83B5E" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'};
+		if (cn.indexOf('musique') !== -1 || cn.indexOf('orchest') !== -1 || cn.indexOf('dj') !== -1) return {cls:'cat-musique',icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8922F" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'};
+		return {cls:'cat-default',icon:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A6B74" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>'};
+	}
+
+	function renderVendors(vendors) {
+		var tbody = document.getElementById('vendorsBody');
+		if (vendors.length === 0) {
+			tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:60px;color:#AEA0A8">Aucun prestataire ne correspond a votre recherche</td></tr>';
+			return;
+		}
+		var html = '';
+		for (var i = 0; i < vendors.length; i++) {
+			var v = vendors[i];
+			var catInfo = getCategoryIcon(v.categoryName);
+			var gammeClass = v.gamme === 'ECONOMIQUE' ? 'eco' : v.gamme === 'MOYEN' ? 'moyen' : 'prem';
+			var gammeLabel = v.gamme === 'ECONOMIQUE' ? 'Eco' : v.gamme === 'MOYEN' ? 'Moyen' : 'Premium';
+			var stars = '';
+			for (var s = 0; s < 5; s++) {
+				stars += s < Math.round(v.rating) ? '&#9733;' : '&#9734;';
+			}
+			var contact = v.phone || v.email || '<span style="color:#AEA0A8">—</span>';
+
+			html += '<tr>'
+				+ '<td><div class="vendor-cell"><div class="vendor-thumb ' + catInfo.cls + '">' + catInfo.icon + '</div>'
+				+ '<span class="user-name"><strong>' + v.name + '</strong><small>' + (v.city || '') + '</small></span></div></td>'
+				+ '<td>' + v.categoryName + '</td>'
+				+ '<td><span class="badge-g ' + gammeClass + '">' + gammeLabel + '</span></td>'
+				+ '<td><span class="price-range">' + formatPrice(v.prixMin) + ' <small>-</small> ' + formatPrice(v.prixMax) + '</span></td>'
+				+ '<td><span class="rating-s">' + stars + '</span> <small style="color:#AEA0A8">(' + v.nbAvis + ')</small></td>'
+				+ '<td style="font-size:13px">' + contact + '</td>'
+				+ '</tr>';
+		}
+		tbody.innerHTML = html;
+	}
+
+	function switchTab(tab) {
+		var tabs = document.querySelectorAll('.pill-tab');
+		var panels = document.querySelectorAll('.tab-panel');
+		for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+		for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
+		document.querySelector('.pill-tab[onclick*="' + tab + '"]').classList.add('active');
+		document.getElementById('tab-' + tab).classList.add('active');
+	}
+
+	function filterUsers() {
+		var search = document.getElementById('searchUsers').value.toLowerCase();
+		var role = document.getElementById('filterRole').value;
+		var filtered = allUsers.filter(function(u) {
+			var nameMatch = !search || (u.firstName + ' ' + u.lastName + ' ' + u.email).toLowerCase().indexOf(search) !== -1;
+			var roleMatch = !role || u.role === role;
+			return nameMatch && roleMatch;
+		});
+		renderUsers(filtered);
+	}
+
+	function filterVendors() {
+		var search = document.getElementById('searchVendors').value.toLowerCase();
+		var gamme = document.getElementById('filterGamme').value;
+		var filtered = allVendors.filter(function(v) {
+			var nameMatch = !search || (v.name + ' ' + v.categoryName).toLowerCase().indexOf(search) !== -1;
+			var gammeMatch = !gamme || v.gamme === gamme;
+			return nameMatch && gammeMatch;
+		});
+		renderVendors(filtered);
+	}
+
+	function statutLabel(s) {
+		if (s === 'EN_ATTENTE') return 'En attente';
+		if (s === 'ACCEPTE') return 'Accepte';
+		if (s === 'REFUSE') return 'Refuse';
+		if (s === 'CONFIRME') return 'Confirme';
+		if (s === 'ANNULE') return 'Annule';
+		return s || 'EN_ATTENTE';
+	}
+
+	function formatDate(d) {
+		if (!d) return '—';
+		try {
+			var dt = new Date(d);
+			return dt.toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'numeric'});
+		} catch(e) { return d; }
+	}
+
+	function renderDevis(devis) {
+		var tbody = document.getElementById('devisBody');
+		if (!devis || devis.length === 0) {
+			tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:60px;color:#AEA0A8;font-size:15px">Aucune demande de devis</td></tr>';
+			return;
+		}
+		var html = '';
+		for (var i = 0; i < devis.length; i++) {
+			var d = devis[i];
+			var statut = d.statut || 'EN_ATTENTE';
+			var statutCls = statut.toLowerCase();
+			var budget = d.budgetMin && d.budgetMax
+				? formatPrice(d.budgetMin) + ' - ' + formatPrice(d.budgetMax)
+				: (d.budgetMin ? formatPrice(d.budgetMin) : (d.budgetMax ? formatPrice(d.budgetMax) : '<span style="color:#AEA0A8">—</span>'));
+
+			html += '<tr>'
+				+ '<td><span class="user-name"><strong>' + (d.clientName || 'Client #' + d.clientId) + '</strong></span></td>'
+				+ '<td><span class="user-name"><strong>' + (d.vendorName || 'Vendor #' + d.vendorId) + '</strong></span></td>'
+				+ '<td>' + budget + '</td>'
+				+ '<td>' + (d.dateMariage || '<span style="color:#AEA0A8">—</span>') + '</td>'
+				+ '<td>' + (d.nbInvites || 0) + '</td>'
+				+ '<td><span class="badge-st ' + statutCls + '">' + statutLabel(statut) + '</span></td>'
+				+ '<td>' + formatDate(d.createdAt) + '</td>'
+				+ '</tr>';
+		}
+		tbody.innerHTML = html;
+	}
+
+	function renderRdv(rdvs) {
+		var tbody = document.getElementById('rdvBody');
+		if (!rdvs || rdvs.length === 0) {
+			tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:60px;color:#AEA0A8;font-size:15px">Aucun rendez-vous</td></tr>';
+			return;
+		}
+		var html = '';
+		for (var i = 0; i < rdvs.length; i++) {
+			var r = rdvs[i];
+			var statut = r.statut || 'EN_ATTENTE';
+			var statutCls = statut.toLowerCase();
+
+			html += '<tr>'
+				+ '<td><span class="user-name"><strong>' + (r.clientName || 'Client #' + r.clientId) + '</strong></span></td>'
+				+ '<td><span class="user-name"><strong>' + (r.vendorName || 'Vendor #' + r.vendorId) + '</strong></span></td>'
+				+ '<td>' + formatDate(r.dateRdv) + '</td>'
+				+ '<td>' + (r.heureRdv || '<span style="color:#AEA0A8">—</span>') + '</td>'
+				+ '<td>' + (r.lieu || 'A definir') + '</td>'
+				+ '<td><span class="badge-st ' + statutCls + '">' + statutLabel(statut) + '</span></td>'
+				+ '<td>' + formatDate(r.createdAt) + '</td>'
+				+ '</tr>';
+		}
+		tbody.innerHTML = html;
+	}
+
+	function filterDevis() {
+		var search = document.getElementById('searchDevis').value.toLowerCase();
+		var statut = document.getElementById('filterDevisStatut').value;
+		var filtered = allDevis.filter(function(d) {
+			var nameMatch = !search || ((d.clientName || '') + ' ' + (d.vendorName || '')).toLowerCase().indexOf(search) !== -1;
+			var statutMatch = !statut || d.statut === statut;
+			return nameMatch && statutMatch;
+		});
+		renderDevis(filtered);
+	}
+
+	function filterRdv() {
+		var search = document.getElementById('searchRdv').value.toLowerCase();
+		var statut = document.getElementById('filterRdvStatut').value;
+		var filtered = allRdv.filter(function(r) {
+			var nameMatch = !search || ((r.clientName || '') + ' ' + (r.vendorName || '')).toLowerCase().indexOf(search) !== -1;
+			var statutMatch = !statut || r.statut === statut;
+			return nameMatch && statutMatch;
+		});
+		renderRdv(filtered);
+	}
+	</script>
+</body>
+</html>
