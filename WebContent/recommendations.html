@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Recommandations</title>
+	<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span class="active" onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+		</div>
+	</div>
+
+	<!-- FILTER -->
+	<div class="filter-bar">
+		<label class="text-navy text-bold">Filtrer par catégorie :</label>
+		<select id="filterCategory" onchange="filterRecommendations()">
+			<option value="">Toutes les catégories</option>
+		</select>
+		<button class="btn btn-small btn-primary" onclick="refreshRecommendations()">Recalculer</button>
+		<button class="btn btn-small btn-secondary" onclick="location.href='questionnaire.html'">Modifier le questionnaire</button>
+	</div>
+
+	<!-- RECOMMENDATIONS -->
+	<div class="panel" style="margin:20px;">
+		<header>Vos recommandations personnalisées <span id="recCount" class="text-muted" style="font-weight:normal;font-size:14px;"></span></header>
+		<div class="content">
+			<div id="recommendationsList" class="loading">
+				<div class="spinner"></div>
+				<p>Chargement de vos recommandations...</p>
+			</div>
+		</div>
+	</div>
+
+	<footer>
+		<p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p>
+	</footer>
+
+	<script src="js/api.js"></script>
+	<script>
+		var user = checkAuth();
+		var allRecommendations = [];
+
+		if (user) {
+			document.getElementById('userName').textContent = user.firstName;
+		}
+
+		api.get('/api/vendors/categories').then(function(categories) {
+			var select = document.getElementById('filterCategory');
+			for (var i = 0; i < categories.length; i++) {
+				var opt = document.createElement('option');
+				opt.value = categories[i].nameFr;
+				opt.textContent = categories[i].nameFr;
+				select.appendChild(opt);
+			}
+		});
+
+		loadRecommendations();
+
+		function loadRecommendations() {
+			api.get('/api/recommendations').then(function(data) {
+				allRecommendations = data;
+				renderRecommendations(data);
+			}).catch(function() {
+				document.getElementById('recommendationsList').innerHTML =
+					'<p class="text-muted text-center">Aucune recommandation disponible. <a href="questionnaire.html">Remplissez le questionnaire</a> pour en obtenir.</p>';
+			});
+		}
+
+		function filterRecommendations() {
+			var category = document.getElementById('filterCategory').value;
+			if (!category) {
+				renderRecommendations(allRecommendations);
+				return;
+			}
+			var filtered = [];
+			for (var i = 0; i < allRecommendations.length; i++) {
+				if (allRecommendations[i].category === category) {
+					filtered.push(allRecommendations[i]);
+				}
+			}
+			renderRecommendations(filtered);
+		}
+
+		function renderRecommendations(recommendations) {
+			var container = document.getElementById('recommendationsList');
+			document.getElementById('recCount').textContent = '(' + recommendations.length + ' résultats)';
+
+			if (!recommendations || recommendations.length === 0) {
+				container.innerHTML = '<p class="text-muted text-center p-20">Aucune recommandation disponible. <a href="questionnaire.html">Remplissez le questionnaire</a> pour en obtenir.</p>';
+				return;
+			}
+
+			var categories = {};
+			for (var i = 0; i < recommendations.length; i++) {
+				var rec = recommendations[i];
+				if (!categories[rec.category]) {
+					categories[rec.category] = [];
+				}
+				categories[rec.category].push(rec);
+			}
+
+			var html = '';
+			for (var cat in categories) {
+				var recs = categories[cat];
+				html += '<h3 class="text-navy" style="margin:24px 0 12px;">' + cat + ' (' + recs.length + ')</h3>';
+				html += '<div class="card-list" style="justify-content:flex-start;">';
+
+				for (var j = 0; j < recs.length; j++) {
+					var rec = recs[j];
+					var scoreClass = getScoreClass(rec.score);
+					var scorePercent = Math.round(rec.score);
+
+					html += '<article>';
+					html += '<header>' + rec.vendorName + '</header>';
+					html += '<div class="card-body">';
+					html += '<p><span class="card-gamme ' + getGammeClass(rec.gamme) + '">' + getGammeLabel(rec.gamme) + '</span></p>';
+					html += '<p class="card-price">À partir de ' + formatPrice(rec.prixMin) + '</p>';
+					html += '<p class="text-muted" style="font-size:13px;">' + rec.raison + '</p>';
+
+					html += '<div style="margin-top:12px;">';
+					html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+					html += '<span class="text-muted" style="font-size:12px;">Compatibilité</span>';
+					html += '<span class="text-bold" style="font-size:14px;color:' + (scorePercent >= 70 ? 'var(--sage-dark)' : scorePercent >= 40 ? 'var(--gold-dark)' : 'var(--rose-dark)') + ';">' + scorePercent + '%</span>';
+					html += '</div>';
+					html += '<div class="score-bar"><div class="score-fill ' + scoreClass + '" style="width:' + scorePercent + '%"></div></div>';
+					html += '</div>';
+
+					html += '</div>';
+					html += '<div class="card-footer">';
+					html += '<button class="btn btn-small btn-secondary" onclick="location.href=\'vendors.html\'">Voir le profil</button>';
+					html += '</div>';
+					html += '</article>';
+				}
+				html += '</div>';
+			}
+
+			container.innerHTML = html;
+		}
+
+		function refreshRecommendations() {
+			document.getElementById('recommendationsList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Recalcul en cours...</p></div>';
+
+			api.post('/api/recommendations/refresh', {}).then(function(result) {
+				if (result.success) {
+					loadRecommendations();
+				} else {
+					loadRecommendations();
+				}
+			}).catch(function() {
+				loadRecommendations();
+			});
+		}
+	</script>
+</body>
+</html>
