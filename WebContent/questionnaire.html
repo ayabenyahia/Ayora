@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Questionnaire</title>
+	<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='index.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span id="userGreeting"></span>
+		</nav>
+	</div>
+
+	<div class="questionnaire-container">
+		<div class="panel">
+			<header>Questionnaire de mariage - Personnalisez votre expérience</header>
+			<div class="content">
+
+				<!-- Step Indicator -->
+				<div class="step-indicator">
+					<div class="step active" id="stepDot1">1</div>
+					<div class="step-line" id="stepLine1"></div>
+					<div class="step" id="stepDot2">2</div>
+					<div class="step-line" id="stepLine2"></div>
+					<div class="step" id="stepDot3">3</div>
+					<div class="step-line" id="stepLine3"></div>
+					<div class="step" id="stepDot4">4</div>
+					<div class="step-line" id="stepLine4"></div>
+					<div class="step" id="stepDot5">5</div>
+					<div class="step-line" id="stepLine5"></div>
+					<div class="step" id="stepDot6">6</div>
+				</div>
+
+				<form id="questionnaireForm" onsubmit="handleSubmit(event)">
+
+					<!-- STEP 1 : Budget -->
+					<div class="questionnaire-step active" id="step1">
+						<h3 class="text-navy mb-20">Étape 1 : Budget et finances</h3>
+
+						<div class="form-group">
+							<label for="budgetTotal">Budget total du mariage (DHS)</label>
+							<input type="number" id="budgetTotal" placeholder="Ex : 150 000" min="10000" step="1000" required>
+							<p class="hint">Indiquez le budget global que vous souhaitez consacrer à votre mariage</p>
+						</div>
+
+						<div class="form-group">
+							<label for="budgetFlexibility">Flexibilité du budget</label>
+							<select id="budgetFlexibility" required>
+								<option value="">-- Choisir --</option>
+								<option value="STRICT">Strict - Ne pas dépasser</option>
+								<option value="FLEXIBLE">Flexible - +20% acceptable</option>
+								<option value="TRES_FLEXIBLE">Très flexible - Le budget est indicatif</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Quels postes souhaitez-vous économiser ?</label>
+							<textarea id="postesEconomie" placeholder="Ex : décoration, transport, faire soi-même les centres de table..."></textarea>
+						</div>
+					</div>
+
+					<!-- STEP 2 : Invités et date -->
+					<div class="questionnaire-step" id="step2">
+						<h3 class="text-navy mb-20">Étape 2 : Invités et date</h3>
+
+						<div class="form-row">
+							<div class="form-group">
+								<label for="nbInvites">Nombre total d'invités</label>
+								<input type="number" id="nbInvites" placeholder="Ex : 300" min="10" required>
+							</div>
+							<div class="form-group">
+								<label for="nbInvitesFemmes">Invitées (femmes)</label>
+								<input type="number" id="nbInvitesFemmes" placeholder="Ex : 180" min="0">
+							</div>
+							<div class="form-group">
+								<label for="nbInvitesHommes">Invités (hommes)</label>
+								<input type="number" id="nbInvitesHommes" placeholder="Ex : 120" min="0">
+							</div>
+						</div>
+
+						<div class="form-row">
+							<div class="form-group">
+								<label for="dateMariage">Date souhaitée du mariage</label>
+								<input type="date" id="dateMariage">
+							</div>
+							<div class="form-group">
+								<label for="saisonPreferee">Saison préférée</label>
+								<select id="saisonPreferee">
+									<option value="">-- Choisir --</option>
+									<option value="PRINTEMPS">Printemps (Mars - Mai)</option>
+									<option value="ETE">Été (Juin - Août)</option>
+									<option value="AUTOMNE">Automne (Sept - Nov)</option>
+									<option value="HIVER">Hiver (Déc - Fév)</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="lieuCeremonie">Lieu souhaité pour la cérémonie</label>
+							<input type="text" id="lieuCeremonie" placeholder="Ex : Médina de Fès, Ville nouvelle, Riad...">
+						</div>
+					</div>
+
+					<!-- STEP 3 : Style et ambiance -->
+					<div class="questionnaire-step" id="step3">
+						<h3 class="text-navy mb-20">Étape 3 : Style et ambiance</h3>
+
+						<div class="form-row">
+							<div class="form-group">
+								<label for="styleMariage">Style de mariage</label>
+								<select id="styleMariage" required>
+									<option value="">-- Choisir --</option>
+									<option value="TRADITIONNEL">Traditionnel marocain</option>
+									<option value="MODERNE">Moderne / Occidental</option>
+									<option value="MIXTE">Mixte (Traditionnel + Moderne)</option>
+									<option value="LUXE">Luxe / Prestige</option>
+									<option value="SIMPLE">Simple / Épuré</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="ambiance">Ambiance souhaitée</label>
+								<select id="ambiance" required>
+									<option value="">-- Choisir --</option>
+									<option value="FESTIVE">Festive et animée</option>
+									<option value="INTIME">Intime et chaleureuse</option>
+									<option value="GRANDIOSE">Grandiose et spectaculaire</option>
+									<option value="ROMANTIQUE">Romantique et douce</option>
+									<option value="FAMILIALE">Familiale et conviviale</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="themeCouleur">Thème de couleur</label>
+							<input type="text" id="themeCouleur" placeholder="Ex : Blanc et or, Rose et argent, Vert émeraude...">
+						</div>
+
+						<div class="form-group">
+							<label for="niveauLuxe">Niveau de luxe souhaité</label>
+							<select id="niveauLuxe" required>
+								<option value="">-- Choisir --</option>
+								<option value="ECONOMIQUE">Économique - L'essentiel bien fait</option>
+								<option value="MOYEN">Moyen - Bon rapport qualité-prix</option>
+								<option value="PREMIUM">Premium - Haute qualité</option>
+								<option value="ULTRA_LUXE">Ultra Luxe - Le meilleur sans compromis</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- STEP 4 : Priorités -->
+					<div class="questionnaire-step" id="step4">
+						<h3 class="text-navy mb-20">Étape 4 : Vos priorités (1 = peu important, 5 = très important)</h3>
+
+						<div class="form-group">
+							<label>Salle de fête</label>
+							<input type="range" id="prioriteSalle" min="1" max="5" value="3" oninput="updateRange(this)">
+							<p class="range-value">3</p>
+						</div>
+
+						<div class="form-group">
+							<label>Traiteur / Cuisine</label>
+							<input type="range" id="prioriteTraiteur" min="1" max="5" value="3" oninput="updateRange(this)">
+							<p class="range-value">3</p>
+						</div>
+
+						<div class="form-group">
+							<label>Photo / Vidéo</label>
+							<input type="range" id="prioritePhoto" min="1" max="5" value="3" oninput="updateRange(this)">
+							<p class="range-value">3</p>
+						</div>
+
+						<div class="form-group">
+							<label>Musique / Animation</label>
+							<input type="range" id="prioriteMusique" min="1" max="5" value="3" oninput="updateRange(this)">
+							<p class="range-value">3</p>
+						</div>
+
+						<div class="form-group">
+							<label>Décoration / Fleurs</label>
+							<input type="range" id="prioriteDecoration" min="1" max="5" value="3" oninput="updateRange(this)">
+							<p class="range-value">3</p>
+						</div>
+
+						<div class="form-group">
+							<label>Neggafa / Tenues</label>
+							<input type="range" id="prioriteNeggafa" min="1" max="5" value="3" oninput="updateRange(this)">
+							<p class="range-value">3</p>
+						</div>
+
+						<div class="form-group">
+							<label>Maquillage / Coiffure</label>
+							<input type="range" id="prioriteMakeup" min="1" max="5" value="3" oninput="updateRange(this)">
+							<p class="range-value">3</p>
+						</div>
+					</div>
+
+					<!-- STEP 5 : Préférences détaillées -->
+					<div class="questionnaire-step" id="step5">
+						<h3 class="text-navy mb-20">Étape 5 : Préférences détaillées</h3>
+
+						<div class="form-row">
+							<div class="form-group">
+								<label for="typeCuisine">Type de cuisine</label>
+								<select id="typeCuisine">
+									<option value="">-- Choisir --</option>
+									<option value="MAROCAINE">Marocaine traditionnelle</option>
+									<option value="INTERNATIONALE">Internationale</option>
+									<option value="MIXTE">Mixte</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="typeMusique">Type de musique</label>
+								<select id="typeMusique">
+									<option value="">-- Choisir --</option>
+									<option value="TRADITIONNELLE">Traditionnelle (Chaabi, Andalous)</option>
+									<option value="MODERNE">Moderne (Pop, Raï)</option>
+									<option value="DJ">DJ</option>
+									<option value="ORCHESTRE">Orchestre live</option>
+									<option value="ISSAWA">Issawa</option>
+									<option value="MIXTE">Mixte</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-row">
+							<div class="form-group">
+								<label for="prefPhoto">Style photo souhaité</label>
+								<select id="prefPhoto">
+									<option value="">-- Choisir --</option>
+									<option value="CLASSIQUE">Classique / Studio</option>
+									<option value="ARTISTIQUE">Artistique / Créatif</option>
+									<option value="REPORTAGE">Reportage / Naturel</option>
+									<option value="DRONE">Avec drone</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="prefDecoration">Style décoration</label>
+								<select id="prefDecoration">
+									<option value="">-- Choisir --</option>
+									<option value="TRADITIONNELLE">Traditionnelle marocaine</option>
+									<option value="MODERNE">Moderne / Minimaliste</option>
+									<option value="FLORALE">Florale abondante</option>
+									<option value="MINIMALISTE">Minimaliste / Épurée</option>
+									<option value="LUXUEUSE">Luxueuse / Opulente</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- STEP 6 : Neggafa et notes -->
+					<div class="questionnaire-step" id="step6">
+						<h3 class="text-navy mb-20">Étape 6 : Neggafa et finalisation</h3>
+
+						<div class="form-row">
+							<div class="form-group">
+								<label for="nbTenuesNeggafa">Nombre de tenues pour la mariée</label>
+								<select id="nbTenuesNeggafa">
+									<option value="1">1 tenue</option>
+									<option value="2">2 tenues</option>
+									<option value="3" selected>3 tenues</option>
+									<option value="4">4 tenues</option>
+									<option value="5">5 tenues ou plus</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="styleNeggafa">Style Neggafa</label>
+								<select id="styleNeggafa">
+									<option value="">-- Choisir --</option>
+									<option value="TRADITIONNEL">Traditionnel fassi</option>
+									<option value="MODERNE">Moderne</option>
+									<option value="MIXTE">Mixte</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="notesSpeciales">Notes spéciales ou demandes particulières</label>
+							<textarea id="notesSpeciales" placeholder="Indiquez toute information supplémentaire qui pourrait nous aider à personnaliser vos recommandations..." rows="4"></textarea>
+						</div>
+
+						<div class="questionnaire-summary">
+							<p class="text-navy text-bold">Prêt à découvrir vos recommandations ?</p>
+							<p class="text-muted">En soumettant ce questionnaire, nous analyserons vos préférences pour vous proposer les meilleurs prestataires de Fès.</p>
+						</div>
+					</div>
+
+					<!-- Navigation -->
+					<div class="questionnaire-nav">
+						<button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display:none">Précédent</button>
+						<button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">Suivant</button>
+						<button type="submit" class="btn btn-premium" id="submitBtn" style="display:none">Voir mes recommandations</button>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/api.js"></script>
+	<script>
+		var currentStep = 1;
+		var totalSteps = 6;
+
+		var user = checkAuth();
+		if (user) {
+			document.getElementById('userGreeting').textContent = 'Bonjour, ' + user.firstName;
+		}
+
+		function updateRange(el) {
+			el.nextElementSibling.textContent = el.value;
+		}
+
+		function changeStep(direction) {
+			var currentEl = document.getElementById('step' + currentStep);
+			currentEl.classList.remove('active');
+
+			if (direction > 0) {
+				document.getElementById('stepDot' + currentStep).classList.remove('active');
+				document.getElementById('stepDot' + currentStep).classList.add('completed');
+				if (document.getElementById('stepLine' + currentStep)) {
+					document.getElementById('stepLine' + currentStep).classList.add('completed');
+				}
+			}
+
+			currentStep += direction;
+
+			if (currentStep < 1) currentStep = 1;
+			if (currentStep > totalSteps) currentStep = totalSteps;
+
+			var nextEl = document.getElementById('step' + currentStep);
+			nextEl.classList.remove('completed');
+			nextEl.classList.add('active');
+
+			document.getElementById('stepDot' + currentStep).classList.add('active');
+
+			if (direction < 0) {
+				document.getElementById('stepDot' + (currentStep + 1)).classList.remove('completed');
+				document.getElementById('stepDot' + (currentStep + 1)).classList.remove('active');
+				if (document.getElementById('stepLine' + currentStep)) {
+					document.getElementById('stepLine' + currentStep).classList.remove('completed');
+				}
+			}
+
+			document.getElementById('prevBtn').style.display = currentStep > 1 ? 'inline-block' : 'none';
+			document.getElementById('nextBtn').style.display = currentStep < totalSteps ? 'inline-block' : 'none';
+			document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+		}
+
+		function handleSubmit(event) {
+			event.preventDefault();
+
+			var data = {
+				budgetTotal: parseFloat(document.getElementById('budgetTotal').value) || 0,
+				budgetFlexibility: document.getElementById('budgetFlexibility').value,
+				nbInvites: parseInt(document.getElementById('nbInvites').value) || 0,
+				nbInvitesFemmes: parseInt(document.getElementById('nbInvitesFemmes').value) || 0,
+				nbInvitesHommes: parseInt(document.getElementById('nbInvitesHommes').value) || 0,
+				dateMariage: document.getElementById('dateMariage').value,
+				saisonPreferee: document.getElementById('saisonPreferee').value,
+				lieuCeremonie: document.getElementById('lieuCeremonie').value,
+				styleMariage: document.getElementById('styleMariage').value,
+				ambiance: document.getElementById('ambiance').value,
+				themeCouleur: document.getElementById('themeCouleur').value,
+				niveauLuxe: document.getElementById('niveauLuxe').value,
+				prioriteSalle: parseInt(document.getElementById('prioriteSalle').value),
+				prioriteTraiteur: parseInt(document.getElementById('prioriteTraiteur').value),
+				prioritePhoto: parseInt(document.getElementById('prioritePhoto').value),
+				prioriteMusique: parseInt(document.getElementById('prioriteMusique').value),
+				prioriteDecoration: parseInt(document.getElementById('prioriteDecoration').value),
+				prioriteNeggafa: parseInt(document.getElementById('prioriteNeggafa').value),
+				prioriteMakeup: parseInt(document.getElementById('prioriteMakeup').value),
+				typeCuisine: document.getElementById('typeCuisine').value,
+				typeMusique: document.getElementById('typeMusique').value,
+				prefPhoto: document.getElementById('prefPhoto').value,
+				prefDecoration: document.getElementById('prefDecoration').value,
+				nbTenuesNeggafa: parseInt(document.getElementById('nbTenuesNeggafa').value),
+				styleNeggafa: document.getElementById('styleNeggafa').value,
+				postesEconomie: document.getElementById('postesEconomie').value,
+				notesSpeciales: document.getElementById('notesSpeciales').value
+			};
+
+			document.getElementById('submitBtn').textContent = 'Analyse en cours...';
+			document.getElementById('submitBtn').disabled = true;
+
+			api.post('/api/questionnaire', data)
+				.then(function(result) {
+					if (result.success) {
+						var user = JSON.parse(localStorage.getItem('user'));
+						user.questionnaireCompleted = true;
+						localStorage.setItem('user', JSON.stringify(user));
+						location.href = 'dashboard.html';
+					} else {
+						alert(result.error || 'Erreur lors de la sauvegarde');
+						document.getElementById('submitBtn').textContent = 'Voir mes recommandations';
+						document.getElementById('submitBtn').disabled = false;
+					}
+				})
+				.catch(function(err) {
+					alert('Erreur : ' + err.message);
+					document.getElementById('submitBtn').textContent = 'Voir mes recommandations';
+					document.getElementById('submitBtn').disabled = false;
+				});
+		}
+	</script>
+</body>
+</html>
