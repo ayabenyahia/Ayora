@@ -4,407 +4,639 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Questionnaire</title>
-	<link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="css/styles.css?v=21">
+	<style>
+	body { background:#FCF8F5; }
+	.q-wrap { max-width: 920px; margin:0 auto; padding: 24px 24px 80px; }
+
+	/* Hero */
+	.q-hero { background:linear-gradient(135deg,#FDF2F8 0%,#FFE4E6 50%,#FFF0F4 100%); border-radius:24px; padding:34px 38px; margin-bottom:24px; box-shadow:0 6px 28px rgba(184,59,94,.08); }
+	.q-hero h1 { margin:0 0 8px; font-family:'Cormorant Garamond',Georgia,serif; font-size:2.2rem; color:#1A0A10; font-weight:700; }
+	.q-hero p { margin:0; color:#7A6B74; font-size:14.5px; }
+
+	/* Stepper */
+	.stepper { display:flex; align-items:center; justify-content:space-between; margin: 28px 0 30px; padding: 0 8px; gap:6px; }
+	.stp { flex:1; text-align:center; position:relative; }
+	.stp .dot { width:38px; height:38px; border-radius:50%; background:#fff; border:2px solid #E8D8DE; color:#7A6B74; font-weight:700; display:inline-flex; align-items:center; justify-content:center; transition:all .3s; font-size:14px; }
+	.stp .lbl { display:block; font-size:11px; color:#7A6B74; margin-top:6px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; line-height:1.2; }
+	.stp.active .dot { background:linear-gradient(135deg,#B83B5E,#8B1A2B); border-color:transparent; color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.3); transform:scale(1.1); }
+	.stp.active .lbl { color:#8B1A2B; }
+	.stp.done .dot { background:#3D8B5E; border-color:#3D8B5E; color:#fff; }
+	.stp.done .dot::after { content:'✓'; position:absolute; }
+	.stp.done .dot span { display:none; }
+	.stp-line { flex:0 0 auto; width:30px; height:2px; background:#E8D8DE; margin: 19px -3px 0; }
+	.stp.done + .stp-line, .stp-line.done { background:#3D8B5E; }
+
+	/* Card */
+	.card { background:#fff; border-radius:24px; padding:32px 36px; box-shadow:0 6px 24px rgba(0,0,0,.05); border:1px solid #F3ECF0; margin-bottom:18px; }
+	.card h2 { margin:0 0 6px; font-family:'Cormorant Garamond',serif; font-size:1.7rem; color:#1A0A10; font-weight:700; }
+	.card .h-sub { color:#7A6B74; font-size:13.5px; margin: 0 0 24px; }
+
+	.section { display:none; }
+	.section.active { display:block; }
+
+	/* Form */
+	.row { display:grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; margin-bottom: 8px; }
+	.row.col3 { grid-template-columns: 1fr 1fr 1fr; }
+	.fg { margin-bottom: 16px; }
+	.fg label { display:block; font-size:12.5px; font-weight:600; color:#3D2232; margin-bottom:6px; letter-spacing:.5px; text-transform:uppercase; }
+	.fg input, .fg select, .fg textarea { width:100%; padding:11px 14px; border:1.5px solid #E8D8DE; border-radius:10px; font-size:14px; color:#1A0A10; background:#fff; font-family:inherit; }
+	.fg input:focus, .fg select:focus, .fg textarea:focus { outline:none; border-color:#8B1A2B; box-shadow:0 0 0 3px rgba(139,26,43,.08); }
+	.fg textarea { resize: vertical; min-height: 80px; }
+	.fg .hint { font-size:12px; color:#AEA0A8; margin: 5px 0 0; }
+
+	/* Chip choices */
+	.chips { display:flex; flex-wrap:wrap; gap:8px; }
+	.chip { padding:9px 16px; border:1.5px solid #E8D8DE; border-radius:50px; background:#fff; cursor:pointer; font-size:13px; color:#3D2232; transition:all .2s; user-select:none; font-weight:500; }
+	.chip:hover { border-color:#8B1A2B; color:#8B1A2B; }
+	.chip.active { background:linear-gradient(135deg,#B83B5E,#8B1A2B); border-color:transparent; color:#fff; box-shadow:0 4px 12px rgba(139,26,43,.25); }
+
+	/* Service checkbox grid */
+	.svc-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+	.svc-item { display:flex; align-items:center; gap:10px; padding:13px 14px; border:1.5px solid #E8D8DE; border-radius:12px; cursor:pointer; transition:all .2s; background:#fff; user-select:none; font-size:13.5px; color:#3D2232; font-weight:500; }
+	.svc-item:hover { border-color:#8B1A2B; background:#FDF2F8; }
+	.svc-item input { margin: 0; width: 18px; height: 18px; accent-color: #8B1A2B; }
+	.svc-item.checked { background:#FDF2F8; border-color:#8B1A2B; color:#8B1A2B; }
+
+	/* Slider */
+	.slider-row { display:flex; align-items:center; gap:14px; padding:8px 0; }
+	.slider-row label { flex:0 0 130px; margin:0; font-size:13px; color:#3D2232; font-weight:500; text-transform:none; letter-spacing:0; }
+	.slider-row input[type=range] { flex:1; accent-color:#8B1A2B; }
+	.slider-row .val { flex:0 0 40px; font-weight:700; color:#8B1A2B; text-align:right; }
+
+	/* Footer buttons */
+	.q-foot { display:flex; justify-content:space-between; gap:12px; margin-top:14px; padding: 0 4px; }
+	.btn-prev, .btn-next, .btn-submit { padding: 13px 30px; border-radius:12px; font-size:14.5px; font-weight:600; cursor:pointer; transition:all .25s; border:1.5px solid; letter-spacing:.5px; }
+	.btn-prev { background:#fff; border-color:#E8D8DE; color:#3D2232; }
+	.btn-prev:hover { background:#F5EDE3; border-color:#8B1A2B; color:#8B1A2B; }
+	.btn-prev:disabled { opacity:.4; cursor:not-allowed; }
+	.btn-next { background:linear-gradient(135deg,#B83B5E,#8B1A2B); border-color:transparent; color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.25); }
+	.btn-next:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(139,26,43,.35); }
+	.btn-submit { background:linear-gradient(135deg,#D4A853,#B8922F); border-color:transparent; color:#fff; box-shadow:0 4px 14px rgba(212,168,83,.3); }
+	.btn-submit:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(212,168,83,.4); }
+
+	.notice { padding:14px 18px; border-radius:12px; margin-bottom:16px; font-size:13.5px; }
+	.notice-error { background:#FEE8EC; color:#8B1A2B; border-left:3px solid #B83B5E; }
+	.notice-success { background:#E8F5EC; color:#1F6B3A; border-left:3px solid #3D8B5E; }
+
+	@media (max-width: 720px) {
+		.row, .row.col3 { grid-template-columns: 1fr; }
+		.svc-grid { grid-template-columns: 1fr 1fr; }
+		.stp .lbl { display:none; }
+	}
+	</style>
 </head>
 <body>
 
 	<div class="menu-bar">
-		<div class="logo" onclick="location.href='index.html'">Ayora<span>.ma</span></div>
-		<nav>
-			<span id="userGreeting"></span>
-		</nav>
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav><span id="userGreeting"></span></nav>
 	</div>
 
-	<div class="questionnaire-container">
-		<div class="panel">
-			<header>Questionnaire de mariage - Personnalisez votre expérience</header>
-			<div class="content">
+	<div class="q-wrap">
 
-				<!-- Step Indicator -->
-				<div class="step-indicator">
-					<div class="step active" id="stepDot1">1</div>
-					<div class="step-line" id="stepLine1"></div>
-					<div class="step" id="stepDot2">2</div>
-					<div class="step-line" id="stepLine2"></div>
-					<div class="step" id="stepDot3">3</div>
-					<div class="step-line" id="stepLine3"></div>
-					<div class="step" id="stepDot4">4</div>
-					<div class="step-line" id="stepLine4"></div>
-					<div class="step" id="stepDot5">5</div>
-					<div class="step-line" id="stepLine5"></div>
-					<div class="step" id="stepDot6">6</div>
+		<div class="q-hero">
+			<h1>Personnalisons votre mariage</h1>
+			<p>Répondez à ces 6 sections — nous adapterons les suggestions, le budget et les invitations à votre projet.</p>
+		</div>
+
+		<!-- Stepper -->
+		<div class="stepper" id="stepper">
+			<div class="stp active" data-step="1"><div class="dot"><span>1</span></div><span class="lbl">Général</span></div>
+			<div class="stp-line"></div>
+			<div class="stp" data-step="2"><div class="dot"><span>2</span></div><span class="lbl">Budget</span></div>
+			<div class="stp-line"></div>
+			<div class="stp" data-step="3"><div class="dot"><span>3</span></div><span class="lbl">Style</span></div>
+			<div class="stp-line"></div>
+			<div class="stp" data-step="4"><div class="dot"><span>4</span></div><span class="lbl">Prestataires</span></div>
+			<div class="stp-line"></div>
+			<div class="stp" data-step="5"><div class="dot"><span>5</span></div><span class="lbl">Ambiance</span></div>
+			<div class="stp-line"></div>
+			<div class="stp" data-step="6"><div class="dot"><span>6</span></div><span class="lbl">Contraintes</span></div>
+		</div>
+
+		<div id="globalNotice"></div>
+
+		<form id="qForm" onsubmit="return submitQuestionnaire(event)">
+
+			<!-- ===== SECTION 1 : Informations générales ===== -->
+			<div class="card section active" data-section="1">
+				<h2>1. Informations générales</h2>
+				<p class="h-sub">Quelques informations essentielles pour personnaliser votre projet.</p>
+
+				<div class="row">
+					<div class="fg"><label>Nom de la mariée *</label><input id="nomMariee" required placeholder="Salma Bennani"></div>
+					<div class="fg"><label>Nom du marié *</label><input id="nomMarie" required placeholder="Yassine Alami"></div>
+				</div>
+				<div class="row col3">
+					<div class="fg"><label>Date prévue *</label><input type="date" id="dateMariage" required></div>
+					<div class="fg"><label>Ville *</label><input id="villeMariage" required placeholder="Fès" value="Fès"></div>
+					<div class="fg"><label>Nb invités *</label><input type="number" id="nbInvites" required placeholder="300" min="10"></div>
+				</div>
+				<div class="fg">
+					<label>Type de mariage *</label>
+					<div class="chips" data-name="typeMariage">
+						<div class="chip" data-val="TRADITIONNEL">Traditionnel</div>
+						<div class="chip" data-val="MODERNE">Moderne</div>
+						<div class="chip" data-val="MIXTE">Mixte</div>
+						<div class="chip" data-val="LUXE">Luxe</div>
+						<div class="chip" data-val="INTIME">Intime</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ===== SECTION 2 : Budget ===== -->
+			<div class="card section" data-section="2">
+				<h2>2. Budget</h2>
+				<p class="h-sub">Votre budget global et son niveau de flexibilité.</p>
+
+				<div class="row">
+					<div class="fg"><label>Budget total *</label><input type="number" id="budgetTotal" required min="10000" step="1000" placeholder="150000"><p class="hint">Budget global en dirhams (DHS)</p></div>
+					<div class="fg"><label>Flexibilité *</label>
+						<select id="budgetFlexibility" required>
+							<option value="">--</option>
+							<option value="STRICT">Strict — ne pas dépasser</option>
+							<option value="FLEXIBLE">Flexible — +20% accepté</option>
+							<option value="TRES_FLEXIBLE">Très flexible — indicatif</option>
+						</select>
+					</div>
 				</div>
 
-				<form id="questionnaireForm" onsubmit="handleSubmit(event)">
-
-					<!-- STEP 1 : Budget -->
-					<div class="questionnaire-step active" id="step1">
-						<h3 class="text-navy mb-20">Étape 1 : Budget et finances</h3>
-
-						<div class="form-group">
-							<label for="budgetTotal">Budget total du mariage (DHS)</label>
-							<input type="number" id="budgetTotal" placeholder="Ex : 150 000" min="10000" step="1000" required>
-							<p class="hint">Indiquez le budget global que vous souhaitez consacrer à votre mariage</p>
-						</div>
-
-						<div class="form-group">
-							<label for="budgetFlexibility">Flexibilité du budget</label>
-							<select id="budgetFlexibility" required>
-								<option value="">-- Choisir --</option>
-								<option value="STRICT">Strict - Ne pas dépasser</option>
-								<option value="FLEXIBLE">Flexible - +20% acceptable</option>
-								<option value="TRES_FLEXIBLE">Très flexible - Le budget est indicatif</option>
-							</select>
-						</div>
-
-						<div class="form-group">
-							<label>Quels postes souhaitez-vous économiser ?</label>
-							<textarea id="postesEconomie" placeholder="Ex : décoration, transport, faire soi-même les centres de table..."></textarea>
-						</div>
+				<div class="fg" style="margin-top:18px;">
+					<label>Priorités du budget (sélectionnez celles qui comptent le plus)</label>
+					<p class="hint" style="margin-bottom:10px;">Multi-choix — Ayora allouera plus de budget aux postes que vous priorisez.</p>
+					<div class="chips multi" data-name="prioriteBudget">
+						<div class="chip" data-val="SALLE">Salle</div>
+						<div class="chip" data-val="TRAITEUR">Traiteur</div>
+						<div class="chip" data-val="NEGGAFA">Neggafa (tenues incluses)</div>
+						<div class="chip" data-val="MAKEUP">Maquillage</div>
+						<div class="chip" data-val="COIFFURE">Coiffure</div>
+						<div class="chip" data-val="PHOTOGRAPHE">Photographe (photo + vidéo)</div>
+						<div class="chip" data-val="ORCHESTRE">Orchestre</div>
+						<div class="chip" data-val="DJ">DJ</div>
+						<div class="chip" data-val="ISSAWA">Issawa / Dakka</div>
+						<div class="chip" data-val="FLEURISTE">Fleuriste (déco + fleurs)</div>
+						<div class="chip" data-val="CAKE_DESIGNER">Gâteau de mariage</div>
+						<div class="chip" data-val="HENNAYA">Hennaya</div>
+						<div class="chip" data-val="WEDDING_PLANNER">Wedding planner</div>
+						<div class="chip" data-val="MYADI">Myadi / Tyafr</div>
+						<div class="chip" data-val="INVITATIONS">Invitations</div>
+						<div class="chip" data-val="VOYAGE">Voyage de noces</div>
 					</div>
-
-					<!-- STEP 2 : Invités et date -->
-					<div class="questionnaire-step" id="step2">
-						<h3 class="text-navy mb-20">Étape 2 : Invités et date</h3>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="nbInvites">Nombre total d'invités</label>
-								<input type="number" id="nbInvites" placeholder="Ex : 300" min="10" required>
-							</div>
-							<div class="form-group">
-								<label for="nbInvitesFemmes">Invitées (femmes)</label>
-								<input type="number" id="nbInvitesFemmes" placeholder="Ex : 180" min="0">
-							</div>
-							<div class="form-group">
-								<label for="nbInvitesHommes">Invités (hommes)</label>
-								<input type="number" id="nbInvitesHommes" placeholder="Ex : 120" min="0">
-							</div>
-						</div>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="dateMariage">Date souhaitée du mariage</label>
-								<input type="date" id="dateMariage">
-							</div>
-							<div class="form-group">
-								<label for="saisonPreferee">Saison préférée</label>
-								<select id="saisonPreferee">
-									<option value="">-- Choisir --</option>
-									<option value="PRINTEMPS">Printemps (Mars - Mai)</option>
-									<option value="ETE">Été (Juin - Août)</option>
-									<option value="AUTOMNE">Automne (Sept - Nov)</option>
-									<option value="HIVER">Hiver (Déc - Fév)</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="lieuCeremonie">Lieu souhaité pour la cérémonie</label>
-							<input type="text" id="lieuCeremonie" placeholder="Ex : Médina de Fès, Ville nouvelle, Riad...">
-						</div>
-					</div>
-
-					<!-- STEP 3 : Style et ambiance -->
-					<div class="questionnaire-step" id="step3">
-						<h3 class="text-navy mb-20">Étape 3 : Style et ambiance</h3>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="styleMariage">Style de mariage</label>
-								<select id="styleMariage" required>
-									<option value="">-- Choisir --</option>
-									<option value="TRADITIONNEL">Traditionnel marocain</option>
-									<option value="MODERNE">Moderne / Occidental</option>
-									<option value="MIXTE">Mixte (Traditionnel + Moderne)</option>
-									<option value="LUXE">Luxe / Prestige</option>
-									<option value="SIMPLE">Simple / Épuré</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="ambiance">Ambiance souhaitée</label>
-								<select id="ambiance" required>
-									<option value="">-- Choisir --</option>
-									<option value="FESTIVE">Festive et animée</option>
-									<option value="INTIME">Intime et chaleureuse</option>
-									<option value="GRANDIOSE">Grandiose et spectaculaire</option>
-									<option value="ROMANTIQUE">Romantique et douce</option>
-									<option value="FAMILIALE">Familiale et conviviale</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="themeCouleur">Thème de couleur</label>
-							<input type="text" id="themeCouleur" placeholder="Ex : Blanc et or, Rose et argent, Vert émeraude...">
-						</div>
-
-						<div class="form-group">
-							<label for="niveauLuxe">Niveau de luxe souhaité</label>
-							<select id="niveauLuxe" required>
-								<option value="">-- Choisir --</option>
-								<option value="ECONOMIQUE">Économique - L'essentiel bien fait</option>
-								<option value="MOYEN">Moyen - Bon rapport qualité-prix</option>
-								<option value="PREMIUM">Premium - Haute qualité</option>
-								<option value="ULTRA_LUXE">Ultra Luxe - Le meilleur sans compromis</option>
-							</select>
-						</div>
-					</div>
-
-					<!-- STEP 4 : Priorités -->
-					<div class="questionnaire-step" id="step4">
-						<h3 class="text-navy mb-20">Étape 4 : Vos priorités (1 = peu important, 5 = très important)</h3>
-
-						<div class="form-group">
-							<label>Salle de fête</label>
-							<input type="range" id="prioriteSalle" min="1" max="5" value="3" oninput="updateRange(this)">
-							<p class="range-value">3</p>
-						</div>
-
-						<div class="form-group">
-							<label>Traiteur / Cuisine</label>
-							<input type="range" id="prioriteTraiteur" min="1" max="5" value="3" oninput="updateRange(this)">
-							<p class="range-value">3</p>
-						</div>
-
-						<div class="form-group">
-							<label>Photo / Vidéo</label>
-							<input type="range" id="prioritePhoto" min="1" max="5" value="3" oninput="updateRange(this)">
-							<p class="range-value">3</p>
-						</div>
-
-						<div class="form-group">
-							<label>Musique / Animation</label>
-							<input type="range" id="prioriteMusique" min="1" max="5" value="3" oninput="updateRange(this)">
-							<p class="range-value">3</p>
-						</div>
-
-						<div class="form-group">
-							<label>Décoration / Fleurs</label>
-							<input type="range" id="prioriteDecoration" min="1" max="5" value="3" oninput="updateRange(this)">
-							<p class="range-value">3</p>
-						</div>
-
-						<div class="form-group">
-							<label>Neggafa / Tenues</label>
-							<input type="range" id="prioriteNeggafa" min="1" max="5" value="3" oninput="updateRange(this)">
-							<p class="range-value">3</p>
-						</div>
-
-						<div class="form-group">
-							<label>Maquillage / Coiffure</label>
-							<input type="range" id="prioriteMakeup" min="1" max="5" value="3" oninput="updateRange(this)">
-							<p class="range-value">3</p>
-						</div>
-					</div>
-
-					<!-- STEP 5 : Préférences détaillées -->
-					<div class="questionnaire-step" id="step5">
-						<h3 class="text-navy mb-20">Étape 5 : Préférences détaillées</h3>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="typeCuisine">Type de cuisine</label>
-								<select id="typeCuisine">
-									<option value="">-- Choisir --</option>
-									<option value="MAROCAINE">Marocaine traditionnelle</option>
-									<option value="INTERNATIONALE">Internationale</option>
-									<option value="MIXTE">Mixte</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="typeMusique">Type de musique</label>
-								<select id="typeMusique">
-									<option value="">-- Choisir --</option>
-									<option value="TRADITIONNELLE">Traditionnelle (Chaabi, Andalous)</option>
-									<option value="MODERNE">Moderne (Pop, Raï)</option>
-									<option value="DJ">DJ</option>
-									<option value="ORCHESTRE">Orchestre live</option>
-									<option value="ISSAWA">Issawa</option>
-									<option value="MIXTE">Mixte</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="prefPhoto">Style photo souhaité</label>
-								<select id="prefPhoto">
-									<option value="">-- Choisir --</option>
-									<option value="CLASSIQUE">Classique / Studio</option>
-									<option value="ARTISTIQUE">Artistique / Créatif</option>
-									<option value="REPORTAGE">Reportage / Naturel</option>
-									<option value="DRONE">Avec drone</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="prefDecoration">Style décoration</label>
-								<select id="prefDecoration">
-									<option value="">-- Choisir --</option>
-									<option value="TRADITIONNELLE">Traditionnelle marocaine</option>
-									<option value="MODERNE">Moderne / Minimaliste</option>
-									<option value="FLORALE">Florale abondante</option>
-									<option value="MINIMALISTE">Minimaliste / Épurée</option>
-									<option value="LUXUEUSE">Luxueuse / Opulente</option>
-								</select>
-							</div>
-						</div>
-					</div>
-
-					<!-- STEP 6 : Neggafa et notes -->
-					<div class="questionnaire-step" id="step6">
-						<h3 class="text-navy mb-20">Étape 6 : Neggafa et finalisation</h3>
-
-						<div class="form-row">
-							<div class="form-group">
-								<label for="nbTenuesNeggafa">Nombre de tenues pour la mariée</label>
-								<select id="nbTenuesNeggafa">
-									<option value="1">1 tenue</option>
-									<option value="2">2 tenues</option>
-									<option value="3" selected>3 tenues</option>
-									<option value="4">4 tenues</option>
-									<option value="5">5 tenues ou plus</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="styleNeggafa">Style Neggafa</label>
-								<select id="styleNeggafa">
-									<option value="">-- Choisir --</option>
-									<option value="TRADITIONNEL">Traditionnel fassi</option>
-									<option value="MODERNE">Moderne</option>
-									<option value="MIXTE">Mixte</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="notesSpeciales">Notes spéciales ou demandes particulières</label>
-							<textarea id="notesSpeciales" placeholder="Indiquez toute information supplémentaire qui pourrait nous aider à personnaliser vos recommandations..." rows="4"></textarea>
-						</div>
-
-						<div class="questionnaire-summary">
-							<p class="text-navy text-bold">Prêt à découvrir vos recommandations ?</p>
-							<p class="text-muted">En soumettant ce questionnaire, nous analyserons vos préférences pour vous proposer les meilleurs prestataires de Fès.</p>
-						</div>
-					</div>
-
-					<!-- Navigation -->
-					<div class="questionnaire-nav">
-						<button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display:none">Précédent</button>
-						<button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">Suivant</button>
-						<button type="submit" class="btn btn-premium" id="submitBtn" style="display:none">Voir mes recommandations</button>
-					</div>
-
-				</form>
+				</div>
+				<p class="h-sub" style="margin-top:14px;font-style:italic;color:#AEA0A8;">La répartition par poste sera calculée automatiquement par Ayora en fonction de vos priorités et du style de mariage choisi.</p>
 			</div>
-		</div>
+
+			<!-- ===== SECTION 3 : Style ===== -->
+			<div class="card section" data-section="3">
+				<h2>3. Style du mariage</h2>
+				<p class="h-sub">Choisissez les ambiances qui vous parlent — vous pouvez en sélectionner plusieurs.</p>
+
+				<div class="fg">
+					<label>Styles préférés (multi)</label>
+					<div class="chips multi" data-name="styles">
+						<div class="chip" data-val="CHIC">Chic</div>
+						<div class="chip" data-val="ROYAL">Royal</div>
+						<div class="chip" data-val="SIMPLE">Simple</div>
+						<div class="chip" data-val="MAROCAIN">Traditionnel marocain</div>
+						<div class="chip" data-val="MODERNE">Moderne</div>
+						<div class="chip" data-val="BOHEME">Bohème</div>
+						<div class="chip" data-val="ORIENTAL">Oriental</div>
+						<div class="chip" data-val="MINIMALISTE">Minimaliste</div>
+						<div class="chip" data-val="FLORAL">Floral</div>
+						<div class="chip" data-val="LUXE">Luxe</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="fg"><label>Saison <span style="font-weight:400;text-transform:none;color:#AEA0A8;letter-spacing:0;font-size:11px;">(calculée automatiquement)</span></label>
+						<select id="saisonPreferee" disabled style="background:#FDF2F8;color:#8B1A2B;cursor:not-allowed;font-weight:600;">
+							<option value="">— renseignez la date du mariage —</option>
+							<option value="PRINTEMPS">Printemps (15 mars - fin mai)</option>
+							<option value="ETE">Été (juin - septembre)</option>
+							<option value="AUTOMNE">Automne (octobre - décembre)</option>
+							<option value="HIVER">Hiver (janvier - 14 mars)</option>
+						</select>
+					</div>
+					<div class="fg"><label>Niveau de luxe souhaité</label>
+						<select id="niveauLuxe">
+							<option value="">--</option>
+							<option value="ECONOMIQUE">Économique</option>
+							<option value="MOYEN">Moyen</option>
+							<option value="PREMIUM">Premium</option>
+							<option value="ULTRA_LUXE">Ultra luxe</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<!-- ===== SECTION 4 : Préférences prestataires ===== -->
+			<div class="card section" data-section="4">
+				<h2>4. Prestataires souhaités</h2>
+				<p class="h-sub">Cochez les services que vous voulez réserver — nous adapterons les suggestions à votre liste.</p>
+
+				<div class="svc-grid" id="svcGrid">
+					<label class="svc-item"><input type="checkbox" data-svc="SALLE" checked>Salle de fête</label>
+					<label class="svc-item"><input type="checkbox" data-svc="TRAITEUR" checked>Traiteur</label>
+					<label class="svc-item"><input type="checkbox" data-svc="NEGGAFA" checked>Neggafa <small style="display:block;color:#7A6B74;font-weight:400;">(robe, tenues, lebssa)</small></label>
+					<label class="svc-item"><input type="checkbox" data-svc="MAKEUP">Maquilleuse</label>
+					<label class="svc-item"><input type="checkbox" data-svc="COIFFURE">Coiffure</label>
+					<label class="svc-item"><input type="checkbox" data-svc="PHOTOGRAPHE" checked>Photographe <small style="display:block;color:#7A6B74;font-weight:400;">(photo + vidéo)</small></label>
+					<label class="svc-item"><input type="checkbox" data-svc="FLEURISTE">Fleuriste <small style="display:block;color:#7A6B74;font-weight:400;">(décoration + fleurs)</small></label>
+					<label class="svc-item"><input type="checkbox" data-svc="CAKE_DESIGNER">Gâteau / Cake</label>
+					<label class="svc-item"><input type="checkbox" data-svc="HENNAYA">Hennaya</label>
+					<label class="svc-item"><input type="checkbox" data-svc="INVITATIONS" checked>Invitations digitales</label>
+					<label class="svc-item"><input type="checkbox" data-svc="WEDDING_PLANNER">Wedding planner</label>
+					<label class="svc-item"><input type="checkbox" data-svc="MYADI">Myadi / Tyafr</label>
+				</div>
+
+				<!-- Details neggafa (visible si Neggafa coche) -->
+				<div id="neggafaDetails" style="margin-top:22px;padding:18px 22px;background:#FFFAEC;border-radius:14px;border:1px solid rgba(212,168,83,.25);">
+					<h3 style="margin:0 0 4px;font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:#B8922F;">Détails Neggafa</h3>
+					<p style="margin:0 0 14px;color:#7A6B74;font-size:13px;">La neggafa s'occupe de toutes les tenues, du caftan au lebssa fassi.</p>
+					<div class="row col3">
+						<div class="fg"><label>Nombre de tenues</label>
+							<select id="nbTenuesNeggafa">
+								<option value="3">3 tenues</option>
+								<option value="4">4 tenues</option>
+								<option value="5" selected>5 tenues</option>
+								<option value="6">6 tenues</option>
+								<option value="7">7 tenues</option>
+								<option value="8">8 tenues et plus</option>
+							</select>
+						</div>
+						<div class="fg"><label>Style de tenues</label>
+							<select id="styleNeggafa">
+								<option value="">--</option>
+								<option value="TRADITIONNEL">Traditionnel fassi</option>
+								<option value="MODERNE">Moderne</option>
+								<option value="MIXTE">Mixte</option>
+							</select>
+						</div>
+						<div class="fg"><label>Amariya (palanquin)</label>
+							<select id="amariya">
+								<option value="OUI" selected>Oui — incluse</option>
+								<option value="NON">Non</option>
+								<option value="OPTIONNEL">À voir</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<!-- Animation de la soiree : multi-choix + Aucun -->
+				<div style="margin-top:28px;padding:20px 22px;background:#FDF2F8;border-radius:14px;border:1px solid #FECDD3;">
+					<h3 style="margin:0 0 4px;font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#8B1A2B;">Animation de la soirée</h3>
+					<p style="margin:0 0 14px;color:#7A6B74;font-size:13px;">Choisissez un, deux ou les trois pour animer votre mariage. Vous pouvez aussi cocher « Aucun ».</p>
+					<div class="svc-grid" id="animationGrid">
+						<label class="svc-item"><input type="checkbox" data-anim="ISSAWA">Issawa / Dakka traditionnelle</label>
+						<label class="svc-item"><input type="checkbox" data-anim="ORCHESTRE">Orchestre / Chanteur</label>
+						<label class="svc-item"><input type="checkbox" data-anim="DJ">DJ professionnel</label>
+						<label class="svc-item"><input type="checkbox" data-anim="AUCUN">Aucun (animation par mes soins)</label>
+					</div>
+				</div>
+			</div>
+
+			<!-- ===== SECTION 5 : Ambiance & personnalisation ===== -->
+			<div class="card section" data-section="5">
+				<h2>5. Ambiance & personnalisation</h2>
+				<p class="h-sub">Précisez l'atmosphère et l'esthétique que vous voulez créer.</p>
+
+				<div class="row">
+					<div class="fg"><label>Couleur principale</label><input id="couleurs" placeholder="Bordeaux & or, blush rose, vert sapin…"></div>
+					<div class="fg"><label>Thème souhaité</label><input id="theme" placeholder="Jardin oriental, Royal fassi, Bohème chic…"></div>
+				</div>
+				<div class="fg">
+					<label>Ambiance souhaitée</label>
+					<div class="chips" data-name="ambiance">
+						<div class="chip" data-val="FAMILIALE">Familiale</div>
+						<div class="chip" data-val="LUXUEUSE">Luxueuse</div>
+						<div class="chip" data-val="INTIME">Intime</div>
+						<div class="chip" data-val="FESTIVE">Festive</div>
+						<div class="chip" data-val="TRADITIONNELLE">Traditionnelle</div>
+						<div class="chip" data-val="ROMANTIQUE">Romantique</div>
+					</div>
+				</div>
+				<div class="row col3">
+					<div class="fg"><label>Type de lieu</label>
+						<select id="lieuCeremonie">
+							<option value="">--</option>
+							<option value="SALLE">Salle de fête (intérieur)</option>
+							<option value="RIAD">Riad / Palais</option>
+							<option value="JARDIN">Jardin / Extérieur</option>
+							<option value="PISCINE">Bord de piscine</option>
+							<option value="HOTEL">Hôtel / Resort</option>
+							<option value="DOMICILE">À la maison</option>
+							<option value="MIXTE">Mixte (intérieur + extérieur)</option>
+						</select>
+					</div>
+					<div class="fg"><label>Ambiance lieu</label>
+						<select id="indoorOutdoor">
+							<option value="">--</option>
+							<option value="INDOOR">Intérieur</option>
+							<option value="OUTDOOR">Extérieur</option>
+							<option value="MIXTE">Mixte</option>
+						</select>
+					</div>
+					<div class="fg"><label>Moment</label>
+						<select id="moment">
+							<option value="">--</option>
+							<option value="JOURNEE">Journée</option>
+							<option value="SOIREE">Soirée</option>
+							<option value="WEEKEND">Week-end complet</option>
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="slider-row"><label>Importance tradition</label><input type="range" id="impTradition" min="1" max="5" value="3"><span class="val" id="impTraditionV">3</span></div>
+					<div class="slider-row"><label>Importance modernité</label><input type="range" id="impModernite" min="1" max="5" value="3"><span class="val" id="impModerniteV">3</span></div>
+				</div>
+			</div>
+
+			<!-- ===== SECTION 6 : Contraintes ===== -->
+			<div class="card section" data-section="6">
+				<h2>6. Contraintes & notes</h2>
+				<p class="h-sub">Tout ce qui peut nous aider à mieux affiner les suggestions.</p>
+
+				<div class="row col3">
+					<div class="fg"><label>Budget strict ?</label>
+						<select id="budgetStrict"><option value="FLEXIBLE">Flexible</option><option value="STRICT">Strict</option></select>
+					</div>
+					<div class="fg"><label>Ville flexible ?</label>
+						<select id="villeFlexible"><option value="OUI">Oui</option><option value="NON">Non — uniquement la ville indiquée</option></select>
+					</div>
+					<div class="fg"><label>Nb invités flexible ?</label>
+						<select id="nbInvitesFlex"><option value="OUI">Oui</option><option value="NON">Non — fixe</option></select>
+					</div>
+				</div>
+				<div class="fg">
+					<label>Préférences particulières</label>
+					<textarea id="preferences" placeholder="Cuisine halal stricte, sans alcool, ambiance feutrée…"></textarea>
+				</div>
+				<div class="fg">
+					<label>Prestataires à éviter (si besoin)</label>
+					<textarea id="prestaEviter" placeholder="Aucun, ou mentionner un nom"></textarea>
+				</div>
+				<div class="fg">
+					<label>Notes supplémentaires</label>
+					<textarea id="notesSpeciales" placeholder="Allergies, contraintes religieuses, accessibilité…"></textarea>
+				</div>
+			</div>
+
+			<div class="q-foot">
+				<button type="button" class="btn-prev" id="btnPrev" onclick="goStep(-1)" disabled>Précédent</button>
+				<button type="button" class="btn-next" id="btnNext" onclick="goStep(1)">Suivant</button>
+				<button type="submit" class="btn-submit" id="btnSubmit" style="display:none;">Sauvegarder le questionnaire</button>
+			</div>
+		</form>
 	</div>
 
 	<script src="js/api.js"></script>
 	<script>
-		var currentStep = 1;
-		var totalSteps = 6;
-
 		var user = checkAuth();
-		if (user) {
-			document.getElementById('userGreeting').textContent = 'Bonjour, ' + user.firstName;
+		if (user) document.getElementById('userGreeting').textContent = 'Bonjour ' + user.firstName;
+
+		var current = 1;
+		var total = 6;
+
+		function goStep(delta) {
+			var next = current + delta;
+			if (next < 1 || next > total) return;
+			if (delta > 0 && !validateSection(current)) return;
+			document.querySelector('.section[data-section="'+current+'"]').classList.remove('active');
+			document.querySelector('.section[data-section="'+next+'"]').classList.add('active');
+			current = next;
+			updateStepper();
+			window.scrollTo({top:0, behavior:'smooth'});
 		}
 
-		function updateRange(el) {
-			el.nextElementSibling.textContent = el.value;
+		function updateStepper() {
+			document.querySelectorAll('.stp').forEach(function(s){
+				var n = parseInt(s.getAttribute('data-step'),10);
+				s.classList.remove('active','done');
+				if (n < current) s.classList.add('done');
+				else if (n === current) s.classList.add('active');
+			});
+			document.getElementById('btnPrev').disabled = (current === 1);
+			document.getElementById('btnNext').style.display = (current === total) ? 'none' : 'inline-block';
+			document.getElementById('btnSubmit').style.display = (current === total) ? 'inline-block' : 'none';
 		}
 
-		function changeStep(direction) {
-			var currentEl = document.getElementById('step' + currentStep);
-			currentEl.classList.remove('active');
-
-			if (direction > 0) {
-				document.getElementById('stepDot' + currentStep).classList.remove('active');
-				document.getElementById('stepDot' + currentStep).classList.add('completed');
-				if (document.getElementById('stepLine' + currentStep)) {
-					document.getElementById('stepLine' + currentStep).classList.add('completed');
+		function validateSection(n) {
+			var card = document.querySelector('.section[data-section="'+n+'"]');
+			var required = card.querySelectorAll('[required]');
+			for (var i=0; i<required.length; i++) {
+				if (!required[i].value) {
+					showNotice('error', 'Champ obligatoire manquant : ' + (required[i].previousElementSibling ? required[i].previousElementSibling.textContent : ''));
+					required[i].focus();
+					return false;
 				}
 			}
-
-			currentStep += direction;
-
-			if (currentStep < 1) currentStep = 1;
-			if (currentStep > totalSteps) currentStep = totalSteps;
-
-			var nextEl = document.getElementById('step' + currentStep);
-			nextEl.classList.remove('completed');
-			nextEl.classList.add('active');
-
-			document.getElementById('stepDot' + currentStep).classList.add('active');
-
-			if (direction < 0) {
-				document.getElementById('stepDot' + (currentStep + 1)).classList.remove('completed');
-				document.getElementById('stepDot' + (currentStep + 1)).classList.remove('active');
-				if (document.getElementById('stepLine' + currentStep)) {
-					document.getElementById('stepLine' + currentStep).classList.remove('completed');
-				}
-			}
-
-			document.getElementById('prevBtn').style.display = currentStep > 1 ? 'inline-block' : 'none';
-			document.getElementById('nextBtn').style.display = currentStep < totalSteps ? 'inline-block' : 'none';
-			document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+			showNotice('', '');
+			return true;
 		}
 
-		function handleSubmit(event) {
-			event.preventDefault();
+		// Chips single/multi
+		document.querySelectorAll('.chips').forEach(function(box) {
+			var multi = box.classList.contains('multi');
+			box.querySelectorAll('.chip').forEach(function(c) {
+				c.addEventListener('click', function() {
+					if (multi) {
+						c.classList.toggle('active');
+					} else {
+						box.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active');});
+						c.classList.add('active');
+					}
+				});
+			});
+		});
 
-			var data = {
-				budgetTotal: parseFloat(document.getElementById('budgetTotal').value) || 0,
+		// Service checkbox visual state
+		document.querySelectorAll('.svc-item input').forEach(function(cb){
+			cb.addEventListener('change', function() {
+				cb.parentElement.classList.toggle('checked', cb.checked);
+			});
+			if (cb.checked) cb.parentElement.classList.add('checked');
+		});
+
+		// Animation de la soiree : "Aucun" est exclusif
+		document.querySelectorAll('#animationGrid input[data-anim]').forEach(function(cb){
+			cb.addEventListener('change', function() {
+				var isAucun = cb.getAttribute('data-anim') === 'AUCUN';
+				if (cb.checked && isAucun) {
+					document.querySelectorAll('#animationGrid input[data-anim]').forEach(function(other){
+						if (other !== cb) {
+							other.checked = false;
+							other.parentElement.classList.remove('checked');
+						}
+					});
+				} else if (cb.checked && !isAucun) {
+					var aucun = document.querySelector('#animationGrid input[data-anim="AUCUN"]');
+					if (aucun) { aucun.checked = false; aucun.parentElement.classList.remove('checked'); }
+				}
+			});
+		});
+
+		// Sliders
+		['impTradition','impModernite'].forEach(function(id){
+			var sl = document.getElementById(id);
+			var vl = document.getElementById(id+'V');
+			sl.addEventListener('input', function() { vl.textContent = sl.value; });
+		});
+
+		// === Calcul automatique de la saison depuis la date du mariage ===
+		// Été : juin / juillet / août / septembre
+		// Automne : octobre / novembre / décembre
+		// Hiver : janvier / février / 1er au 14 mars
+		// Printemps : 15 mars jusqu'à fin mai
+		function computeSaison(dateStr) {
+			if (!dateStr) return '';
+			var parts = dateStr.split('-');
+			if (parts.length < 3) return '';
+			var m = parseInt(parts[1], 10);
+			var d = parseInt(parts[2], 10);
+			if (m >= 6 && m <= 9) return 'ETE';
+			if (m >= 10 && m <= 12) return 'AUTOMNE';
+			if (m === 1 || m === 2 || (m === 3 && d < 15)) return 'HIVER';
+			return 'PRINTEMPS';
+		}
+
+		var dateInput = document.getElementById('dateMariage');
+		var saisonSelect = document.getElementById('saisonPreferee');
+		function updateSaisonFromDate() {
+			var s = computeSaison(dateInput.value);
+			saisonSelect.value = s;
+		}
+		dateInput.addEventListener('change', updateSaisonFromDate);
+		dateInput.addEventListener('input', updateSaisonFromDate);
+		// Initial (si la date est deja remplie)
+		updateSaisonFromDate();
+
+		function showNotice(type, msg) {
+			document.getElementById('globalNotice').innerHTML = msg ? '<div class="notice notice-' + type + '">' + msg + '</div>' : '';
+		}
+
+		function getChipValue(name) {
+			var sel = document.querySelector('.chips[data-name="' + name + '"] .chip.active');
+			return sel ? sel.getAttribute('data-val') : '';
+		}
+		function getMultiChips(name) {
+			return Array.prototype.map.call(
+				document.querySelectorAll('.chips[data-name="' + name + '"] .chip.active'),
+				function(c){ return c.getAttribute('data-val'); });
+		}
+
+		function submitQuestionnaire(e) {
+			if (e) e.preventDefault();
+			if (!validateSection(current)) return false;
+
+			var services = [];
+			document.querySelectorAll('.svc-item input[data-svc]:checked').forEach(function(cb){
+				services.push(cb.getAttribute('data-svc'));
+			});
+
+			// Animation de la soiree (multi + Aucun exclusif)
+			var animations = [];
+			document.querySelectorAll('#animationGrid input[data-anim]:checked').forEach(function(cb){
+				animations.push(cb.getAttribute('data-anim'));
+			});
+
+			// Pack new fields into notesSpeciales as JSON, plus keep core fields mapped to existing schema
+			var extras = {
+				nomMariee: document.getElementById('nomMariee').value,
+				nomMarie: document.getElementById('nomMarie').value,
+				villeMariage: document.getElementById('villeMariage').value,
+				typeMariage: getChipValue('typeMariage'),
+				stylesPref: getMultiChips('styles'),
+				prioriteBudget: getMultiChips('prioriteBudget'),
+				ambiance: getChipValue('ambiance'),
+				services: services,
+				animations: animations,
+				couleurs: document.getElementById('couleurs').value,
+				theme: document.getElementById('theme').value,
+				indoorOutdoor: document.getElementById('indoorOutdoor').value,
+				moment: document.getElementById('moment').value,
+				impTradition: parseInt(document.getElementById('impTradition').value,10),
+				impModernite: parseInt(document.getElementById('impModernite').value,10),
+				budgetStrict: document.getElementById('budgetStrict').value,
+				villeFlexible: document.getElementById('villeFlexible').value,
+				nbInvitesFlex: document.getElementById('nbInvitesFlex').value,
+				preferences: document.getElementById('preferences').value,
+				prestaEviter: document.getElementById('prestaEviter').value
+			};
+
+			var payload = {
+				budgetTotal: parseFloat(document.getElementById('budgetTotal').value)||0,
 				budgetFlexibility: document.getElementById('budgetFlexibility').value,
-				nbInvites: parseInt(document.getElementById('nbInvites').value) || 0,
-				nbInvitesFemmes: parseInt(document.getElementById('nbInvitesFemmes').value) || 0,
-				nbInvitesHommes: parseInt(document.getElementById('nbInvitesHommes').value) || 0,
+				nbInvites: parseInt(document.getElementById('nbInvites').value,10)||0,
 				dateMariage: document.getElementById('dateMariage').value,
 				saisonPreferee: document.getElementById('saisonPreferee').value,
 				lieuCeremonie: document.getElementById('lieuCeremonie').value,
-				styleMariage: document.getElementById('styleMariage').value,
-				ambiance: document.getElementById('ambiance').value,
-				themeCouleur: document.getElementById('themeCouleur').value,
+				styleMariage: getChipValue('typeMariage'),
+				ambiance: getChipValue('ambiance'),
+				themeCouleur: document.getElementById('couleurs').value,
 				niveauLuxe: document.getElementById('niveauLuxe').value,
-				prioriteSalle: parseInt(document.getElementById('prioriteSalle').value),
-				prioriteTraiteur: parseInt(document.getElementById('prioriteTraiteur').value),
-				prioritePhoto: parseInt(document.getElementById('prioritePhoto').value),
-				prioriteMusique: parseInt(document.getElementById('prioriteMusique').value),
-				prioriteDecoration: parseInt(document.getElementById('prioriteDecoration').value),
-				prioriteNeggafa: parseInt(document.getElementById('prioriteNeggafa').value),
-				prioriteMakeup: parseInt(document.getElementById('prioriteMakeup').value),
-				typeCuisine: document.getElementById('typeCuisine').value,
-				typeMusique: document.getElementById('typeMusique').value,
-				prefPhoto: document.getElementById('prefPhoto').value,
-				prefDecoration: document.getElementById('prefDecoration').value,
-				nbTenuesNeggafa: parseInt(document.getElementById('nbTenuesNeggafa').value),
-				styleNeggafa: document.getElementById('styleNeggafa').value,
-				postesEconomie: document.getElementById('postesEconomie').value,
-				notesSpeciales: document.getElementById('notesSpeciales').value
+				notesSpeciales: JSON.stringify(extras)
 			};
 
-			document.getElementById('submitBtn').textContent = 'Analyse en cours...';
-			document.getElementById('submitBtn').disabled = true;
+			document.getElementById('btnSubmit').disabled = true;
+			document.getElementById('btnSubmit').textContent = 'Sauvegarde…';
 
-			api.post('/api/questionnaire', data)
-				.then(function(result) {
-					if (result.success) {
-						var user = JSON.parse(localStorage.getItem('user'));
-						user.questionnaireCompleted = true;
-						localStorage.setItem('user', JSON.stringify(user));
-						location.href = 'dashboard.html';
-					} else {
-						alert(result.error || 'Erreur lors de la sauvegarde');
-						document.getElementById('submitBtn').textContent = 'Voir mes recommandations';
-						document.getElementById('submitBtn').disabled = false;
-					}
-				})
-				.catch(function(err) {
-					alert('Erreur : ' + err.message);
-					document.getElementById('submitBtn').textContent = 'Voir mes recommandations';
-					document.getElementById('submitBtn').disabled = false;
-				});
+			// Sauvegarde locale au cas ou (recuperable au retour du login)
+			try { localStorage.setItem('pendingQuestionnaire', JSON.stringify(payload)); } catch(e){}
+
+			api.post('/api/questionnaire', payload).then(function(r) {
+				if (r && (r.success || r.id)) {
+					localStorage.removeItem('pendingQuestionnaire');
+					showNotice('success', '✓ Questionnaire enregistré ! Redirection vers le dashboard…');
+					setTimeout(function(){ location.href='dashboard.html'; }, 1500);
+					return;
+				}
+				// Erreur 401 : session expiree, on redirige vers login en gardant les reponses
+				if (r && r.error && /authent/i.test(r.error)) {
+					showNotice('error', 'Votre session a expiré. Redirection vers la connexion… Vos réponses sont sauvegardées localement.');
+					setTimeout(function(){
+						location.href = 'login.html?next=questionnaire.html&restore=1';
+					}, 1800);
+					return;
+				}
+				showNotice('error', (r && r.error) || 'Erreur lors de la sauvegarde.');
+				document.getElementById('btnSubmit').disabled = false;
+				document.getElementById('btnSubmit').textContent = 'Sauvegarder le questionnaire';
+			}).catch(function(){
+				showNotice('error', 'Erreur réseau, réessayez.');
+				document.getElementById('btnSubmit').disabled = false;
+				document.getElementById('btnSubmit').textContent = 'Sauvegarder le questionnaire';
+			});
+			return false;
 		}
+
+		// Restaurer les reponses sauvegardees apres reconnexion
+		(function tryRestore() {
+			if (location.search.indexOf('restore=1') === -1) return;
+			try {
+				var saved = JSON.parse(localStorage.getItem('pendingQuestionnaire') || 'null');
+				if (saved && saved.budgetTotal) {
+					document.getElementById('budgetTotal').value = saved.budgetTotal || '';
+					document.getElementById('budgetFlexibility').value = saved.budgetFlexibility || '';
+					document.getElementById('nbInvites').value = saved.nbInvites || '';
+					document.getElementById('dateMariage').value = saved.dateMariage || '';
+					document.getElementById('lieuCeremonie').value = saved.lieuCeremonie || '';
+					document.getElementById('niveauLuxe').value = saved.niveauLuxe || '';
+					if (saved.notesSpeciales) {
+						try {
+							var ex = JSON.parse(saved.notesSpeciales);
+							document.getElementById('nomMariee').value = ex.nomMariee || '';
+							document.getElementById('nomMarie').value = ex.nomMarie || '';
+							document.getElementById('villeMariage').value = ex.villeMariage || 'Fès';
+						} catch(e){}
+					}
+					setTimeout(updateSaisonFromDate, 100);
+					showNotice('info', 'Vos réponses ont été restaurées. Cliquez sur Sauvegarder pour finaliser.');
+				}
+			} catch(e){}
+		})();
+
+		updateStepper();
 	</script>
 </body>
 </html>
