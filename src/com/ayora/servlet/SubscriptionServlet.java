@@ -61,10 +61,19 @@ public class SubscriptionServlet extends HttpServlet {
 		String path = request.getPathInfo();
 
 		if ("/upgrade".equals(path)) {
-			boolean success = subscriptionDao.upgradeToPremium(userId);
+			String body = JsonUtil.readRequestBody(request);
+			String plan = JsonUtil.getStringValue(body, "plan");
+			if (plan == null || plan.isEmpty()) plan = "PREMIUM";
+			plan = plan.toUpperCase();
+			if (!plan.equals("PRO") && !plan.equals("PREMIUM")) {
+				JsonUtil.sendError(response, 400, "Plan invalide (PRO ou PREMIUM attendu)");
+				return;
+			}
+			boolean success = subscriptionDao.updatePlan(userId, plan);
 			if (success) {
-				userDao.updateSubscription(userId, "PREMIUM");
-				JsonUtil.sendJson(response, "{\"success\":true,\"message\":\"Felicitations ! Vous etes maintenant Premium.\",\"plan\":\"PREMIUM\"}");
+				userDao.updateSubscription(userId, plan);
+				String label = "PRO".equals(plan) ? "Pro" : "Premium";
+				JsonUtil.sendJson(response, "{\"success\":true,\"message\":\"Felicitations ! Vous etes maintenant " + label + ".\",\"plan\":\"" + plan + "\"}");
 			} else {
 				JsonUtil.sendError(response, 500, "Erreur lors de la mise a niveau");
 			}
