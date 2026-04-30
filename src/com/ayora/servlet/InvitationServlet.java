@@ -31,6 +31,62 @@ public class InvitationServlet extends HttpServlet {
 	private QuestionnaireDao questionnaireDao;
 	private EmailService emailService;
 
+	// === Catalogue des templates avec leur niveau requis ===
+	// Mappe le slug visible cote frontend vers (visualTemplate utilise par EmailService, niveau requis).
+	// FREE = libre / PRO = abonnement Pro / PREMIUM = abonnement Premium.
+	private static final java.util.Map<String, String[]> TEMPLATE_CATALOG = new java.util.HashMap<>();
+	static {
+		// === FREE ===
+		TEMPLATE_CATALOG.put("ivory-gold",     new String[]{"classique", "FREE"});
+		TEMPLATE_CATALOG.put("minimal-luxury", new String[]{"moderne",   "FREE"});
+		TEMPLATE_CATALOG.put("soft-cal",       new String[]{"classique", "FREE"});
+		// === PRO ===
+		TEMPLATE_CATALOG.put("desert-rose",    new String[]{"classique", "PRO"});
+		TEMPLATE_CATALOG.put("garden-elegance",new String[]{"classique", "PRO"});
+		TEMPLATE_CATALOG.put("pearl",          new String[]{"luxe",      "PRO"});
+		TEMPLATE_CATALOG.put("zellige-pearl",  new String[]{"luxe",      "PRO"});  // zellige marocain Pro
+		TEMPLATE_CATALOG.put("palace-cream",   new String[]{"luxe",      "PRO"});
+		// === PREMIUM (statiques) ===
+		TEMPLATE_CATALOG.put("royal-black",    new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("emerald-night",  new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("andalusian",     new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("zellige-royal",  new String[]{"luxe",      "PREMIUM"});  // zellige marocain Premium
+		// === PREMIUM (video) ===
+		TEMPLATE_CATALOG.put("video-cinema",   new String[]{"video",     "PREMIUM"});
+		TEMPLATE_CATALOG.put("video-fassi",    new String[]{"video",     "PREMIUM"});
+		TEMPLATE_CATALOG.put("video-luxe",     new String[]{"video",     "PREMIUM"});
+
+		// === retro-compat avec anciens slugs ===
+		TEMPLATE_CATALOG.put("classique",      new String[]{"classique", "FREE"});
+		TEMPLATE_CATALOG.put("blanc-dore",     new String[]{"classique", "FREE"});
+		TEMPLATE_CATALOG.put("floral",         new String[]{"classique", "FREE"});
+		TEMPLATE_CATALOG.put("soft-pink",      new String[]{"classique", "PRO"});
+		TEMPLATE_CATALOG.put("oriental",       new String[]{"luxe",      "PRO"});
+		TEMPLATE_CATALOG.put("marocain",       new String[]{"luxe",      "PRO"});
+		TEMPLATE_CATALOG.put("beige",          new String[]{"moderne",   "PRO"});
+		TEMPLATE_CATALOG.put("green-garden",   new String[]{"classique", "PRO"});
+		TEMPLATE_CATALOG.put("royal",          new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("luxe",           new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("calligraphy",    new String[]{"moderne",   "PREMIUM"});
+		TEMPLATE_CATALOG.put("cream",          new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("moderne",        new String[]{"moderne",   "PRO"});
+	}
+
+	private static boolean isVideoTemplate(String slug) {
+		String[] entry = TEMPLATE_CATALOG.get(slug);
+		return entry != null && "video".equals(entry[0]);
+	}
+
+	private static String resolveVisual(String slug) {
+		String[] entry = TEMPLATE_CATALOG.get(slug);
+		return entry != null ? entry[0] : "classique";
+	}
+
+	private static String requiredLevel(String slug) {
+		String[] entry = TEMPLATE_CATALOG.get(slug);
+		return entry != null ? entry[1] : "FREE";
+	}
+
 	@Override
 	public void init() throws ServletException {
 		invitationDao = new InvitationDao();
@@ -63,9 +119,9 @@ public class InvitationServlet extends HttpServlet {
 		json.append("\"subscription\":{");
 		json.append("\"plan\":\"" + (sub != null ? sub.getPlan() : "FREE") + "\",");
 		json.append("\"invitationsSent\":" + (sub != null ? sub.getInvitationsSent() : 0) + ",");
-		json.append("\"maxFree\":" + (sub != null ? sub.getMaxInvitationsFree() : 10) + ",");
+		json.append("\"maxFree\":" + (sub != null ? sub.getMaxInvitationsAllowed() : 10) + ",");
 		json.append("\"canSend\":" + (sub != null ? sub.canSendInvitation() : true) + ",");
-		json.append("\"remaining\":" + (sub != null ? sub.getRemainingFreeInvitations() : 10));
+		json.append("\"remaining\":" + (sub != null ? sub.getRemainingInvitations() : 10));
 		json.append("}}");
 
 		JsonUtil.sendJson(response, json.toString());
@@ -91,17 +147,32 @@ public class InvitationServlet extends HttpServlet {
 		int guestId = JsonUtil.getIntValue(body, "guestId");
 		String templateName = JsonUtil.getStringValue(body, "templateName");
 		String messagePerso = JsonUtil.getStringValue(body, "messagePerso");
+		String videoUrl = JsonUtil.getStringValue(body, "videoUrl");
 
 		if (guestId <= 0) {
 			JsonUtil.sendError(response, 400, "ID invite requis");
 			return;
 		}
 
+		String slug = templateName != null ? templateName : "classique";
+		String requiredLvl = requiredLevel(slug);
+
+		// Verifier le droit d'acces au template selon l'abonnement
+		Subscription subCheck = subscriptionDao.findByUserId(userId);
+		if (subCheck == null) subCheck = new Subscription();
+		if (!subCheck.canUseTemplateLevel(requiredLvl)) {
+			JsonUtil.sendError(response, 403,
+				"Ce modele necessite un abonnement " + requiredLvl
+				+ ". Votre plan actuel : " + subCheck.getPlan() + ".");
+			return;
+		}
+
 		Invitation invitation = new Invitation();
 		invitation.setGuestId(guestId);
 		invitation.setUserId(userId);
-		invitation.setTemplateName(templateName != null ? templateName : "classique");
+		invitation.setTemplateName(slug);
 		invitation.setMessagePerso(messagePerso);
+		invitation.setVideoUrl(videoUrl);
 
 		int invId = invitationDao.create(invitation);
 		if (invId == -1) {
@@ -109,7 +180,7 @@ public class InvitationServlet extends HttpServlet {
 			return;
 		}
 
-		JsonUtil.sendJson(response, "{\"success\":true,\"id\":" + invId + "}");
+		JsonUtil.sendJson(response, "{\"success\":true,\"id\":" + invId + ",\"requiredLevel\":\"" + requiredLvl + "\"}");
 	}
 
 	private void handleSend(HttpServletRequest request, HttpServletResponse response, int userId, String path) throws IOException {
@@ -128,12 +199,16 @@ public class InvitationServlet extends HttpServlet {
 			return;
 		}
 
+		int maxAllowed = sub.getMaxInvitationsAllowed();
 		if (!sub.canSendInvitation()) {
+			String limitMsg = "Limite de " + maxAllowed + " invitations atteinte sur le plan " + sub.getPlan() + ". "
+				+ ("FREE".equals(sub.getPlan()) ? "Passez en Pro ou Premium pour en envoyer plus."
+					: "Passez en Premium pour des invitations illimitees.");
 			JsonUtil.sendJson(response, "{\"success\":false,"
 					+ "\"limitReached\":true,"
-					+ "\"message\":\"Limite de " + sub.getMaxInvitationsFree() + " invitations gratuites atteinte. Passez en Premium pour envoyer plus d'invitations.\","
+					+ "\"message\":\"" + JsonUtil.escapeJson(limitMsg) + "\","
 					+ "\"invitationsSent\":" + sub.getInvitationsSent() + ","
-					+ "\"maxFree\":" + sub.getMaxInvitationsFree()
+					+ "\"maxFree\":" + maxAllowed
 					+ "}");
 			return;
 		}
@@ -150,6 +225,15 @@ public class InvitationServlet extends HttpServlet {
 
 		if (targetInv == null) {
 			JsonUtil.sendError(response, 404, "Invitation non trouvee");
+			return;
+		}
+
+		// Verifier le droit d'acces au template choisi (defense en profondeur)
+		String reqLvl = requiredLevel(targetInv.getTemplateName());
+		if (!sub.canUseTemplateLevel(reqLvl)) {
+			JsonUtil.sendError(response, 403,
+				"Ce modele necessite un abonnement " + reqLvl
+				+ ". Votre plan actuel : " + sub.getPlan() + ".");
 			return;
 		}
 
@@ -174,14 +258,25 @@ public class InvitationServlet extends HttpServlet {
 			String hostName = user != null ? (user.getFirstName() + " " + user.getLastName()) : "Les maries";
 			String guestName = guest.getFirstName() + " " + guest.getLastName();
 
+			// Mappe le slug visible (ex: "royal", "soft-pink"...) vers le visuel HTML
+			// disponible dans EmailService (classique / moderne / luxe / video).
+			String visualTemplate = resolveVisual(targetInv.getTemplateName());
+
+			// Pour les modeles video, on enrichit le messagePerso avec le lien video
+			String finalMessage = targetInv.getMessagePerso();
+			if ("video".equals(visualTemplate) && targetInv.getVideoUrl() != null && !targetInv.getVideoUrl().isEmpty()) {
+				String prefix = (finalMessage != null && !finalMessage.isEmpty()) ? finalMessage + "\n\n" : "";
+				finalMessage = prefix + "[VIDEO_INVITATION_URL]=" + targetInv.getVideoUrl();
+			}
+
 			emailSent = emailService.sendInvitation(
 				guest.getEmail(),
 				guestName,
 				hostName,
 				dateMariage,
 				lieuMariage,
-				targetInv.getTemplateName(),
-				targetInv.getMessagePerso()
+				visualTemplate,
+				finalMessage
 			);
 
 			emailMessage = emailSent ? "Email envoye a " + guest.getEmail() : "Echec envoi email";
