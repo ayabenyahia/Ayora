@@ -3,608 +3,263 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Ayora - Invitations</title>
-	<link rel="stylesheet" href="css/styles.css?v=8">
+	<title>Ayora — Invitations</title>
+	<link rel="stylesheet" href="css/styles.css?v=21">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Italiana&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
 	<style>
-		/* ======================================================
-		   TEMPLATE GALLERY - SPECTACULAR DESIGN
-		   ====================================================== */
-		.template-gallery {
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			gap: 28px;
-			margin: 24px 0;
-			perspective: 800px;
-		}
+	:root{
+		--ivory:#FAF7F2; --cream:#F4EFE6; --pearl:#EDE6DB; --gold:#B8922F; --gold-light:#D4B370;
+		--noir:#1A0F08; --noir-2:#0d0904; --emerald:#0E3B2E; --emerald-2:#1B5E3F;
+		--rose-d:#9B5A6B; --rose-l:#E8D0D4; --sand:#D4C4A8; --olive:#3F3F2E;
+		--ink:#1A0A10; --ink-soft:#3D2232; --muted:#7A6B74; --border:#EAE0D5;
+	}
+	body { background:#F8F4ED; color:var(--ink); }
 
-		/* === BASE CARD === */
-		.tpl-card {
-			border-radius: 20px;
-			overflow: visible;
-			cursor: pointer;
-			transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-			position: relative;
-			background: #fff;
-		}
-		.tpl-card:hover {
-			transform: translateY(-8px) scale(1.02);
-		}
-		.tpl-card.selected .tpl-check {
-			opacity: 1;
-			transform: scale(1);
-		}
-		.tpl-check {
-			position: absolute;
-			top: -10px;
-			right: -10px;
-			width: 32px;
-			height: 32px;
-			background: linear-gradient(135deg, #8B1A2B, #B83B5E);
-			color: #fff;
-			border-radius: 50%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 16px;
-			font-weight: bold;
-			z-index: 10;
-			opacity: 0;
-			transform: scale(0);
-			transition: all 0.3s ease;
-			box-shadow: 0 4px 12px rgba(139,26,43,0.4);
-		}
+	.inv-wrap { max-width:1320px; margin:0 auto; padding:24px 28px 80px; font-family:'Inter',-apple-system,sans-serif; }
 
-		/* === TIER LABEL === */
-		.tpl-tier {
-			position: absolute;
-			top: 16px;
-			left: 16px;
-			font-size: 9px;
-			letter-spacing: 2px;
-			text-transform: uppercase;
-			padding: 3px 10px;
-			border-radius: 20px;
-			z-index: 5;
-			font-weight: 600;
-		}
+	/* ===== Hero ===== */
+	.inv-hero { background:#fff; border:1px solid var(--border); border-radius:28px; padding:36px 42px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; box-shadow:0 8px 32px rgba(184,146,47,.06); position:relative; overflow:hidden; }
+	.inv-hero::before { content:""; position:absolute; top:-100px; right:-100px; width:340px; height:340px; border-radius:50%; background:radial-gradient(circle, rgba(184,146,47,.10), transparent 70%); pointer-events:none; }
+	.inv-hero h1 { margin:0 0 8px; font-family:'Italiana','Cormorant Garamond',serif; font-size:2.6rem; color:var(--ink); font-weight:400; letter-spacing:1px; }
+	.inv-hero p { margin:0; color:var(--muted); font-size:14.5px; max-width:560px; line-height:1.6; }
+	.inv-hero .acc { display:block; font-size:11px; letter-spacing:5px; color:var(--gold); margin-bottom:10px; text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; }
+	.plan-pill { display:inline-flex; align-items:center; gap:8px; padding:10px 22px; border-radius:50px; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; font-family:'Cinzel',serif; }
+	.plan-FREE { background:var(--ivory); color:var(--ink-soft); border:1.5px solid var(--border); }
+	.plan-PRO { background:linear-gradient(135deg, #2C1810, #4A2818); color:#fff; box-shadow:0 6px 18px rgba(44,24,16,.25); }
+	.plan-PREMIUM { background:linear-gradient(135deg, var(--gold), var(--gold-light)); color:#fff; box-shadow:0 6px 18px rgba(184,146,47,.3); }
 
-		/* === PREVIEW AREA === */
-		.tpl-preview {
-			height: 280px;
-			position: relative;
-			overflow: hidden;
-			border-radius: 20px 20px 0 0;
-		}
+	/* ===== Stats ===== */
+	.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:36px; }
+	.stat-card { background:#fff; border:1px solid var(--border); border-radius:18px; padding:22px 20px; text-align:center; transition:all .3s; }
+	.stat-card:hover { border-color:var(--gold); box-shadow:0 8px 22px rgba(184,146,47,.1); }
+	.stat-card .v { font-family:'Italiana',serif; font-size:2.4rem; color:var(--gold); line-height:1; }
+	.stat-card .l { font-size:11px; color:var(--muted); margin-top:8px; text-transform:uppercase; letter-spacing:2px; }
 
-		/* ======================================================
-		   CARD 1 : CLASSIQUE ELEGANT
-		   Soft rose, serif, bague simple, romantique
-		   ====================================================== */
-		.tpl-card-classique {
-			border: 2px solid #e8d5d0;
-			box-shadow: 0 4px 20px rgba(139,26,74,0.06);
-		}
-		.tpl-card-classique:hover {
-			box-shadow: 0 12px 40px rgba(139,26,74,0.12);
-		}
-		.tpl-card-classique.selected {
-			border-color: #8B1A4A;
-			box-shadow: 0 8px 32px rgba(139,26,74,0.2);
-		}
-		.tpl-card-classique .tpl-tier {
-			background: rgba(139,26,74,0.1);
-			color: #8B1A4A;
-		}
-		.prev-classique {
-			background: linear-gradient(160deg, #FDF2F8 0%, #FECDD3 30%, #FDF2F8 60%, #F9E4EC 100%);
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-		}
-		/* Bague classique */
-		.ring-classique {
-			width: 70px;
-			height: 70px;
-			border: 3px solid #D4A574;
-			border-radius: 50%;
-			position: relative;
-			margin-bottom: 16px;
-			animation: ringFloat 4s ease-in-out infinite;
-			box-shadow: 0 0 15px rgba(212,165,116,0.3), inset 0 0 10px rgba(212,165,116,0.1);
-		}
-		.ring-classique::after {
-			content: '';
-			position: absolute;
-			top: -8px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 10px;
-			height: 10px;
-			background: radial-gradient(circle, #fff, #D4A574);
-			border-radius: 50%;
-			box-shadow: 0 0 8px rgba(212,165,116,0.6);
-		}
-		@keyframes ringFloat {
-			0%, 100% { transform: translateY(0) rotate(0deg); }
-			50% { transform: translateY(-8px) rotate(5deg); }
-		}
-		.prev-classique .prev-ornament {
-			font-size: 13px;
-			letter-spacing: 5px;
-			color: #D4A574;
-			margin-bottom: 8px;
-		}
-		.prev-classique .prev-title {
-			font-family: Georgia, serif;
-			font-size: 20px;
-			color: #8B1A4A;
-			font-style: italic;
-			margin-bottom: 4px;
-		}
-		.prev-classique .prev-line {
-			width: 60px;
-			height: 2px;
-			background: #D4A574;
-			margin: 10px 0;
-		}
-		.prev-classique .prev-subtitle {
-			font-size: 12px;
-			color: #B07080;
-			font-family: Georgia, serif;
-		}
+	/* ===== Section title ===== */
+	.section-head { text-align:center; margin:48px 0 28px; }
+	.section-head .acc { display:block; font-size:11px; letter-spacing:6px; color:var(--gold); margin-bottom:12px; text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; }
+	.section-head h2 { font-family:'Italiana','Cormorant Garamond',serif; font-size:2.4rem; color:var(--ink); margin:0 0 8px; font-weight:400; }
+	.section-head .ornament { display:flex; align-items:center; justify-content:center; gap:14px; color:var(--gold); margin:14px 0 8px; }
+	.section-head .ornament::before, .section-head .ornament::after { content:""; width:50px; height:1px; background:var(--gold); opacity:.5; }
+	.section-head p { color:var(--muted); font-size:14.5px; max-width:600px; margin:0 auto; line-height:1.6; }
 
-		/* ======================================================
-		   CARD 2 : MODERNE MINIMAL
-		   Dark, sans-serif, double ring, particles
-		   ====================================================== */
-		.tpl-card-moderne {
-			border: 2px solid #2a2a4e;
-			box-shadow: 0 4px 20px rgba(26,26,46,0.12);
-		}
-		.tpl-card-moderne:hover {
-			box-shadow: 0 12px 40px rgba(26,26,46,0.25);
-		}
-		.tpl-card-moderne.selected {
-			border-color: #E8A0BF;
-			box-shadow: 0 8px 32px rgba(232,160,191,0.25);
-		}
-		.tpl-card-moderne .tpl-tier {
-			background: rgba(232,160,191,0.15);
-			color: #E8A0BF;
-		}
-		.prev-moderne {
-			background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0f2847 70%, #0f0f23 100%);
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			position: relative;
-		}
-		/* Particles */
-		.prev-moderne .particle {
-			position: absolute;
-			width: 2px;
-			height: 2px;
-			background: #E8A0BF;
-			border-radius: 50%;
-			animation: particleFade 3s ease-in-out infinite;
-		}
-		.prev-moderne .particle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
-		.prev-moderne .particle:nth-child(2) { top: 25%; right: 25%; animation-delay: 0.8s; width: 3px; height: 3px; }
-		.prev-moderne .particle:nth-child(3) { bottom: 30%; left: 15%; animation-delay: 1.6s; }
-		.prev-moderne .particle:nth-child(4) { bottom: 20%; right: 18%; animation-delay: 0.4s; width: 2.5px; height: 2.5px; }
-		.prev-moderne .particle:nth-child(5) { top: 40%; left: 10%; animation-delay: 1.2s; }
-		.prev-moderne .particle:nth-child(6) { top: 60%; right: 12%; animation-delay: 2s; width: 3px; height: 3px; }
-		@keyframes particleFade {
-			0%, 100% { opacity: 0.2; transform: scale(1); }
-			50% { opacity: 0.8; transform: scale(1.8); }
-		}
-		/* Double rings */
-		.rings-moderne {
-			position: relative;
-			width: 100px;
-			height: 60px;
-			margin-bottom: 18px;
-		}
-		.rings-moderne .ring-m {
-			position: absolute;
-			width: 52px;
-			height: 52px;
-			border: 2px solid;
-			border-radius: 50%;
-			top: 50%;
-			transform: translateY(-50%);
-		}
-		.rings-moderne .ring-m:first-child {
-			left: 8px;
-			border-color: rgba(232,160,191,0.6);
-			animation: ringPulse1 3s ease-in-out infinite;
-			box-shadow: 0 0 12px rgba(232,160,191,0.2);
-		}
-		.rings-moderne .ring-m:last-child {
-			right: 8px;
-			border-color: rgba(255,255,255,0.4);
-			animation: ringPulse2 3s ease-in-out infinite;
-			box-shadow: 0 0 12px rgba(255,255,255,0.1);
-		}
-		@keyframes ringPulse1 {
-			0%, 100% { transform: translateY(-50%) scale(1); }
-			50% { transform: translateY(-50%) scale(1.05); }
-		}
-		@keyframes ringPulse2 {
-			0%, 100% { transform: translateY(-50%) scale(1); }
-			50% { transform: translateY(-50%) scale(0.96); }
-		}
-		.prev-moderne .prev-title {
-			font-family: 'Helvetica Neue', Arial, sans-serif;
-			font-size: 18px;
-			color: #fff;
-			font-weight: 200;
-			letter-spacing: 8px;
-			text-transform: uppercase;
-			margin-bottom: 4px;
-		}
-		.prev-moderne .prev-line {
-			width: 36px;
-			height: 1px;
-			background: #E8A0BF;
-			margin: 12px 0;
-		}
-		.prev-moderne .prev-subtitle {
-			font-size: 10px;
-			color: rgba(255,255,255,0.35);
-			letter-spacing: 4px;
-			text-transform: uppercase;
-		}
+	/* ===== Filter pills ===== */
+	.filters { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:36px; }
+	.filter { padding:10px 24px; border-radius:50px; background:#fff; border:1.5px solid var(--border); color:var(--ink-soft); font-size:12px; font-weight:600; cursor:pointer; transition:all .25s; letter-spacing:1.5px; text-transform:uppercase; font-family:'Cinzel',serif; }
+	.filter:hover { border-color:var(--gold); color:var(--gold); }
+	.filter.active { background:var(--ink); border-color:var(--ink); color:var(--gold); }
 
-		/* ======================================================
-		   CARD 3 : PREMIUM DORE - LE MEILLEUR
-		   Black & gold, animated rings with diamond, sparkles
-		   ====================================================== */
-		.tpl-card-premium {
-			border: 2px solid rgba(212,175,55,0.3);
-			box-shadow: 0 4px 24px rgba(212,175,55,0.08);
-		}
-		.tpl-card-premium:hover {
-			box-shadow: 0 12px 48px rgba(212,175,55,0.2);
-			border-color: rgba(212,175,55,0.5);
-		}
-		.tpl-card-premium.selected {
-			border-color: #D4AF37;
-			box-shadow: 0 8px 40px rgba(212,175,55,0.3);
-		}
-		.tpl-card-premium .tpl-check {
-			background: linear-gradient(135deg, #D4AF37, #B8922F);
-			box-shadow: 0 4px 12px rgba(212,175,55,0.5);
-		}
-		.tpl-card-premium .tpl-tier {
-			background: linear-gradient(135deg, #D4AF37, #B8922F);
-			color: #fff;
-		}
-		.prev-premium {
-			background: linear-gradient(160deg, #0a0500 0%, #1a0f00 30%, #2d1800 50%, #1a0f00 70%, #0a0500 100%);
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			position: relative;
-		}
-		/* Gold ornamental border inside */
-		.prev-premium::before {
-			content: '';
-			position: absolute;
-			inset: 12px;
-			border: 1px solid rgba(212,175,55,0.2);
-			border-radius: 8px;
-			pointer-events: none;
-		}
-		.prev-premium::after {
-			content: '';
-			position: absolute;
-			inset: 16px;
-			border: 1px solid rgba(212,175,55,0.08);
-			border-radius: 6px;
-			pointer-events: none;
-		}
-		/* Sparkles */
-		.prev-premium .sparkle {
-			position: absolute;
-			font-size: 10px;
-			color: #D4AF37;
-			animation: sparkleAnim 2.5s ease-in-out infinite;
-		}
-		.prev-premium .sparkle:nth-child(1) { top: 12%; left: 18%; animation-delay: 0s; font-size: 8px; }
-		.prev-premium .sparkle:nth-child(2) { top: 20%; right: 20%; animation-delay: 0.7s; font-size: 12px; }
-		.prev-premium .sparkle:nth-child(3) { bottom: 25%; left: 22%; animation-delay: 1.4s; font-size: 6px; }
-		.prev-premium .sparkle:nth-child(4) { bottom: 15%; right: 16%; animation-delay: 0.3s; font-size: 10px; }
-		.prev-premium .sparkle:nth-child(5) { top: 45%; left: 8%; animation-delay: 1.8s; font-size: 7px; }
-		.prev-premium .sparkle:nth-child(6) { top: 55%; right: 8%; animation-delay: 1s; font-size: 9px; }
-		@keyframes sparkleAnim {
-			0%, 100% { opacity: 0.15; transform: scale(0.8) rotate(0deg); }
-			50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
-		}
-		/* Gold rings with diamond */
-		.rings-premium {
-			position: relative;
-			width: 120px;
-			height: 80px;
-			margin-bottom: 16px;
-		}
-		.rings-premium .ring-p {
-			position: absolute;
-			width: 58px;
-			height: 58px;
-			border: 2.5px solid #D4AF37;
-			border-radius: 50%;
-			top: 50%;
-			transform: translateY(-50%);
-			box-shadow: 0 0 20px rgba(212,175,55,0.25), inset 0 0 12px rgba(212,175,55,0.1);
-		}
-		.rings-premium .ring-p:first-child {
-			left: 10px;
-			animation: ringGold1 4s ease-in-out infinite;
-		}
-		.rings-premium .ring-p:last-child {
-			right: 10px;
-			animation: ringGold2 4s ease-in-out infinite;
-		}
-		/* Diamond on top of first ring */
-		.rings-premium .ring-p:first-child::before {
-			content: '';
-			position: absolute;
-			top: -10px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 0;
-			height: 0;
-			border-left: 7px solid transparent;
-			border-right: 7px solid transparent;
-			border-bottom: 10px solid #D4AF37;
-		}
-		.rings-premium .ring-p:first-child::after {
-			content: '';
-			position: absolute;
-			top: 0px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 0;
-			height: 0;
-			border-left: 7px solid transparent;
-			border-right: 7px solid transparent;
-			border-top: 8px solid #D4AF37;
-			filter: drop-shadow(0 0 6px rgba(212,175,55,0.8));
-		}
-		@keyframes ringGold1 {
-			0%, 100% { transform: translateY(-50%) rotate(-3deg); }
-			50% { transform: translateY(calc(-50% - 6px)) rotate(3deg); }
-		}
-		@keyframes ringGold2 {
-			0%, 100% { transform: translateY(-50%) rotate(3deg); }
-			50% { transform: translateY(calc(-50% - 6px)) rotate(-3deg); }
-		}
-		.prev-premium .prev-ornament {
-			font-size: 11px;
-			letter-spacing: 6px;
-			color: #D4AF37;
-			margin-bottom: 6px;
-		}
-		.prev-premium .prev-title {
-			font-family: Georgia, serif;
-			font-size: 18px;
-			color: #D4AF37;
-			letter-spacing: 5px;
-			text-transform: uppercase;
-			margin-bottom: 4px;
-		}
-		.prev-premium .prev-line {
-			width: 100px;
-			height: 1px;
-			background: linear-gradient(90deg, transparent, #D4AF37, transparent);
-			margin: 10px 0;
-		}
-		.prev-premium .prev-subtitle {
-			font-size: 10px;
-			color: rgba(212,175,55,0.45);
-			letter-spacing: 3px;
-		}
-		.prev-premium .prev-diamonds {
-			margin-top: 8px;
-			font-size: 10px;
-			color: #D4AF37;
-			letter-spacing: 6px;
-			animation: diamondGlow 2s ease-in-out infinite;
-		}
-		@keyframes diamondGlow {
-			0%, 100% { text-shadow: 0 0 4px rgba(212,175,55,0.3); }
-			50% { text-shadow: 0 0 12px rgba(212,175,55,0.8); }
-		}
+	/* ===== Template grid ===== */
+	.tpl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:26px; }
 
-		/* ======================================================
-		   CARD INFO AREA
-		   ====================================================== */
-		.tpl-info {
-			padding: 18px 20px 20px;
-			text-align: center;
-			border-top: 1px solid rgba(0,0,0,0.04);
-		}
-		.tpl-info h3 {
-			margin: 0 0 4px;
-			font-size: 17px;
-			color: #333;
-			font-weight: 600;
-		}
-		.tpl-info .tpl-desc {
-			margin: 0 0 10px;
-			font-size: 12px;
-			color: #999;
-		}
-		.tpl-stars {
-			display: flex;
-			justify-content: center;
-			gap: 2px;
-			margin-bottom: 10px;
-		}
-		.tpl-stars .star {
-			font-size: 14px;
-			color: #ddd;
-		}
-		.tpl-stars .star.filled {
-			color: #D4AF37;
-		}
-		.tpl-badge-premium {
-			display: inline-block;
-			background: linear-gradient(135deg, #D4AF37, #B8922F);
-			color: #fff;
-			font-size: 9px;
-			padding: 3px 10px;
-			border-radius: 12px;
-			letter-spacing: 1.5px;
-			text-transform: uppercase;
-			font-weight: 600;
-			margin-bottom: 8px;
-		}
-		.btn-preview {
-			display: inline-block;
-			padding: 6px 18px;
-			font-size: 11px;
-			border-radius: 20px;
-			border: 1px solid;
-			background: transparent;
-			cursor: pointer;
-			transition: all 0.3s ease;
-			font-weight: 500;
-			letter-spacing: 0.5px;
-		}
-		.btn-preview-classique {
-			border-color: #D4A574;
-			color: #8B1A4A;
-		}
-		.btn-preview-classique:hover {
-			background: #8B1A4A;
-			color: #fff;
-			border-color: #8B1A4A;
-		}
-		.btn-preview-moderne {
-			border-color: rgba(232,160,191,0.4);
-			color: #666;
-		}
-		.btn-preview-moderne:hover {
-			background: #1a1a2e;
-			color: #E8A0BF;
-			border-color: #1a1a2e;
-		}
-		.btn-preview-premium {
-			border-color: rgba(212,175,55,0.4);
-			color: #B8922F;
-		}
-		.btn-preview-premium:hover {
-			background: linear-gradient(135deg, #D4AF37, #B8922F);
-			color: #fff;
-			border-color: #D4AF37;
-		}
+	.tpl { position:relative; background:#fff; border:1px solid var(--border); border-radius:18px; overflow:hidden; transition:all .4s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; cursor:pointer; }
+	.tpl:hover { transform:translateY(-6px); box-shadow:0 18px 44px rgba(0,0,0,.10); border-color:transparent; }
+	.tpl.locked:hover { transform:none; box-shadow:none; border-color:var(--border); }
 
-		/* ======================================================
-		   RECOMMENDED BADGE
-		   ====================================================== */
-		.tpl-recommended {
-			position: absolute;
-			top: -1px;
-			left: 50%;
-			transform: translateX(-50%);
-			background: linear-gradient(135deg, #D4AF37, #B8922F);
-			color: #fff;
-			font-size: 9px;
-			padding: 4px 14px;
-			border-radius: 0 0 10px 10px;
-			letter-spacing: 1.5px;
-			text-transform: uppercase;
-			font-weight: 600;
-			z-index: 5;
-			box-shadow: 0 4px 12px rgba(212,175,55,0.3);
-		}
+	/* Tier badge */
+	.tier { position:absolute; top:14px; right:14px; padding:5px 14px; border-radius:50px; font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; z-index:5; font-family:'Cinzel',serif; backdrop-filter:blur(8px); }
+	.tier-FREE { background:rgba(255,255,255,.92); color:var(--emerald); border:1px solid rgba(14,59,46,.3); }
+	.tier-PRO { background:rgba(26,15,8,.92); color:#D4B370; border:1px solid rgba(212,179,112,.4); }
+	.tier-PREMIUM { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:#fff; }
 
-		/* ======================================================
-		   PREVIEW MODAL
-		   ====================================================== */
-		.preview-modal-overlay {
-			display: none;
-			position: fixed;
-			inset: 0;
-			background: rgba(0,0,0,0.65);
-			z-index: 1000;
-			align-items: center;
-			justify-content: center;
-			backdrop-filter: blur(4px);
-		}
-		.preview-modal-overlay.active { display: flex; }
-		.preview-modal {
-			background: #fff;
-			border-radius: 20px;
-			width: 90%;
-			max-width: 640px;
-			max-height: 85vh;
-			overflow: auto;
-			box-shadow: 0 24px 64px rgba(0,0,0,0.3);
-		}
-		.preview-modal-header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 18px 24px;
-			border-bottom: 1px solid #f0ebe6;
-		}
-		.preview-modal-header h3 { margin: 0; font-size: 16px; color: #333; }
-		.preview-modal-close {
-			background: none; border: none; font-size: 24px;
-			cursor: pointer; color: #999; padding: 0; line-height: 1;
-		}
-		.preview-modal-body iframe {
-			width: 100%; height: 520px; border: none;
-		}
-		.preview-modal-footer {
-			padding: 16px 24px;
-			border-top: 1px solid #f0ebe6;
-			display: flex; gap: 10px; justify-content: flex-end;
-		}
+	/* ===== Preview canvas ===== */
+	.preview { height:340px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px 24px; text-align:center; }
 
-		/* ======================================================
-		   STATS + FORM + TABLE
-		   ====================================================== */
-		.inv-stats {
-			display: grid;
-			grid-template-columns: repeat(4, 1fr);
-			gap: 16px;
-			margin-bottom: 20px;
-		}
-		.inv-stat-card {
-			background: #fff;
-			border: 1px solid #e8e0d8;
-			border-radius: 12px;
-			padding: 16px;
-			text-align: center;
-		}
-		.inv-stat-value { font-size: 28px; font-weight: bold; color: var(--primary, #8B1A2B); }
-		.inv-stat-label { font-size: 12px; color: #888; margin-top: 4px; }
-		.statut-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-		.statut-pending { background: #FEF3C7; color: #92400E; }
-		.statut-sent { background: #DBEAFE; color: #1E40AF; }
-		.statut-confirmed { background: #D1FAE5; color: #065F46; }
-		.statut-declined { background: #FEE2E2; color: #991B1B; }
-		.create-form {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 16px;
-			align-items: end;
-		}
-		.create-form .form-group { margin-bottom: 0; }
-		.create-form .full-width { grid-column: 1 / -1; }
+	/* Common preview elements */
+	.pv-acc { font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:5px; text-transform:uppercase; opacity:.7; margin-bottom:16px; }
+	.pv-line { width:60px; height:1px; background:currentColor; opacity:.45; margin:14px auto; }
+	.pv-line-fancy { width:70px; height:1px; background:linear-gradient(90deg,transparent,currentColor,transparent); opacity:.65; margin:14px auto; }
+	.pv-title { font-family:'Italiana','Cormorant Garamond',serif; font-size:32px; line-height:1.15; font-weight:400; }
+	.pv-name { font-family:'Great Vibes',cursive; font-size:34px; line-height:1; margin:8px 0; }
+	.pv-sub { font-family:'Cinzel',serif; font-size:10px; letter-spacing:4px; text-transform:uppercase; opacity:.7; }
+	.pv-date { font-family:'Italiana',serif; font-size:14px; letter-spacing:2px; margin-top:14px; }
+	.pv-ornament { font-size:14px; letter-spacing:6px; margin:8px 0; opacity:.55; }
+	.pv-monogram { width:54px; height:54px; border:1.5px solid currentColor; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-family:'Italiana',serif; font-size:22px; margin-bottom:10px; opacity:.75; }
+	.pv-frame { position:absolute; pointer-events:none; }
 
-		@media (max-width: 768px) {
-			.template-gallery { grid-template-columns: 1fr; }
-			.inv-stats { grid-template-columns: repeat(2, 1fr); }
-			.create-form { grid-template-columns: 1fr; }
-		}
+	/* === Palettes === */
+	/* 1. Ivory Gold */
+	.p-ivory { background:linear-gradient(180deg,#FAF7F2 0%, #F4EFE6 100%); color:#8B6F2A; }
+	.p-ivory::before { content:""; position:absolute; inset:14px; border:1px solid rgba(184,146,47,.35); border-radius:8px; pointer-events:none; }
+	.p-ivory::after { content:""; position:absolute; inset:18px; border:1px solid rgba(184,146,47,.18); border-radius:6px; pointer-events:none; }
+	/* 2. Royal Black */
+	.p-royal { background:linear-gradient(160deg,#0d0904 0%, #1A0F08 50%, #0d0904 100%); color:#D4B370; }
+	.p-royal::before { content:""; position:absolute; inset:16px; border:1px solid rgba(212,179,112,.35); border-radius:6px; }
+	/* 3. Moroccan Pearl */
+	.p-pearl { background:linear-gradient(180deg,#F0E8DC 0%, #E5D9C3 100%); color:#7C5E2F; }
+	.p-pearl::before { content:""; position:absolute; top:0; left:50%; transform:translateX(-50%); width:140px; height:140px; background:radial-gradient(circle, rgba(184,146,47,.18), transparent 70%); }
+	/* 4. Garden Elegance */
+	.p-garden { background:linear-gradient(170deg,#EAEFE3 0%, #C8D5BA 100%); color:#3F5C2D; }
+	/* 5. Minimal Luxury */
+	.p-minimal { background:#FFFFFF; color:#1A0A10; border-bottom:1px solid var(--border); }
+	/* 6. Desert Rose */
+	.p-desert { background:linear-gradient(180deg,#F8E6E0 0%, #E8C5C0 100%); color:#9B5A6B; }
+	/* 7. Emerald Night */
+	.p-emerald { background:linear-gradient(170deg,#0a2418 0%, #0E3B2E 50%, #0a2418 100%); color:#D4B370; }
+	.p-emerald::before { content:""; position:absolute; inset:18px; border:1px solid rgba(212,179,112,.35); border-radius:6px; }
+	/* 8. Palace Cream */
+	.p-palace { background:linear-gradient(180deg,#FFF9EE 0%, #F5E6C8 100%); color:#7C5E2F; }
+	.p-palace::before { content:""; position:absolute; inset:14px; border-top:2px solid rgba(184,146,47,.45); border-bottom:2px solid rgba(184,146,47,.45); border-radius:0; pointer-events:none; }
+	/* 9. Andalusian Touch */
+	.p-andalou { background:linear-gradient(180deg,#1A0F0F 0%, #5C1A2B 50%, #1A0F0F 100%); color:#F0D8B8; }
+	.p-andalou::before { content:""; position:absolute; inset:18px; border:1px solid rgba(240,216,184,.3); border-radius:8px; }
+	/* 10. Soft Calligraphy */
+	.p-cal { background:linear-gradient(180deg,#F8F4ED 0%, #F0E8D8 100%); color:#3D2232; }
+
+	/* === ZELLIGE styles marocains === */
+	/* Zellige Pearl — fond crème avec motif zellige beige doré */
+	.p-zellige-pearl {
+		background:
+			radial-gradient(circle at 0% 0%, rgba(184,146,47,.15) 0%, transparent 30%),
+			radial-gradient(circle at 100% 100%, rgba(184,146,47,.15) 0%, transparent 30%),
+			linear-gradient(180deg,#F8F1E4,#EFE3CB);
+		color:#7C5E2F;
+		position:relative;
+	}
+	.p-zellige-pearl::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			repeating-linear-gradient(45deg, rgba(184,146,47,.10) 0 2px, transparent 2px 18px),
+			repeating-linear-gradient(-45deg, rgba(184,146,47,.10) 0 2px, transparent 2px 18px);
+		opacity:.6;
+		pointer-events:none;
+	}
+	.p-zellige-pearl::after {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(184,146,47,.45); border-radius:6px;
+		pointer-events:none;
+	}
+
+	/* Zellige Royal — noir + or, motifs zellige étoilés */
+	.p-zellige-royal {
+		background:
+			radial-gradient(circle at 50% 0%, rgba(212,179,112,.18) 0%, transparent 50%),
+			radial-gradient(circle at 50% 100%, rgba(212,179,112,.15) 0%, transparent 50%),
+			linear-gradient(160deg,#0d0904 0%, #1A0F08 50%, #0d0904 100%);
+		color:#D4B370;
+		position:relative;
+	}
+	.p-zellige-royal::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			repeating-linear-gradient(60deg, rgba(212,179,112,.12) 0 1.5px, transparent 1.5px 14px),
+			repeating-linear-gradient(-60deg, rgba(212,179,112,.12) 0 1.5px, transparent 1.5px 14px);
+		opacity:.55;
+		pointer-events:none;
+	}
+	.p-zellige-royal::after {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(212,179,112,.45); border-radius:8px;
+		pointer-events:none;
+	}
+
+	/* === VIDEO templates === */
+	.p-video-cinema, .p-video-fassi, .p-video-luxe { color:#fff; position:relative; }
+	.p-video-cinema { background:linear-gradient(160deg,#1a0a30 0%, #2C1810 60%, #5C2A8C 100%); }
+	.p-video-fassi  { background:linear-gradient(160deg,#0d0904 0%, #5C1A2B 50%, #0d0904 100%); color:#D4B370; }
+	.p-video-luxe   { background:linear-gradient(160deg,#000 0%, #1a0a10 50%, #000 100%); color:#D4B370; }
+	.p-video-cinema::before, .p-video-fassi::before, .p-video-luxe::before {
+		content:""; position:absolute; inset:0;
+		background-image:radial-gradient(circle at 50% 50%, rgba(255,255,255,.08), transparent 60%);
+		pointer-events:none;
+	}
+	/* Play icon pour les models video */
+	.preview.video-tpl .play-icon {
+		position:absolute; top:50%; left:50%;
+		width:64px; height:64px; transform:translate(-50%,-50%);
+		background:rgba(255,255,255,.92); border-radius:50%;
+		display:flex; align-items:center; justify-content:center;
+		box-shadow:0 8px 32px rgba(0,0,0,.4);
+		z-index:3;
+	}
+	.preview.video-tpl .play-icon::after {
+		content:""; width:0; height:0;
+		border-left:18px solid #1A0A10;
+		border-top:11px solid transparent;
+		border-bottom:11px solid transparent;
+		margin-left:5px;
+	}
+	.video-tag {
+		position:absolute; bottom:14px; left:14px;
+		padding:5px 12px; border-radius:50px;
+		background:rgba(255,255,255,.92); color:#8B1A2B;
+		font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase;
+		font-weight:600; z-index:3;
+	}
+
+	/* Selected check */
+	.tpl.selected { border-color:var(--gold); box-shadow:0 12px 36px rgba(184,146,47,.18); }
+	.tpl-check { position:absolute; top:14px; left:14px; width:28px; height:28px; background:var(--gold); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:6; opacity:0; transform:scale(.6); transition:all .25s; font-size:14px; }
+	.tpl.selected .tpl-check { opacity:1; transform:scale(1); }
+
+	/* Lock overlay */
+	.tpl.locked { opacity:.92; }
+	.lock { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(26,10,16,.42); backdrop-filter:blur(2.5px); z-index:4; opacity:0; transition:opacity .3s; }
+	.tpl.locked:hover .lock, .tpl.locked.show-lock .lock { opacity:1; }
+	.tpl.locked .lock { opacity:.85; }
+	.lock svg { width:34px; height:34px; color:#fff; margin-bottom:10px; }
+	.lock span { display:inline-block; padding:8px 18px; background:#fff; color:var(--ink); border-radius:50px; font-family:'Cinzel',serif; font-size:10px; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; }
+	.lock-tier-PRO span { background:linear-gradient(135deg,#2C1810,#4A2818); color:#D4B370; }
+	.lock-tier-PREMIUM span { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:#fff; }
+
+	/* Card info */
+	.tpl-info { padding:18px 22px 22px; flex:1; display:flex; flex-direction:column; background:#fff; border-top:1px solid var(--border); }
+	.tpl-info h4 { margin:0 0 4px; font-family:'Italiana','Cormorant Garamond',serif; font-size:1.3rem; color:var(--ink); font-weight:400; letter-spacing:.5px; }
+	.tpl-info .d { margin:0 0 14px; font-size:12.5px; color:var(--muted); line-height:1.5; flex:1; font-style:italic; }
+	.tpl-info button { margin-top:auto; padding:10px; border-radius:8px; border:1px solid var(--ink); background:transparent; color:var(--ink); font-size:11px; font-weight:600; cursor:pointer; transition:all .25s; letter-spacing:2px; text-transform:uppercase; font-family:'Cinzel',serif; }
+	.tpl-info button:hover { background:var(--ink); color:var(--gold); }
+	.tpl-info button.btn-locked { border-color:var(--gold); color:var(--gold); background:rgba(184,146,47,.06); }
+	.tpl-info button.btn-locked:hover { background:var(--gold); color:#fff; }
+
+	/* ===== Modal ===== */
+	.modal-overlay { position:fixed; inset:0; background:rgba(13,9,4,.65); backdrop-filter:blur(6px); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; }
+	.modal-overlay.show { display:flex; }
+	.modal { background:#fff; border-radius:24px; max-width:680px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 30px 80px rgba(0,0,0,.3); }
+	.modal-head { padding:26px 32px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+	.modal-head h2 { margin:0; font-family:'Italiana',serif; font-size:1.7rem; color:var(--ink); font-weight:400; }
+	.modal-close { background:none; border:none; font-size:30px; cursor:pointer; color:var(--muted); line-height:1; }
+	.modal-body { padding:26px 32px; }
+	.modal-body label { display:block; font-size:10.5px; font-weight:600; color:var(--ink-soft); margin:18px 0 8px; text-transform:uppercase; letter-spacing:2.5px; font-family:'Cinzel',serif; }
+	.modal-body select, .modal-body textarea, .modal-body input { width:100%; padding:12px 16px; border:1px solid var(--border); border-radius:10px; font-size:14px; font-family:inherit; color:var(--ink); background:#fff; }
+	.modal-body select:focus, .modal-body textarea:focus, .modal-body input:focus { outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,146,47,.1); }
+	.modal-body textarea { min-height:90px; resize:vertical; }
+	.confirm-summary { background:linear-gradient(180deg,#FAF7F2,#F4EFE6); border-radius:14px; padding:18px 22px; margin:22px 0 8px; border:1px solid rgba(184,146,47,.2); }
+	.confirm-summary div { display:flex; justify-content:space-between; padding:7px 0; font-size:13.5px; }
+	.confirm-summary div:not(:last-child) { border-bottom:1px solid rgba(184,146,47,.12); }
+	.confirm-summary span:first-child { color:var(--muted); font-weight:500; font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:2px; text-transform:uppercase; }
+	.confirm-summary span:last-child { color:var(--ink); font-weight:600; }
+	.modal-foot { padding:20px 32px 26px; display:flex; gap:12px; justify-content:flex-end; border-top:1px solid var(--border); }
+	.btn-cancel { padding:12px 24px; border:1px solid var(--border); background:#fff; color:var(--ink-soft); border-radius:10px; font-weight:600; cursor:pointer; font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+	.btn-confirm { padding:12px 28px; border:none; background:var(--ink); color:var(--gold); border-radius:10px; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.18); font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+	.btn-confirm:hover { transform:translateY(-1px); background:var(--noir-2); }
+	.btn-confirm:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+	/* Notice */
+	.notice { padding:14px 20px; border-radius:12px; margin-bottom:14px; font-size:13.5px; }
+	.notice-info { background:#F4EFE6; color:#7C5E2F; border-left:3px solid var(--gold); }
+	.notice-warn { background:#FEF3E0; color:#8B5C0B; border-left:3px solid #D4A853; }
+	.notice-success { background:#E8F0E5; color:#1F6B3A; border-left:3px solid #3D8B5E; }
+	.notice-error { background:#FCEAEC; color:#8B1A2B; border-left:3px solid #B83B5E; }
+
+	/* Sent invitations list */
+	.inv-list { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+	.inv-item { background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; gap:14px; transition:border-color .2s; }
+	.inv-item:hover { border-color:var(--gold); }
+	.inv-item h5 { margin:0 0 4px; font-size:15px; color:var(--ink); font-family:'Italiana',serif; font-weight:400; letter-spacing:.5px; }
+	.inv-item small { color:var(--muted); font-size:12px; font-style:italic; }
+	.statut-badge { padding:4px 12px; border-radius:50px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; font-family:'Cinzel',serif; }
+	.s-EN_ATTENTE { background:#FEF3C7; color:#92400E; }
+	.s-ENVOYEE { background:#E0EAF8; color:#1E40AF; }
+	.s-CONFIRMEE { background:#DCFCE7; color:#166534; }
+	.s-DECLINEE { background:#FEE2E2; color:#991B1B; }
+	.inv-item button { padding:8px 16px; border-radius:8px; border:1px solid var(--ink); background:transparent; color:var(--ink); font-size:11px; font-weight:600; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:1.5px; text-transform:uppercase; transition:all .2s; }
+	.inv-item button:hover { background:var(--ink); color:var(--gold); }
+	.inv-item button:disabled { border-color:var(--border); color:var(--muted); cursor:not-allowed; background:transparent; }
+
+	@media(max-width:900px){.tpl-grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.inv-list{grid-template-columns:1fr}}
+	@media(max-width:520px){.tpl-grid{grid-template-columns:1fr}.inv-hero{flex-direction:column;align-items:flex-start}.inv-hero h1{font-size:2rem}}
 	</style>
 </head>
 <body>
@@ -625,404 +280,435 @@
 		</div>
 	</div>
 
-	<!-- STATS -->
-	<div class="panel" style="margin:20px;">
-		<header>Suivi des invitations</header>
-		<div class="content">
-			<div class="inv-stats">
-				<div class="inv-stat-card">
-					<div class="inv-stat-value" id="statTotal">0</div>
-					<div class="inv-stat-label">Total créées</div>
+	<div class="inv-wrap">
+
+		<!-- HERO -->
+		<div class="inv-hero">
+			<div>
+				<span class="acc">Collection 2026</span>
+				<h1>Invitations digitales</h1>
+				<p>Une collection raffinée de modèles signés Ayora — du minimaliste élégant au luxe absolu, pour des invitations qui marquent les esprits.</p>
+			</div>
+			<span class="plan-pill plan-FREE" id="planPill">Plan Free</span>
+		</div>
+
+		<!-- STATS -->
+		<div class="stats">
+			<div class="stat-card"><div class="v" id="statTotal">0</div><div class="l">Créées</div></div>
+			<div class="stat-card"><div class="v" id="statSent">0</div><div class="l">Envoyées</div></div>
+			<div class="stat-card"><div class="v" id="statRemaining">10</div><div class="l">Restantes</div></div>
+			<div class="stat-card"><div class="v" id="statPlan">FREE</div><div class="l">Plan</div></div>
+		</div>
+
+		<div id="globalNotice"></div>
+
+		<!-- COLLECTION -->
+		<div class="section-head">
+			<span class="acc">— La collection —</span>
+			<h2>Choisissez votre modèle</h2>
+			<div class="ornament">◆</div>
+			<p>10 designs exclusifs, signés par notre studio. Les modèles Pro et Premium révèlent toute leur élégance.</p>
+		</div>
+
+		<div class="filters">
+			<div class="filter active" data-f="all">Tous</div>
+			<div class="filter" data-f="FREE">Free</div>
+			<div class="filter" data-f="PRO">Pro</div>
+			<div class="filter" data-f="PREMIUM">Premium</div>
+		</div>
+
+		<div class="tpl-grid" id="tplGrid"></div>
+
+		<!-- SENT LIST -->
+		<div class="section-head">
+			<span class="acc">— Vos envois —</span>
+			<h2>Vos invitations</h2>
+			<div class="ornament">◆</div>
+			<p>Suivez vos invitations créées et envoyez-les aux invités d'un simple clic.</p>
+		</div>
+		<div id="invitationsList" class="inv-list">
+			<div class="loading"><div class="spinner"></div></div>
+		</div>
+
+	</div>
+
+	<!-- MODAL -->
+	<div class="modal-overlay" id="modalCreate">
+		<div class="modal">
+			<div class="modal-head">
+				<h2>Confirmer & envoyer</h2>
+				<button class="modal-close" onclick="closeModal()">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div id="modalNotice"></div>
+				<label>Invité destinataire</label>
+				<select id="selectGuest"><option value="">— Choisir un invité —</option></select>
+				<label>Modèle choisi</label>
+				<input id="selTplName" readonly>
+				<div id="videoField" style="display:none;">
+					<label>Lien de la vidéo d'invitation</label>
+					<input id="videoUrl" type="url" placeholder="https://youtu.be/... ou https://drive.google.com/...">
+					<p style="font-size:12px;color:#7A6B74;margin:6px 0 0;font-style:italic;">Le lien sera inclus dans l'email envoyé à l'invité. YouTube, Vimeo, Google Drive, Dropbox acceptés.</p>
 				</div>
-				<div class="inv-stat-card">
-					<div class="inv-stat-value" id="statSent">0</div>
-					<div class="inv-stat-label">Envoyées</div>
-				</div>
-				<div class="inv-stat-card">
-					<div class="inv-stat-value" id="statRemaining">10</div>
-					<div class="inv-stat-label">Restantes</div>
-				</div>
-				<div class="inv-stat-card">
-					<div class="inv-stat-value" id="statPlan">FREE</div>
-					<div class="inv-stat-label">Plan actuel</div>
+				<label>Message personnalisé (optionnel)</label>
+				<textarea id="messagePerso" placeholder="Une attention pour cet invité…"></textarea>
+				<div class="confirm-summary" id="confirmSummary" style="display:none;">
+					<div><span>Invité</span><span id="sumGuest">—</span></div>
+					<div><span>Email</span><span id="sumEmail">—</span></div>
+					<div><span>Modèle</span><span id="sumTpl">—</span></div>
+					<div id="sumVideoRow" style="display:none;"><span>Vidéo</span><span id="sumVideo">—</span></div>
 				</div>
 			</div>
-			<div id="limitWarning" class="error-message" style="display:none;">
-				Limite de 10 invitations gratuites atteinte.
-				<a href="premium.html">Passez en Premium</a> pour des invitations illimitées.
+			<div class="modal-foot">
+				<button class="btn-cancel" onclick="closeModal()">Annuler</button>
+				<button class="btn-confirm" id="btnConfirm" onclick="confirmAndSend()">Confirmer & envoyer</button>
 			</div>
 		</div>
 	</div>
-
-	<!-- STEP 1: CHOISIR LE TEMPLATE -->
-	<div class="panel" style="margin:20px;">
-		<header>1. Choisissez un modèle d'invitation</header>
-		<div class="content">
-			<div class="template-gallery">
-
-				<!-- ============ CLASSIQUE ELEGANT ============ -->
-				<div class="tpl-card tpl-card-classique selected" onclick="selectTemplate('classique', this)">
-					<div class="tpl-check">&#10003;</div>
-					<span class="tpl-tier">Essentiel</span>
-					<div class="tpl-preview prev-classique">
-						<div class="ring-classique"></div>
-						<span class="prev-ornament">&#10047; &#10047; &#10047;</span>
-						<span class="prev-title">Vous êtes invité(e)</span>
-						<div class="prev-line"></div>
-						<span class="prev-subtitle">au mariage de...</span>
-					</div>
-					<div class="tpl-info">
-						<h3>Classique Élégant</h3>
-						<p class="tpl-desc">Tons rosés, serif, romantique & intemporel</p>
-						<div class="tpl-stars">
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star">&#9733;</span>
-							<span class="star">&#9733;</span>
-						</div>
-						<button class="btn-preview btn-preview-classique" onclick="event.stopPropagation();previewTemplate('classique')">Prévisualiser</button>
-					</div>
-				</div>
-
-				<!-- ============ MODERNE MINIMAL ============ -->
-				<div class="tpl-card tpl-card-moderne" onclick="selectTemplate('moderne', this)">
-					<div class="tpl-check">&#10003;</div>
-					<span class="tpl-tier">Avancé</span>
-					<div class="tpl-preview prev-moderne">
-						<span class="particle"></span>
-						<span class="particle"></span>
-						<span class="particle"></span>
-						<span class="particle"></span>
-						<span class="particle"></span>
-						<span class="particle"></span>
-						<div class="rings-moderne">
-							<div class="ring-m"></div>
-							<div class="ring-m"></div>
-						</div>
-						<span class="prev-title">Invitation</span>
-						<div class="prev-line"></div>
-						<span class="prev-subtitle">Célébration</span>
-					</div>
-					<div class="tpl-info">
-						<h3>Moderne Minimal</h3>
-						<p class="tpl-desc">Dark mode, épuré & contemporain</p>
-						<div class="tpl-stars">
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star">&#9733;</span>
-						</div>
-						<button class="btn-preview btn-preview-moderne" onclick="event.stopPropagation();previewTemplate('moderne')">Prévisualiser</button>
-					</div>
-				</div>
-
-				<!-- ============ PREMIUM DORE ============ -->
-				<div class="tpl-card tpl-card-premium" onclick="selectTemplate('luxe', this)">
-					<div class="tpl-check">&#10003;</div>
-					<div class="tpl-recommended">Recommandé</div>
-					<span class="tpl-tier">Prestige</span>
-					<div class="tpl-preview prev-premium">
-						<span class="sparkle">&#10022;</span>
-						<span class="sparkle">&#10022;</span>
-						<span class="sparkle">&#10022;</span>
-						<span class="sparkle">&#10022;</span>
-						<span class="sparkle">&#10022;</span>
-						<span class="sparkle">&#10022;</span>
-						<span class="prev-ornament">&#9670; &#9670; &#9670;</span>
-						<div class="rings-premium">
-							<div class="ring-p"></div>
-							<div class="ring-p"></div>
-						</div>
-						<span class="prev-title">Invitation</span>
-						<div class="prev-line"></div>
-						<span class="prev-subtitle">Prestige & Élégance</span>
-						<span class="prev-diamonds">&#9670; &#9670; &#9670;</span>
-					</div>
-					<div class="tpl-info">
-						<h3>Premium Doré</h3>
-						<p class="tpl-desc">Noir & or, luxe absolu, exclusif</p>
-						<span class="tpl-badge-premium">Premium</span>
-						<div class="tpl-stars" style="margin-top:8px;">
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-							<span class="star filled">&#9733;</span>
-						</div>
-						<button class="btn-preview btn-preview-premium" onclick="event.stopPropagation();previewTemplate('luxe')">Prévisualiser</button>
-					</div>
-				</div>
-
-			</div>
-		</div>
-	</div>
-
-	<!-- STEP 2: DETAILS -->
-	<div class="panel" style="margin:20px;">
-		<header>2. Créer l'invitation</header>
-		<div class="content">
-			<div class="create-form">
-				<div class="form-group">
-					<label for="selectGuest">Invité</label>
-					<select id="selectGuest">
-						<option value="">-- Sélectionnez un invité --</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<label>Modèle sélectionné</label>
-					<input type="text" id="selectedTemplateName" value="Classique Élégant" readonly style="background:#f9f6f3;cursor:default;">
-				</div>
-				<div class="form-group full-width">
-					<label for="messagePerso">Message personnalisé (optionnel)</label>
-					<textarea id="messagePerso" rows="3" placeholder="Ex: Nous serions ravis de vous voir parmi nous pour célébrer ce jour unique..."></textarea>
-				</div>
-			</div>
-			<div class="button-panel" style="margin-top:16px;">
-				<button class="btn btn-primary" onclick="createInvitation()">Créer l'invitation</button>
-			</div>
-		</div>
-	</div>
-
-	<!-- STEP 3: LISTE -->
-	<div class="panel" style="margin:20px;">
-		<header>Invitations créées</header>
-		<div class="content">
-			<div id="invitationsList">
-				<div class="loading"><div class="spinner"></div></div>
-			</div>
-		</div>
-	</div>
-
-	<!-- PREVIEW MODAL -->
-	<div class="preview-modal-overlay" id="previewModal">
-		<div class="preview-modal">
-			<div class="preview-modal-header">
-				<h3 id="previewModalTitle">Prévisualisation</h3>
-				<button class="preview-modal-close" onclick="closePreview()">&times;</button>
-			</div>
-			<div class="preview-modal-body">
-				<iframe id="previewFrame" sandbox="allow-same-origin"></iframe>
-			</div>
-			<div class="preview-modal-footer">
-				<button class="btn btn-secondary" onclick="closePreview()">Fermer</button>
-				<button class="btn btn-primary" id="previewSelectBtn" onclick="closePreview()">Utiliser ce modèle</button>
-			</div>
-		</div>
-	</div>
-
-	<footer>
-		<p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p>
-	</footer>
 
 	<script src="js/api.js"></script>
 	<script>
 		var user = checkAuth();
 		var currentPlan = 'FREE';
-		var selectedTemplate = 'classique';
+		var planRank = { FREE:0, PRO:1, PREMIUM:2 };
+		var selectedTemplate = null;
+		var subscription = null;
+		var guests = [];
 
-		var TEMPLATES = {
-			classique: { name: 'Classique Élégant', desc: 'Tons rosés, serif, romantique' },
-			moderne:   { name: 'Moderne Minimal',   desc: 'Dark, épuré, contemporain' },
-			luxe:      { name: 'Premium Doré',       desc: 'Or, luxe, exclusif' }
-		};
+		// Noms dynamiques recuperes depuis le questionnaire (fallback "Ayla & Youssef")
+		var coupleNames = "Ayla & Youssef";
+		var coupleInitials = "A&Y";
+
+		function getInitials(s) {
+			var parts = s.replace(/\s*&\s*/g, ' & ').split('&');
+			if (parts.length >= 2) return (parts[0].trim()[0] || 'A') + '&' + (parts[1].trim()[0] || 'Y');
+			return s.substring(0, 3);
+		}
+
+		// === 15 templates premium (3 FREE, 5 PRO incl. zellige, 7 PREMIUM dont 3 video) ===
+		function buildTemplates() {
+			var n = coupleNames; var m = coupleInitials;
+			return [
+			// === FREE ===
+			{ slug:'ivory-gold',     name:'Ivory Gold',         desc:'Ivoire & or fin, double cadre raffine',     level:'FREE',    palette:'p-ivory',    type:'card',
+			  pv:{acc:'Save the Date', mono:m, title:'Vous etes invite', name:n, sub:'Ceremonie · 12 Juin 2026', orn:'◆ ◆ ◆', date:'Fes - Maroc'} },
+			{ slug:'minimal-luxury', name:'Minimal Luxury',     desc:'Minimalisme epure, typographie italienne',  level:'FREE',    palette:'p-minimal',  type:'card',
+			  pv:{acc:'Wedding 2026', title:'Save the Date', name:m.replace('&',' · '), sub:'12 . 06 . 2026', orn:'—', date:'Fes'} },
+			{ slug:'soft-cal',       name:'Soft Calligraphy',   desc:'Calligraphie elegante, doux et raffine',    level:'FREE',    palette:'p-cal',      type:'card',
+			  pv:{acc:'L\'invitation', mono:m, title:'Notre mariage', name:n, sub:'Avec amour', orn:'◊', date:'12 Juin 2026 · Fes'} },
+
+			// === PRO ===
+			{ slug:'desert-rose',    name:'Desert Rose',        desc:'Rose poudre, feminin, contemporain',        level:'PRO',     palette:'p-desert',   type:'card',
+			  pv:{acc:'Save the Date', mono:m, title:'Notre mariage', name:n, sub:'Avec joie', orn:'❀ ❀ ❀', date:'12 Juin 2026 · Fes'} },
+			{ slug:'garden-elegance',name:'Garden Elegance',    desc:'Vert botanique sage, fraicheur naturelle',  level:'PRO',     palette:'p-garden',   type:'card',
+			  pv:{acc:'Garden Wedding', title:'You are invited', name:n, sub:'Sunday 12.06.26', orn:'❦', date:'Riad Maison Bleue'} },
+			{ slug:'pearl',          name:'Moroccan Pearl',     desc:'Perle nacree, touche fassi elegante',       level:'PRO',     palette:'p-pearl',    type:'card',
+			  pv:{acc:'Wedding Invitation', mono:m, title:'Ceremonie de mariage', name:n, sub:'Tradition fassi', orn:'❋', date:'12 Juin 2026'} },
+			// === ZELLIGE PRO (style marocain authentique) ===
+			{ slug:'zellige-pearl',  name:'Zellige Pearl',      desc:'Mosaique de zellige, art fassi raffine',    level:'PRO',     palette:'p-zellige-pearl', type:'card',
+			  pv:{acc:'Mariage marocain', mono:m, title:'Vous etes convie(e)', name:n, sub:'Tradition & elegance', orn:'❋ ◆ ❋', date:'12 Juin 2026 · Fes'} },
+			{ slug:'palace-cream',   name:'Palace Cream',       desc:'Creme imperial, lignes dorees royales',     level:'PRO',     palette:'p-palace',   type:'card',
+			  pv:{acc:'Royal Invitation', mono:m, title:'Ceremonie de mariage', name:n, sub:'Palais Faraj - Fes', orn:'◇ ◆ ◇', date:'12 Juin 2026'} },
+
+			// === PREMIUM === (statiques + video)
+			{ slug:'royal-black',    name:'Royal Black',        desc:'Noir profond & or, prestige absolu',        level:'PREMIUM', palette:'p-royal',    type:'card',
+			  pv:{acc:'Invitation Prestige', mono:m, title:'Ceremonie privee', name:n, sub:'Le 12 Juin 2026', orn:'◆ ◆ ◆', date:'Palais Faraj · Fes'} },
+			{ slug:'emerald-night',  name:'Emerald Night',      desc:'Emeraude profond, cadre en or fin',         level:'PREMIUM', palette:'p-emerald',  type:'card',
+			  pv:{acc:'A Night to Remember', mono:m, title:'Notre union', name:n, sub:'12 Juin 2026', orn:'❋ ❋ ❋', date:'Fes - Riad Maison Bleue'} },
+			{ slug:'andalusian',     name:'Andalusian Touch',   desc:'Bordeaux & ivoire, heritage andalou',       level:'PREMIUM', palette:'p-andalou',  type:'card',
+			  pv:{acc:'Ceremonie de mariage', mono:m, title:'Vous etes invite(e)', name:n, sub:'Avec honneur', orn:'❋ ◆ ❋', date:'12 Juin 2026 · Fes'} },
+			{ slug:'zellige-royal',  name:'Zellige Royal',      desc:'Zellige royal noir & or, signature marocaine', level:'PREMIUM', palette:'p-zellige-royal', type:'card',
+			  pv:{acc:'Invitation marocaine', mono:m, title:'Mariage royal', name:n, sub:'Heritage fassi · 2026', orn:'◆ ❋ ◆', date:'Fes - Maroc'} },
+
+			// === MODELES VIDEO PREMIUM ===
+			{ slug:'video-cinema',   name:'Cinema Wedding',     desc:'Invitation video cinematique, lien envoye par email', level:'PREMIUM', palette:'p-video-cinema', type:'video',
+			  pv:{acc:'Cinema Wedding', mono:m, title:'Save the Date', name:n, sub:'Une invitation video unique', orn:'▶', date:'Cliquez pour voir'} },
+			{ slug:'video-fassi',    name:'Fassi Royal Video',  desc:'Video signature fassi avec zellige & or', level:'PREMIUM', palette:'p-video-fassi', type:'video',
+			  pv:{acc:'Invitation Video', mono:m, title:'Mariage royal fassi', name:n, sub:'Une experience immersive', orn:'▶', date:'Lien personnalise'} },
+			{ slug:'video-luxe',     name:'Black Velvet Video', desc:'Velours noir & or, cinematic premium',    level:'PREMIUM', palette:'p-video-luxe',  type:'video',
+			  pv:{acc:'Cinematic Invitation', mono:m, title:'Ceremonie privee', name:n, sub:'Video exclusive Premium', orn:'▶', date:'Pour vos invites VIP'} }
+			];
+		}
+
+		var TEMPLATES = buildTemplates();
 
 		if (user) {
 			document.getElementById('userName').textContent = user.firstName;
-			if (user.subscriptionType === 'PREMIUM') {
-				document.getElementById('userBadge').textContent = 'PREMIUM';
-				document.getElementById('userBadge').className = 'badge-premium';
-				currentPlan = 'PREMIUM';
-			}
+			currentPlan = (user.subscriptionType || 'FREE').toUpperCase();
+			updatePlanUI();
+		}
+		loadCoupleNames();
+		loadInvitations();
+		loadGuests();
+		renderTemplates('all');
+
+		// Charger les noms du couple depuis le questionnaire
+		function loadCoupleNames() {
+			api.get('/api/questionnaire').then(function(qa) {
+				if (!qa) return;
+				try {
+					var extras = qa.notesSpeciales ? JSON.parse(qa.notesSpeciales) : null;
+					if (extras && extras.nomMariee && extras.nomMarie) {
+						// Garde uniquement le prenom pour rester compact dans l'invitation
+						var first = function(s){ return (s||'').trim().split(' ')[0] || ''; };
+						coupleNames = first(extras.nomMariee) + ' & ' + first(extras.nomMarie);
+						coupleInitials = getInitials(coupleNames);
+					} else if (user && user.firstName) {
+						coupleNames = user.firstName + ' & ...';
+						coupleInitials = (user.firstName[0] || 'A') + '&Y';
+					}
+				} catch(e){}
+				TEMPLATES = buildTemplates();
+				renderTemplates(document.querySelector('.filter.active').getAttribute('data-f'));
+			}).catch(function(){});
 		}
 
-		api.get('/api/guests').then(function(guests) {
-			var select = document.getElementById('selectGuest');
-			if (!guests || guests.length === 0) {
-				var opt = document.createElement('option');
-				opt.value = '';
-				opt.textContent = 'Aucun invité - Ajoutez-en d\'abord';
-				opt.disabled = true;
-				select.appendChild(opt);
-				return;
-			}
-			for (var i = 0; i < guests.length; i++) {
-				var opt = document.createElement('option');
-				opt.value = guests[i].id;
-				opt.textContent = guests[i].firstName + ' ' + guests[i].lastName + (guests[i].email ? ' (' + guests[i].email + ')' : ' (pas d\'email)');
-				select.appendChild(opt);
-			}
-		}).catch(function(e) {
-			console.error('Erreur chargement invites:', e);
-		});
+		function updatePlanUI() {
+			var pill = document.getElementById('planPill');
+			pill.textContent = 'Plan ' + currentPlan.charAt(0) + currentPlan.slice(1).toLowerCase();
+			pill.className = 'plan-pill plan-' + currentPlan;
+			document.getElementById('userBadge').textContent = currentPlan;
+			document.getElementById('userBadge').className = 'badge-' + currentPlan.toLowerCase();
+			document.getElementById('statPlan').textContent = currentPlan;
+		}
 
-		loadInvitations();
+		function canAccess(level) { return planRank[currentPlan] >= planRank[level]; }
 
-		function loadInvitations() {
-			api.get('/api/invitations').then(function(data) {
-				var sub = data.subscription;
-				var invitations = data.invitations || [];
-				document.getElementById('statTotal').textContent = invitations.length;
-				document.getElementById('statSent').textContent = sub.invitationsSent;
-				document.getElementById('statRemaining').textContent = sub.plan === 'PREMIUM' ? '\u221E' : sub.remaining;
-				document.getElementById('statPlan').textContent = sub.plan;
-				currentPlan = sub.plan;
-				if (!sub.canSend && sub.plan !== 'PREMIUM') {
-					document.getElementById('limitWarning').style.display = 'block';
-				} else {
-					document.getElementById('limitWarning').style.display = 'none';
-				}
-				renderInvitations(invitations);
-			}).catch(function(e) {
-				console.error('Erreur chargement invitations:', e);
-				document.getElementById('invitationsList').innerHTML = '<p class="text-muted text-center">Erreur de chargement.</p>';
+		function renderTemplates(filter) {
+			var grid = document.getElementById('tplGrid');
+			grid.innerHTML = '';
+			TEMPLATES.filter(function(t){ return filter==='all' || t.level===filter; }).forEach(function(t) {
+				var locked = !canAccess(t.level);
+				var div = document.createElement('div');
+				div.className = 'tpl' + (locked ? ' locked' : '') + (selectedTemplate===t.slug ? ' selected' : '');
+
+				var pv = t.pv;
+				var monoHtml = pv.mono ? '<div class="pv-monogram">' + pv.mono + '</div>' : '';
+				var isVideo = t.type === 'video';
+
+				div.innerHTML =
+					'<div class="tpl-check">✓</div>' +
+					'<span class="tier tier-' + t.level + '">' + t.level + '</span>' +
+					'<div class="preview ' + t.palette + (isVideo ? ' video-tpl' : '') + '">' +
+						monoHtml +
+						'<div class="pv-acc">' + pv.acc + '</div>' +
+						'<div class="pv-title">' + pv.title + '</div>' +
+						'<div class="pv-line-fancy"></div>' +
+						'<div class="pv-name">' + pv.name + '</div>' +
+						'<div class="pv-line"></div>' +
+						'<div class="pv-sub">' + pv.sub + '</div>' +
+						'<div class="pv-ornament">' + pv.orn + '</div>' +
+						'<div class="pv-date">' + pv.date + '</div>' +
+						(isVideo ? '<div class="play-icon"></div><span class="video-tag">Video</span>' : '') +
+					'</div>' +
+					(locked ? '<div class="lock lock-tier-' + t.level + '">' +
+						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="11" width="16" height="11" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>' +
+						'<span>Disponible avec ' + t.level + '</span>' +
+					'</div>' : '') +
+					'<div class="tpl-info">' +
+						'<h4>' + t.name + (isVideo ? ' <span style="font-size:10px;color:#B8922F;letter-spacing:1.5px;font-family:Cinzel,serif;">· VIDEO</span>' : '') + '</h4>' +
+						'<p class="d">' + t.desc + '</p>' +
+						(locked
+							? '<button class="btn-locked" data-slug="' + t.slug + '" data-locked="1">Passer en ' + t.level + '</button>'
+							: '<button data-slug="' + t.slug + '">Utiliser ce modèle</button>') +
+					'</div>';
+
+				div.querySelector('button').addEventListener('click', function(e) {
+					e.stopPropagation();
+					if (this.getAttribute('data-locked')) { location.href='premium.html'; return; }
+					openCreateModal(this.getAttribute('data-slug'));
+				});
+				div.addEventListener('click', function() {
+					if (locked) { location.href='premium.html'; return; }
+					openCreateModal(t.slug);
+				});
+				grid.appendChild(div);
 			});
 		}
 
-		function renderInvitations(invitations) {
-			var container = document.getElementById('invitationsList');
-			if (!invitations || invitations.length === 0) {
-				container.innerHTML = '<p class="text-muted text-center" style="padding:30px 0;">Aucune invitation créée. Choisissez un modèle et un invité ci-dessus.</p>';
+		Array.prototype.forEach.call(document.querySelectorAll('.filter'), function(p) {
+			p.addEventListener('click', function() {
+				document.querySelectorAll('.filter').forEach(function(x){x.classList.remove('active')});
+				p.classList.add('active');
+				renderTemplates(p.getAttribute('data-f'));
+			});
+		});
+
+		function openCreateModal(slug) {
+			var t = TEMPLATES.find(function(x){return x.slug===slug});
+			if (!t) return;
+			selectedTemplate = slug;
+			document.getElementById('selTplName').value = t.name;
+			document.getElementById('modalNotice').innerHTML = '';
+			document.getElementById('confirmSummary').style.display = 'none';
+			document.getElementById('messagePerso').value = '';
+			document.getElementById('selectGuest').value = '';
+			document.getElementById('videoUrl').value = '';
+			document.getElementById('videoField').style.display = (t.type === 'video') ? 'block' : 'none';
+			document.getElementById('sumVideoRow').style.display = 'none';
+			var btn = document.getElementById('btnConfirm');
+			btn.disabled = false;
+			btn.textContent = 'Confirmer & envoyer';
+			document.getElementById('modalCreate').classList.add('show');
+		}
+		function closeModal() { document.getElementById('modalCreate').classList.remove('show'); }
+
+		document.getElementById('selectGuest').addEventListener('change', function() {
+			var gid = this.value;
+			if (!gid) { document.getElementById('confirmSummary').style.display='none'; return; }
+			var g = guests.find(function(x){return ''+x.id===''+gid});
+			var t = TEMPLATES.find(function(x){return x.slug===selectedTemplate});
+			if (g && t) {
+				document.getElementById('sumGuest').textContent = g.firstName + ' ' + g.lastName;
+				document.getElementById('sumEmail').textContent = g.email || '— (pas d\'email)';
+				document.getElementById('sumTpl').textContent = t.name + ' · ' + t.level;
+				if (t.type === 'video') {
+					var vu = document.getElementById('videoUrl').value.trim();
+					document.getElementById('sumVideo').textContent = vu || '(aucun lien — sera demandé)';
+					document.getElementById('sumVideoRow').style.display = 'flex';
+				} else {
+					document.getElementById('sumVideoRow').style.display = 'none';
+				}
+				document.getElementById('confirmSummary').style.display = 'block';
+			}
+		});
+
+		document.getElementById('videoUrl').addEventListener('input', function() {
+			var vu = this.value.trim();
+			if (document.getElementById('confirmSummary').style.display === 'block') {
+				document.getElementById('sumVideo').textContent = vu || '(aucun lien)';
+			}
+		});
+
+		function confirmAndSend() {
+			var gid = parseInt(document.getElementById('selectGuest').value, 10);
+			if (!gid) { showModalNotice('error', 'Veuillez choisir un invité.'); return; }
+			var msg = document.getElementById('messagePerso').value.trim();
+			var t = TEMPLATES.find(function(x){return x.slug===selectedTemplate});
+			var videoUrl = '';
+			if (t && t.type === 'video') {
+				videoUrl = document.getElementById('videoUrl').value.trim();
+				if (!videoUrl) {
+					showModalNotice('error', 'Veuillez coller le lien de votre vidéo d\'invitation.');
+					return;
+				}
+				if (!/^https?:\/\//i.test(videoUrl)) {
+					showModalNotice('error', 'Le lien doit commencer par http:// ou https://');
+					return;
+				}
+			}
+			var btn = document.getElementById('btnConfirm');
+			btn.disabled = true; btn.textContent = 'Création…';
+
+			api.post('/api/invitations', {
+				guestId: gid, templateName: selectedTemplate, messagePerso: msg, videoUrl: videoUrl
+			}).then(function(r){
+				if (!r || r.error || !r.id) {
+					showModalNotice('error', (r && r.error) || 'Erreur lors de la création.');
+					btn.disabled = false; btn.textContent = 'Confirmer & envoyer'; return;
+				}
+				btn.textContent = 'Envoi de l\'email…';
+				return api.post('/api/invitations/send/' + r.id, {}).then(function(s){
+					if (s && s.success) {
+						showModalNotice(s.emailSent ? 'success' : 'warn',
+							s.emailSent ? '✓ Email envoyé à l\'invité.' : '⚠ Invitation créée, email non envoyé : ' + (s.emailMessage || ''));
+						setTimeout(function(){ closeModal(); loadInvitations(); }, 1800);
+					} else if (s && s.limitReached) {
+						showModalNotice('warn', s.message);
+						btn.disabled = false; btn.textContent = 'Confirmer & envoyer';
+					} else {
+						showModalNotice('error', (s && s.error) || 'Erreur lors de l\'envoi.');
+						btn.disabled = false; btn.textContent = 'Confirmer & envoyer';
+					}
+				});
+			}).catch(function(){
+				showModalNotice('error', 'Erreur réseau.');
+				btn.disabled = false; btn.textContent = 'Confirmer & envoyer';
+			});
+		}
+
+		function showModalNotice(type, text) {
+			var cls = 'notice notice-' + (type==='success'?'success':type==='warn'?'warn':type==='info'?'info':'error');
+			document.getElementById('modalNotice').innerHTML = '<div class="' + cls + '">' + text + '</div>';
+		}
+
+		function loadGuests() {
+			api.get('/api/guests').then(function(list) {
+				guests = list || [];
+				var sel = document.getElementById('selectGuest');
+				sel.innerHTML = '<option value="">— Choisir un invité —</option>';
+				if (!guests.length) {
+					var o = document.createElement('option');
+					o.disabled = true; o.textContent = 'Aucun invité — ajoutez-en d\'abord';
+					sel.appendChild(o); return;
+				}
+				guests.forEach(function(g){
+					var o = document.createElement('option');
+					o.value = g.id;
+					o.textContent = g.firstName + ' ' + g.lastName + (g.email ? ' (' + g.email + ')' : '');
+					sel.appendChild(o);
+				});
+			});
+		}
+
+		function loadInvitations() {
+			api.get('/api/invitations').then(function(data) {
+				if (!data) return;
+				var inv = data.invitations || [];
+				subscription = data.subscription || {};
+				if (subscription.plan) { currentPlan = subscription.plan; updatePlanUI(); }
+				document.getElementById('statTotal').textContent = inv.length;
+				document.getElementById('statSent').textContent = inv.filter(function(i){return i.statut!=='EN_ATTENTE'}).length;
+				var rem = subscription.remaining;
+				document.getElementById('statRemaining').textContent = (rem===-1||rem===null||rem===undefined) ? '∞' : rem;
+
+				var notice = '';
+				if (currentPlan === 'FREE' && subscription.invitationsSent >= subscription.maxFree) {
+					notice = '<div class="notice notice-warn">Limite de ' + subscription.maxFree + ' invitations atteinte. <a href="premium.html">Passez en Pro ou Premium</a> pour continuer.</div>';
+				} else if (currentPlan === 'FREE') {
+					notice = '<div class="notice notice-info">Plan gratuit · 3 modèles élégants disponibles, ' + subscription.maxFree + ' invitations max. <a href="premium.html">Découvrir Pro & Premium</a></div>';
+				} else if (currentPlan === 'PRO') {
+					notice = '<div class="notice notice-info">Plan Pro · 7 modèles débloqués, ' + (subscription.maxFree||50) + ' invitations. <a href="premium.html">Passer Premium</a> pour les modèles exclusifs.</div>';
+				}
+				document.getElementById('globalNotice').innerHTML = notice;
+
+				renderInvList(inv);
+				renderTemplates(document.querySelector('.filter.active').getAttribute('data-f'));
+			});
+		}
+
+		function renderInvList(list) {
+			var box = document.getElementById('invitationsList');
+			if (!list.length) {
+				box.innerHTML = '<div class="notice notice-info" style="grid-column:1/-1;">Aucune invitation pour le moment. Choisissez un modèle ci-dessus.</div>';
 				return;
 			}
-			var html = '<table class="data-table">';
-			html += '<thead><tr><th>Invité</th><th>Modèle</th><th>Statut</th><th>Date d\'envoi</th><th>Actions</th></tr></thead>';
-			html += '<tbody>';
-			for (var i = 0; i < invitations.length; i++) {
-				var inv = invitations[i];
-				var sc = 'statut-pending';
-				if (inv.statut === 'ENVOYEE') sc = 'statut-sent';
-				else if (inv.statut === 'CONFIRMEE') sc = 'statut-confirmed';
-				else if (inv.statut === 'DECLINEE') sc = 'statut-declined';
-				var tplInfo = TEMPLATES[inv.templateName] || { name: inv.templateName };
-				html += '<tr>';
-				html += '<td><strong>' + escHtml(inv.guestName) + '</strong></td>';
-				html += '<td>' + escHtml(tplInfo.name) + '</td>';
-				html += '<td><span class="statut-badge ' + sc + '">' + getStatutLabel(inv.statut) + '</span></td>';
-				html += '<td>' + (inv.dateEnvoi || '-') + '</td>';
-				html += '<td class="actions">';
-				if (inv.statut === 'EN_ATTENTE') {
-					html += '<button class="btn btn-small btn-primary" onclick="sendInvitation(' + inv.id + ')">Envoyer</button> ';
+			box.innerHTML = '';
+			list.forEach(function(i){
+				var canSend = i.statut === 'EN_ATTENTE';
+				var item = document.createElement('div');
+				item.className = 'inv-item';
+				item.innerHTML =
+					'<div>' +
+						'<h5>' + i.guestName + '</h5>' +
+						'<small>' + (i.templateName || '—') + ' · ' + (i.dateEnvoi || 'pas encore envoyée') + '</small>' +
+					'</div>' +
+					'<div style="display:flex;gap:10px;align-items:center;">' +
+						'<span class="statut-badge s-' + i.statut + '">' + i.statut.replace('_',' ') + '</span>' +
+						(canSend ? '<button data-id="' + i.id + '">Envoyer</button>' : '') +
+					'</div>';
+				if (canSend) {
+					item.querySelector('button').addEventListener('click', function() {
+						var btn = this; btn.disabled = true; btn.textContent = '…';
+						api.post('/api/invitations/send/' + this.getAttribute('data-id'), {}).then(function(r) {
+							if (r && r.success) loadInvitations();
+							else if (r && r.limitReached) { alert(r.message); loadInvitations(); }
+							else { btn.disabled=false; btn.textContent='Envoyer'; alert((r && r.error) || 'Erreur'); }
+						});
+					});
 				}
-				html += '<button class="btn btn-small btn-danger" onclick="deleteInvitation(' + inv.id + ')">Supprimer</button>';
-				html += '</td></tr>';
-			}
-			html += '</tbody></table>';
-			container.innerHTML = html;
-		}
-
-		function selectTemplate(name, el) {
-			selectedTemplate = name;
-			var cards = document.querySelectorAll('.tpl-card');
-			for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
-			if (el) el.classList.add('selected');
-			var tpl = TEMPLATES[name];
-			document.getElementById('selectedTemplateName').value = tpl ? tpl.name : name;
-		}
-
-		function previewTemplate(name) {
-			var tpl = TEMPLATES[name] || { name: name };
-			document.getElementById('previewModalTitle').textContent = 'Prévisualisation - ' + tpl.name;
-			var guestName = 'Fatima El Amrani';
-			var hostName = user ? (user.firstName + ' ' + user.lastName) : 'Les mariés';
-			document.getElementById('previewFrame').srcdoc = buildPreviewHtml(name, guestName, hostName);
-			document.getElementById('previewModal').classList.add('active');
-		}
-
-		function closePreview() {
-			document.getElementById('previewModal').classList.remove('active');
-		}
-
-		function buildPreviewHtml(tn, gn, hn) {
-			var p, a, bg, fb, hs, db;
-			if (tn === 'luxe') {
-				p='#D4AF37'; a='#B8922F'; fb='#0d0500';
-				hs='background:linear-gradient(135deg,#1a0a00,#3d1c00,#1a0a00);color:#D4AF37;';
-				db='background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.15);';
-			} else if (tn === 'moderne') {
-				p='#E8A0BF'; a='#B06C96'; fb='#0f0f1e';
-				hs='background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460);color:#fff;';
-				db='background:rgba(232,160,191,0.06);border:1px solid rgba(232,160,191,0.12);';
-			} else {
-				p='#8B1A4A'; a='#D4A574'; fb='#f5f0eb';
-				hs='background:linear-gradient(135deg,#FDF2F8,#FECDD3,#FDF2F8);color:#8B1A4A;';
-				db='background:linear-gradient(135deg,#FDF2F8,#FECDD3);';
-			}
-			var dk=(tn==='luxe'||tn==='moderne'), tc=dk?'rgba(255,255,255,0.85)':'#444', mc=dk?'rgba(255,255,255,0.5)':'#888', cb=dk?'rgba(255,255,255,0.05)':'#fff';
-			var fm=tn==='moderne'?"'Helvetica Neue',Arial,sans-serif":"Georgia,'Times New Roman',serif";
-			var h='<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:20px;font-family:'+fm+';background:'+fb+';">';
-			h+='<table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:'+cb+';border-radius:16px;overflow:hidden;';
-			h+=dk?'border:1px solid rgba(255,255,255,0.08);':'box-shadow:0 4px 20px rgba(0,0,0,0.08);';
-			h+='">';
-			h+='<tr><td style="'+hs+'padding:40px 30px;text-align:center;">';
-			if(tn==='luxe'){
-				h+='<div style="font-size:11px;letter-spacing:6px;color:'+p+';margin-bottom:12px;">&#9670; INVITATION PRESTIGE &#9670;</div>';
-				h+='<div style="width:100px;height:1px;background:linear-gradient(90deg,transparent,'+p+',transparent);margin:0 auto 12px;"></div>';
-				h+='<h1 style="margin:0;font-size:28px;color:'+p+';font-weight:normal;">Vous êtes invité(e)</h1>';
-				h+='<div style="width:100px;height:1px;background:linear-gradient(90deg,transparent,'+p+',transparent);margin:12px auto;"></div>';
-			} else if(tn==='moderne'){
-				h+='<div style="font-size:10px;letter-spacing:8px;color:'+p+';margin-bottom:16px;text-transform:uppercase;">Invitation</div>';
-				h+='<h1 style="margin:0;font-size:26px;color:#fff;font-weight:300;letter-spacing:2px;">Vous êtes invité(e)</h1>';
-				h+='<div style="width:40px;height:1px;background:'+p+';margin:16px auto 0;"></div>';
-			} else {
-				h+='<div style="font-size:14px;letter-spacing:4px;color:'+a+';margin-bottom:10px;">&#10047; INVITATION &#10047;</div>';
-				h+='<h1 style="margin:0;font-size:30px;color:'+p+';font-weight:normal;font-style:italic;">Vous êtes invité(e)</h1>';
-				h+='<div style="width:80px;height:2px;background:'+a+';margin:15px auto;"></div>';
-			}
-			h+='<p style="margin:10px 0 0;font-size:15px;color:'+mc+';">au mariage de</p>';
-			h+='<h2 style="margin:5px 0 0;font-size:24px;color:'+(dk?'#fff':p)+';">'+escHtml(hn)+'</h2></td></tr>';
-			h+='<tr><td style="padding:30px 36px;text-align:center;'+(dk?'background:'+cb+';':'')+'">';
-			h+='<p style="font-size:17px;color:'+tc+';line-height:1.6;">Cher(e) <strong style="color:'+p+';">'+escHtml(gn)+'</strong>,</p>';
-			h+='<p style="font-size:15px;color:'+mc+';line-height:1.8;">Nous avons l\'immense joie de vous inviter à partager avec nous ce moment unique.</p>';
-			h+='<table width="100%" cellpadding="0" cellspacing="0" style="'+db+'border-radius:12px;padding:24px;margin:20px 0;"><tr><td style="text-align:center;">';
-			var lc=dk?p:a;
-			h+='<div style="margin-bottom:14px;"><div style="font-size:11px;letter-spacing:3px;color:'+lc+';margin-bottom:4px;">DATE</div><div style="font-size:18px;color:'+(dk?'#fff':p)+';font-weight:bold;">15 Août 2026</div></div>';
-			h+='<div><div style="font-size:11px;letter-spacing:3px;color:'+lc+';margin-bottom:4px;">LIEU</div><div style="font-size:18px;color:'+(dk?'#fff':p)+';font-weight:bold;">Riad Fès, Médina</div></div>';
-			h+='</td></tr></table>';
-			h+='<div style="border-left:3px solid '+(dk?p:a)+';padding:12px 18px;margin:20px 0;text-align:left;background:'+(dk?'rgba(255,255,255,0.03)':'#FFF9FB')+';border-radius:0 8px 8px 0;"><p style="margin:0;font-size:14px;color:'+mc+';font-style:italic;">"Votre message personnalisé apparaîtra ici..."</p></div>';
-			h+='<p style="font-size:14px;color:'+mc+';margin:24px 0 0;">Votre présence serait pour nous le plus beau des cadeaux.</p></td></tr>';
-			h+='<tr><td style="background:'+(dk?'rgba(255,255,255,0.03)':p)+';padding:18px 30px;text-align:center;'+(dk?'border-top:1px solid rgba(255,255,255,0.06);':'')+'">';
-			h+='<p style="margin:0;font-size:12px;color:'+(dk?mc:'rgba(255,255,255,0.7)')+';">Invitation envoyée via Ayora</p></td></tr>';
-			h+='</table></body></html>';
-			return h;
-		}
-
-		function createInvitation() {
-			var guestId = document.getElementById('selectGuest').value;
-			if (!guestId) { alert('Veuillez sélectionner un invité.'); return; }
-			api.post('/api/invitations', {
-				guestId: parseInt(guestId),
-				templateName: selectedTemplate,
-				messagePerso: document.getElementById('messagePerso').value
-			}).then(function(r) {
-				if (r.success) { document.getElementById('messagePerso').value = ''; loadInvitations(); }
-				else alert(r.error || 'Erreur');
-			}).catch(function(e) { alert('Erreur réseau : ' + e.message); });
-		}
-
-		function sendInvitation(id) {
-			if (!confirm('Envoyer cette invitation par email ?')) return;
-			api.post('/api/invitations/send/' + id, {}).then(function(r) {
-				if (r.success) { alert('Invitation envoyée !' + (r.emailMessage ? '\n' + r.emailMessage : '')); loadInvitations(); }
-				else if (r.limitReached) { alert(r.message); document.getElementById('limitWarning').style.display = 'block'; }
-				else alert(r.error || 'Erreur');
-			}).catch(function(e) { alert('Erreur réseau : ' + e.message); });
-		}
-
-		function deleteInvitation(id) {
-			if (!confirm('Supprimer cette invitation ?')) return;
-			api.del('/api/invitations/' + id).then(function(r) {
-				if (r.success) loadInvitations();
-				else alert(r.error || 'Erreur');
-			}).catch(function(e) { alert('Erreur réseau : ' + e.message); });
-		}
-
-		function escHtml(s) {
-			if (!s) return '';
-			var d = document.createElement('div');
-			d.textContent = s;
-			return d.innerHTML;
+				box.appendChild(item);
+			});
 		}
 	</script>
 </body>
