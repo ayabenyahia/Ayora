@@ -10,6 +10,8 @@ public class Invitation {
 	private String dateEnvoi;
 	private String dateReponse;
 	private String messagePerso;
+	// URL d'une video d'invitation (modeles video Premium uniquement)
+	private String videoUrl;
 	// Joined fields
 	private String guestFirstName;
 	private String guestLastName;
@@ -89,6 +91,14 @@ public class Invitation {
 
 	public void setMessagePerso(String messagePerso) {
 		this.messagePerso = messagePerso;
+	}
+
+	public String getVideoUrl() {
+		return videoUrl;
+	}
+
+	public void setVideoUrl(String videoUrl) {
+		this.videoUrl = videoUrl;
 	}
 
 	public String getGuestFirstName() {

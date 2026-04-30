@@ -41,14 +41,15 @@ public class InvitationDao {
 		Connection connection = null;
 		try {
 			connection = DatabaseConnection.getConnection();
-			String sql = "INSERT INTO invitations (guest_id, user_id, statut, template_name, message_perso) "
-					+ "VALUES (?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO invitations (guest_id, user_id, statut, template_name, message_perso, video_url) "
+					+ "VALUES (?, ?, ?, ?, ?, ?)";
 			PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			ps.setInt(1, invitation.getGuestId());
 			ps.setInt(2, invitation.getUserId());
 			ps.setString(3, invitation.getStatut());
 			ps.setString(4, invitation.getTemplateName());
 			ps.setString(5, invitation.getMessagePerso());
+			ps.setString(6, invitation.getVideoUrl());
 			ps.executeUpdate();
 			ResultSet keys = ps.getGeneratedKeys();
 			if (keys.next()) {
@@ -128,6 +129,7 @@ public class InvitationDao {
 		inv.setDateEnvoi(rs.getString("date_envoi"));
 		inv.setDateReponse(rs.getString("date_reponse"));
 		inv.setMessagePerso(rs.getString("message_perso"));
+		try { inv.setVideoUrl(rs.getString("video_url")); } catch (SQLException ignore) {}
 		inv.setGuestFirstName(rs.getString("guest_first_name"));
 		inv.setGuestLastName(rs.getString("guest_last_name"));
 		return inv;
