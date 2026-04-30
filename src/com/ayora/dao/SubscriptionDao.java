@@ -50,15 +50,20 @@ public class SubscriptionDao {
 	}
 
 	public boolean upgradeToPremium(int userId) {
+		return updatePlan(userId, "PREMIUM");
+	}
+
+	public boolean updatePlan(int userId, String plan) {
 		Connection connection = null;
 		try {
 			connection = DatabaseConnection.getConnection();
-			String sql = "UPDATE subscriptions SET plan = 'PREMIUM' WHERE user_id = ?";
+			String sql = "UPDATE subscriptions SET plan = ? WHERE user_id = ?";
 			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
+			ps.setString(1, plan);
+			ps.setInt(2, userId);
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			System.out.println("## Erreur upgradeToPremium : " + e.getMessage());
+			System.out.println("## Erreur updatePlan : " + e.getMessage());
 		} finally {
 			DatabaseConnection.closeConnection(connection);
 		}
