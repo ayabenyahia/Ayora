@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Passer Premium</title>
-	<link rel="stylesheet" href="css/styles.css?v=3">
+	<link rel="stylesheet" href="css/styles.css?v=21">
 </head>
 <body>
 
@@ -31,38 +31,97 @@
 	</div>
 
 	<!-- PLANS -->
+	<style>
+	.plans-container { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; max-width:1180px; margin:30px auto; padding:0 24px; align-items:stretch; }
+	.plan-card { background:#fff; border:1px solid #F3ECF0; border-radius:20px; display:flex; flex-direction:column; padding:32px 28px; min-height:580px; box-shadow:0 4px 20px rgba(0,0,0,.04); position:relative; transition:transform .3s,box-shadow .3s; }
+	.plan-card:hover { transform:translateY(-6px); box-shadow:0 16px 40px rgba(139,26,43,.1); }
+	.plan-card h3 { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:#7A6B74; margin:0 0 12px; text-align:center; letter-spacing:1px; }
+	.plan-price-display { font-family:'Cormorant Garamond',serif; font-size:2.6rem; color:#1A0A10; text-align:center; margin-bottom:18px; font-weight:700; }
+	.plan-price-display span { font-size:.9rem; color:#7A6B74; font-weight:400; }
+	.plan-features-list { list-style:none; padding:0; margin:0 0 20px; flex:1; }
+	.plan-features-list li { padding:10px 0 10px 28px; position:relative; font-size:13.5px; color:#3D2232; border-bottom:1px solid #F3ECF0; }
+	.plan-features-list li:last-child { border-bottom:none; }
+	.plan-feature-included::before { content:'✓'; position:absolute; left:0; top:10px; color:#3D8B5E; font-weight:bold; }
+	.plan-feature-excluded { color:#B8AAB3; }
+	.plan-feature-excluded::before { content:'×'; position:absolute; left:2px; top:9px; color:#AEA0A8; font-weight:bold; }
+	.plan-recommended-label { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#B83B5E,#8B1A2B); color:#fff; padding:6px 22px; border-radius:50px; font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; box-shadow:0 4px 14px rgba(139,26,43,.3); }
+	.plan-card-pro { border:2px solid #B83B5E; box-shadow:0 8px 28px rgba(184,59,94,.15); }
+	.plan-card-premium .plan-header-bg { background:linear-gradient(160deg,#1A0A10,#5C0E1B,#8B1A2B); border-radius:14px 14px 0 0; padding:12px; margin:-32px -28px 18px; color:#fff; text-align:center; }
+	.plan-card-premium .plan-header-bg h3 { color:#D4A853; margin:0; padding:8px 0; }
+	.plan-card-premium .plan-price-display { color:#1A0A10; }
+	.btn-plan { padding:12px 22px; border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; border:none; width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:transform .2s, box-shadow .2s; }
+	.btn-plan svg { width:14px; height:14px; }
+	.btn-plan-current { background:#fff; border:2px solid #E8D8DE; color:#7A6B74; cursor:not-allowed; }
+	.btn-plan-pro { background:linear-gradient(135deg,#B83B5E,#8B1A2B); color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.25); }
+	.btn-plan-pro:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(139,26,43,.35); }
+	.btn-plan-premium { background:linear-gradient(135deg,#D4A853,#B8922F); color:#fff; box-shadow:0 4px 14px rgba(212,168,83,.3); }
+	.btn-plan-premium:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(212,168,83,.4); }
+	@media (max-width:1000px) { .plans-container { grid-template-columns:1fr; max-width:420px; } .plan-card { min-height:auto; } }
+	</style>
+
 	<div class="plans-container" id="plansSection">
+		<!-- GRATUIT -->
 		<div class="plan-card">
 			<h3>Gratuit</h3>
 			<div class="plan-price-display">0 DHS <span>/ toujours</span></div>
 			<ul class="plan-features-list">
-				<li class="plan-feature-included">Questionnaire personnalisé</li>
-				<li class="plan-feature-included">Recommandations de base</li>
-				<li class="plan-feature-included">Liste d'invités</li>
-				<li class="plan-feature-included">10 invitations</li>
-				<li class="plan-feature-included">Accès catalogue prestataires</li>
-				<li class="plan-feature-excluded">Templates premium</li>
-				<li class="plan-feature-excluded">Invitations illimitées</li>
-				<li class="plan-feature-excluded">Support prioritaire</li>
+				<li class="plan-feature-included">Questionnaire de base (6 questions)</li>
+				<li class="plan-feature-included">10 prestataires visibles</li>
+				<li class="plan-feature-included">10 invitations max / mois</li>
+				<li class="plan-feature-included">3 modeles d'invitations simples</li>
+				<li class="plan-feature-included">Liste d'invites basique</li>
+				<li class="plan-feature-excluded">Envoi par email</li>
+				<li class="plan-feature-excluded">Modeles Pro & Premium</li>
+				<li class="plan-feature-excluded">Modeles video exclusifs</li>
+				<li class="plan-feature-excluded">Personnalisation avancee</li>
+				<li class="plan-feature-excluded">Recommandations IA & VIP</li>
 			</ul>
-			<button class="btn btn-secondary" style="width:100%;" disabled>Plan actuel</button>
+			<button class="btn-plan btn-plan-current" id="btnFree" disabled>Plan actuel</button>
 		</div>
 
-		<div class="plan-card plan-card-recommended">
-			<div class="plan-recommended-label">Recommandé</div>
+		<!-- PRO -->
+		<div class="plan-card plan-card-pro">
+			<div class="plan-recommended-label">Recommande</div>
+			<h3>Pro</h3>
+			<div class="plan-price-display">149 DHS <span>/ mois</span></div>
+			<ul class="plan-features-list">
+				<li class="plan-feature-included">Questionnaire detaille (6 sections)</li>
+				<li class="plan-feature-included">Tous les prestataires visibles</li>
+				<li class="plan-feature-included">50 invitations / mois</li>
+				<li class="plan-feature-included">9 modeles elegants debloques</li>
+				<li class="plan-feature-included">Envoi des invitations par email</li>
+				<li class="plan-feature-included">Personnalisation avancee</li>
+				<li class="plan-feature-included">Suggestions selon budget</li>
+				<li class="plan-feature-included">Suivi statut des invitations</li>
+				<li class="plan-feature-excluded">Modeles video exclusifs</li>
+				<li class="plan-feature-excluded">Invitations illimitees & VIP</li>
+			</ul>
+			<button class="btn-plan btn-plan-pro" id="btnPro" onclick="upgradeToPlan('PRO')">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+				Choisir Pro
+			</button>
+		</div>
+
+		<!-- PREMIUM -->
+		<div class="plan-card plan-card-premium">
 			<h3>Premium</h3>
 			<div class="plan-price-display">299 DHS <span>/ mois</span></div>
 			<ul class="plan-features-list">
-				<li class="plan-feature-included">Tout le plan gratuit</li>
-				<li class="plan-feature-included">Invitations illimitées</li>
-				<li class="plan-feature-included">Recommandations avancées</li>
-				<li class="plan-feature-included">Templates premium exclusifs</li>
-				<li class="plan-feature-included">Support prioritaire 24/7</li>
-				<li class="plan-feature-included">Statistiques détaillées</li>
-				<li class="plan-feature-included">Export liste invités</li>
-				<li class="plan-feature-included">Badge Premium</li>
+				<li class="plan-feature-included">Tout le plan Pro inclus</li>
+				<li class="plan-feature-included">Tous les modeles d'invitations</li>
+				<li class="plan-feature-included">3 modeles VIDEO exclusifs</li>
+				<li class="plan-feature-included">Invitations illimitees</li>
+				<li class="plan-feature-included">Personnalisation complete</li>
+				<li class="plan-feature-included">Suggestions IA les plus detaillees</li>
+				<li class="plan-feature-included">Acces complet aux prestataires</li>
+				<li class="plan-feature-included">Recommandations selon profil</li>
+				<li class="plan-feature-included">Support prioritaire VIP 24/7</li>
+				<li class="plan-feature-included">Badge Premium dore</li>
 			</ul>
-			<button class="btn btn-premium" style="width:100%;" onclick="showPayment()">Choisir Premium</button>
+			<button class="btn-plan btn-plan-premium" id="btnPremium" onclick="upgradeToPlan('PREMIUM')">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+				Choisir Premium
+			</button>
 		</div>
 	</div>
 
@@ -143,17 +202,56 @@
 	<script src="js/api.js"></script>
 	<script>
 		var user = checkAuth();
+		var planTarget = 'PREMIUM';
 		if (user) {
 			document.getElementById('userName').textContent = user.firstName + ' ' + user.lastName;
-			if (user.subscriptionType === 'PREMIUM') {
-				document.getElementById('userBadge').textContent = 'PREMIUM';
-				document.getElementById('userBadge').className = 'badge-premium';
-				document.getElementById('plansSection').innerHTML =
-					'<div class="panel" style="max-width:500px;margin:0 auto;text-align:center;">' +
-					'<div class="content"><h3 class="text-navy">Vous êtes déjà Premium</h3>' +
-					'<p class="text-muted mt-10">Profitez de toutes les fonctionnalités avancées d\'Ayora.</p>' +
-					'<button class="btn btn-primary mt-20" onclick="location.href=\'dashboard.html\'">Retour au tableau de bord</button></div></div>';
+			var plan = (user.subscriptionType || 'FREE').toUpperCase();
+			document.getElementById('userBadge').textContent = plan;
+			document.getElementById('userBadge').className = 'badge-' + plan.toLowerCase();
+			updateButtonsForPlan(plan);
+		}
+
+		function updateButtonsForPlan(plan) {
+			var btnFree = document.getElementById('btnFree');
+			var btnPro  = document.getElementById('btnPro');
+			var btnPrem = document.getElementById('btnPremium');
+			// Reset
+			btnFree.disabled = true;
+			btnFree.textContent = 'Plan actuel';
+			if (plan === 'FREE') {
+				btnFree.textContent = 'Plan actuel';
+			} else if (plan === 'PRO') {
+				btnFree.textContent = 'Inferieur';
+				btnPro.disabled = true;
+				btnPro.innerHTML = 'Plan actuel';
+				btnPro.classList.add('btn-plan-current');
+				btnPro.classList.remove('btn-plan-pro');
+			} else if (plan === 'PREMIUM') {
+				btnFree.textContent = 'Inferieur';
+				btnPro.disabled = true;
+				btnPro.innerHTML = 'Inferieur';
+				btnPro.classList.add('btn-plan-current');
+				btnPro.classList.remove('btn-plan-pro');
+				btnPrem.disabled = true;
+				btnPrem.innerHTML = 'Plan actuel';
+				btnPrem.classList.add('btn-plan-current');
+				btnPrem.classList.remove('btn-plan-premium');
 			}
+		}
+
+		function upgradeToPlan(plan) {
+			planTarget = plan;
+			// Met a jour le recap paiement
+			var price = (plan === 'PRO') ? '149' : '299';
+			var label = (plan === 'PRO') ? 'Ayora Pro - Abonnement mensuel' : 'Ayora Premium - Abonnement mensuel';
+			var first = document.querySelector('.order-line span');
+			if (first) first.textContent = label;
+			var amounts = document.querySelectorAll('.order-line span:last-child');
+			if (amounts.length >= 1) amounts[0].textContent = price + ' DHS';
+			if (amounts.length >= 2) amounts[1].textContent = price + ',00 DHS';
+			var payBtn = document.getElementById('payBtn');
+			if (payBtn) payBtn.textContent = 'Payer ' + price + ' DHS';
+			showPayment();
 		}
 
 		function showPayment() {
@@ -186,26 +284,27 @@
 		function handlePayment(event) {
 			event.preventDefault();
 			var btn = document.getElementById('payBtn');
+			var price = (planTarget === 'PRO') ? '149' : '299';
 			btn.textContent = 'Traitement en cours...';
 			btn.disabled = true;
 
-			api.post('/api/subscription/upgrade', {}).then(function(data) {
+			api.post('/api/subscription/upgrade', { plan: planTarget }).then(function(data) {
 				if (data.success) {
 					var u = JSON.parse(localStorage.getItem('user'));
-					u.subscriptionType = 'PREMIUM';
+					u.subscriptionType = planTarget;
 					localStorage.setItem('user', JSON.stringify(u));
 
 					document.getElementById('paymentSection').style.display = 'none';
 					document.getElementById('successSection').classList.add('active');
-					document.getElementById('userBadge').textContent = 'PREMIUM';
-					document.getElementById('userBadge').className = 'badge-premium';
+					document.getElementById('userBadge').textContent = planTarget;
+					document.getElementById('userBadge').className = 'badge-' + planTarget.toLowerCase();
 				} else {
-					btn.textContent = 'Payer 299 DHS';
+					btn.textContent = 'Payer ' + price + ' DHS';
 					btn.disabled = false;
 					alert(data.error || 'Erreur lors du paiement');
 				}
 			}).catch(function() {
-				btn.textContent = 'Payer 299 DHS';
+				btn.textContent = 'Payer ' + price + ' DHS';
 				btn.disabled = false;
 				alert('Erreur de connexion au serveur');
 			});
