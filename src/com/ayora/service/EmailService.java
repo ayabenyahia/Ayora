@@ -23,15 +23,29 @@ import jakarta.mail.internet.MimeMessage;
 public class EmailService {
 
 	// === CONFIGURATION SMTP ===
-	private static final String SMTP_HOST = "smtp.gmail.com";
-	private static final int SMTP_PORT = 587;
-	private static String EMAIL_FROM = "votre.email@gmail.com";
-	private static String EMAIL_PASSWORD = "xxxx xxxx xxxx xxxx";
-	private static String SENDER_NAME = "Ayora - Mariage";
+	// Lus depuis les variables d'environnement (voir .env.example)
+	// Aucun mot de passe en dur dans le code source.
+	private static String SMTP_HOST = envOr("AYORA_SMTP_HOST", "smtp.gmail.com");
+	private static int SMTP_PORT = Integer.parseInt(envOr("AYORA_SMTP_PORT", "587"));
+	private static String EMAIL_FROM = envOr("AYORA_MAIL_FROM", "");
+	private static String EMAIL_PASSWORD = envOr("AYORA_MAIL_PASSWORD", "");
+	private static String SENDER_NAME = envOr("AYORA_MAIL_SENDER", "Ayora - Mariage");
 
 	private Session mailSession;
+	private boolean demoMode;
+
+	private static String envOr(String key, String fallback) {
+		String v = System.getenv(key);
+		if (v == null || v.isEmpty()) v = System.getProperty(key);
+		return (v == null || v.isEmpty()) ? fallback : v;
+	}
 
 	public EmailService() {
+		// Mode demo si pas de credentials configures :
+		// l'envoi est simule (log uniquement) pour ne pas planter en developpement.
+		this.demoMode = (EMAIL_FROM == null || EMAIL_FROM.isEmpty()
+			|| EMAIL_PASSWORD == null || EMAIL_PASSWORD.isEmpty());
+
 		Properties props = new Properties();
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
@@ -46,6 +60,11 @@ public class EmailService {
 				return new PasswordAuthentication(EMAIL_FROM, EMAIL_PASSWORD);
 			}
 		});
+
+		if (demoMode) {
+			System.out.println("[Ayora][EmailService] Mode DEMO actif (aucun email reel envoye). "
+				+ "Definissez AYORA_MAIL_FROM et AYORA_MAIL_PASSWORD pour activer SMTP.");
+		}
 	}
 
 	public static void configure(String email, String password, String senderName) {
@@ -61,6 +80,14 @@ public class EmailService {
 	 */
 	public boolean sendInvitation(String toEmail, String guestName, String hostName,
 			String dateMariage, String lieuMariage, String templateName, String messagePerso) {
+
+		// Mode demo : on simule l'envoi (aucun mail reel) pour ne pas crasher en dev
+		if (demoMode) {
+			System.out.println("[Ayora][EmailService][DEMO] Simulation envoi a " + toEmail
+				+ " | template=" + templateName + " | host=" + hostName);
+			return true;
+		}
+
 		try {
 			MimeMessage message = new MimeMessage(mailSession);
 			message.setFrom(new InternetAddress(EMAIL_FROM, SENDER_NAME));
@@ -86,6 +113,9 @@ public class EmailService {
 	}
 
 	private String buildSubject(String hostName, String templateName) {
+		if ("video".equalsIgnoreCase(templateName)) {
+			return "\u25b6 Invitation video - Mariage de " + hostName;
+		}
 		if ("luxe".equalsIgnoreCase(templateName)) {
 			return "\u2666 Invitation Prestige - Mariage de " + hostName;
 		} else if ("moderne".equalsIgnoreCase(templateName)) {
@@ -101,12 +131,97 @@ public class EmailService {
 	private String buildInvitationHtml(String guestName, String hostName,
 			String dateMariage, String lieuMariage, String templateName, String messagePerso) {
 
-		if ("luxe".equalsIgnoreCase(templateName)) {
-			return buildLuxeTemplate(guestName, hostName, dateMariage, lieuMariage, messagePerso);
-		} else if ("moderne".equalsIgnoreCase(templateName)) {
-			return buildModerneTemplate(guestName, hostName, dateMariage, lieuMariage, messagePerso);
+		// Detection auto d'un modele video : le messagePerso contient le marqueur
+		// [VIDEO_INVITATION_URL]=https://... insere par le servlet.
+		String videoUrl = null;
+		String cleanMessage = messagePerso;
+		if (messagePerso != null) {
+			int idx = messagePerso.indexOf("[VIDEO_INVITATION_URL]=");
+			if (idx >= 0) {
+				videoUrl = messagePerso.substring(idx + "[VIDEO_INVITATION_URL]=".length()).trim();
+				cleanMessage = (idx > 0) ? messagePerso.substring(0, idx).trim() : "";
+			}
 		}
-		return buildClassiqueTemplate(guestName, hostName, dateMariage, lieuMariage, messagePerso);
+
+		if ("video".equalsIgnoreCase(templateName) && videoUrl != null) {
+			return buildVideoTemplate(guestName, hostName, dateMariage, lieuMariage, cleanMessage, videoUrl);
+		}
+		if ("luxe".equalsIgnoreCase(templateName)) {
+			return buildLuxeTemplate(guestName, hostName, dateMariage, lieuMariage, cleanMessage);
+		} else if ("moderne".equalsIgnoreCase(templateName)) {
+			return buildModerneTemplate(guestName, hostName, dateMariage, lieuMariage, cleanMessage);
+		}
+		return buildClassiqueTemplate(guestName, hostName, dateMariage, lieuMariage, cleanMessage);
+	}
+
+	// ==========================================
+	//  TEMPLATE 4 : VIDEO PREMIUM
+	//  Lien cliquable vers la video d'invitation
+	// ==========================================
+	private String buildVideoTemplate(String guestName, String hostName,
+			String dateMariage, String lieuMariage, String messagePerso, String videoUrl) {
+
+		String gold = "#D4AF37";
+		String bg = "#0d0904";
+
+		StringBuilder h = new StringBuilder();
+		h.append("<!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'></head>");
+		h.append("<body style='margin:0;padding:0;font-family:Georgia,serif;background:#000;'>");
+		h.append("<table width='100%' cellpadding='0' cellspacing='0' style='background:#000;padding:24px 0;'>");
+		h.append("<tr><td align='center'>");
+		h.append("<table width='600' cellpadding='0' cellspacing='0' style='background:").append(bg).append(";border-radius:18px;overflow:hidden;border:1px solid rgba(212,175,55,.2);'>");
+
+		// Top accent
+		h.append("<tr><td style='height:3px;background:linear-gradient(90deg,transparent,").append(gold).append(",transparent);'></td></tr>");
+
+		// Header
+		h.append("<tr><td style='background:linear-gradient(135deg,#0d0904 0%,#3d1c00 50%,#0d0904 100%);padding:50px 30px 36px;text-align:center;'>");
+		h.append("<div style='font-size:11px;letter-spacing:6px;color:").append(gold).append(";margin-bottom:14px;text-transform:uppercase;'>&#9670; Invitation Video Privee &#9670;</div>");
+		h.append("<h1 style='margin:0;font-size:32px;color:").append(gold).append(";font-weight:normal;line-height:1.3;'>Vous etes convie(e)</h1>");
+		h.append("<div style='width:120px;height:1px;background:linear-gradient(90deg,transparent,").append(gold).append(",transparent);margin:18px auto;'></div>");
+		h.append("<p style='margin:10px 0 0;font-size:14px;color:rgba(212,175,55,.7);letter-spacing:2px;'>au mariage de</p>");
+		h.append("<h2 style='margin:10px 0 0;font-size:26px;color:").append(gold).append(";font-weight:normal;letter-spacing:1px;'>").append(esc(hostName)).append("</h2>");
+		h.append("</td></tr>");
+
+		// Body
+		h.append("<tr><td style='padding:34px 38px;text-align:center;'>");
+		h.append("<p style='font-size:17px;color:rgba(212,175,55,.85);line-height:1.6;margin:0 0 14px;'>Cher(e) <strong style='color:").append(gold).append(";'>").append(esc(guestName)).append("</strong>,</p>");
+		h.append("<p style='font-size:14px;color:rgba(212,175,55,.55);line-height:1.7;margin:0 0 24px;'>Nous avons l'honneur de vous transmettre notre invitation video personnalisee.<br>Decouvrez-la en cliquant ci-dessous :</p>");
+
+		// Big CTA
+		h.append("<table cellpadding='0' cellspacing='0' style='margin:8px auto 4px;'><tr><td>");
+		h.append("<a href='").append(esc(videoUrl)).append("' target='_blank' rel='noopener' style='display:inline-block;background:linear-gradient(135deg,#D4AF37,#B8922F);color:#0d0904;font-family:Georgia,serif;font-size:16px;font-weight:bold;letter-spacing:2px;padding:18px 42px;border-radius:50px;text-decoration:none;box-shadow:0 8px 28px rgba(212,175,55,.35);'>");
+		h.append("&#9658;&nbsp;&nbsp;Voir l'invitation video");
+		h.append("</a>");
+		h.append("</td></tr></table>");
+
+		h.append("<p style='font-size:11px;color:rgba(212,175,55,.4);margin:18px 0 0;letter-spacing:1px;font-style:italic;'>Si le bouton ne fonctionne pas, copiez ce lien :<br>");
+		h.append("<a href='").append(esc(videoUrl)).append("' style='color:").append(gold).append(";word-break:break-all;'>").append(esc(videoUrl)).append("</a></p>");
+
+		// Details
+		appendDetailsBlock(h, dateMariage, lieuMariage, gold, gold,
+			"background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.15);border-radius:12px;padding:24px;margin:30px 0 16px;");
+
+		// Message perso
+		if (messagePerso != null && !messagePerso.isEmpty()) {
+			h.append("<div style='border-left:3px solid ").append(gold).append(";padding:14px 20px;margin:22px 0 0;text-align:left;background:rgba(212,175,55,.03);border-radius:0 8px 8px 0;'>");
+			h.append("<p style='margin:0;font-size:14px;color:rgba(212,175,55,.7);font-style:italic;'>\"").append(esc(messagePerso)).append("\"</p>");
+			h.append("</div>");
+		}
+
+		h.append("<p style='font-size:13px;color:rgba(212,175,55,.5);margin:30px 0 0;font-style:italic;'>Votre presence honorera cette celebration.</p>");
+		h.append("</td></tr>");
+
+		// Footer
+		h.append("<tr><td style='background:rgba(212,175,55,.03);padding:22px 30px;text-align:center;border-top:1px solid rgba(212,175,55,.08);'>");
+		h.append("<div style='font-size:14px;color:").append(gold).append(";margin-bottom:6px;'>&#9670;</div>");
+		h.append("<p style='margin:0;font-size:12px;color:rgba(212,175,55,.5);'>Invitation Video Premium &mdash; envoyee via Ayora</p>");
+		h.append("</td></tr>");
+
+		h.append("<tr><td style='height:3px;background:linear-gradient(90deg,transparent,").append(gold).append(",transparent);'></td></tr>");
+
+		h.append("</table></td></tr></table></body></html>");
+		return h.toString();
 	}
 
 	// ==========================================
