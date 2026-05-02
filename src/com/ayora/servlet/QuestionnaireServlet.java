@@ -174,8 +174,23 @@ public class QuestionnaireServlet extends HttpServlet {
 				+ "\"nbTenuesNeggafa\":" + a.getNbTenuesNeggafa() + ","
 				+ "\"styleNeggafa\":\"" + nullSafe(a.getStyleNeggafa()) + "\","
 				+ "\"postesEconomie\":\"" + JsonUtil.escapeJson(a.getPostesEconomie()) + "\","
-				+ "\"notesSpeciales\":\"" + JsonUtil.escapeJson(a.getNotesSpeciales()) + "\""
+				+ "\"notesSpeciales\":" + inlineJsonOrString(a.getNotesSpeciales())
 				+ "}";
+	}
+
+	/**
+	 * Si notesSpeciales contient deja du JSON valide (commence par { ou [), on
+	 * l'inclut tel quel comme objet/array (pas de string entouree de guillemets).
+	 * Sinon on l'echape comme une string normale. Cela evite le double-escape
+	 * qui faisait planter le JSON.parse cote frontend lors du pre-remplissage.
+	 */
+	private String inlineJsonOrString(String value) {
+		if (value == null || value.isEmpty()) return "null";
+		String trimmed = value.trim();
+		if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+			return trimmed; // deja JSON valide, on l'inclut tel quel
+		}
+		return "\"" + JsonUtil.escapeJson(value) + "\"";
 	}
 
 	private String nullSafe(String s) {
