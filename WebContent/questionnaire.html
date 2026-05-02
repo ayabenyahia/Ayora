@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Questionnaire</title>
-	<link rel="stylesheet" href="css/styles.css?v=21">
+	<link rel="stylesheet" href="css/styles.css?v=22">
 	<style>
 	body { background:#FCF8F5; }
 	.q-wrap { max-width: 920px; margin:0 auto; padding: 24px 24px 80px; }
@@ -78,6 +78,7 @@
 	.notice { padding:14px 18px; border-radius:12px; margin-bottom:16px; font-size:13.5px; }
 	.notice-error { background:#FEE8EC; color:#8B1A2B; border-left:3px solid #B83B5E; }
 	.notice-success { background:#E8F5EC; color:#1F6B3A; border-left:3px solid #3D8B5E; }
+	.notice-info { background:#FFF8E8; color:#8B6F2A; border-left:3px solid #D4A853; }
 
 	@media (max-width: 720px) {
 		.row, .row.col3 { grid-template-columns: 1fr; }
@@ -130,8 +131,12 @@
 				</div>
 				<div class="row col3">
 					<div class="fg"><label>Date prévue *</label><input type="date" id="dateMariage" required></div>
+					<div class="fg"><label>Heure de la cérémonie *</label><input type="time" id="heureMariage" required value="19:00"></div>
 					<div class="fg"><label>Ville *</label><input id="villeMariage" required placeholder="Fès" value="Fès"></div>
+				</div>
+				<div class="row">
 					<div class="fg"><label>Nb invités *</label><input type="number" id="nbInvites" required placeholder="300" min="10"></div>
+					<div class="fg"><label>Lieu de la cérémonie</label><input id="lieuMariageNom" placeholder="Nom de la salle / palais (ex : Palais Mokri)"></div>
 				</div>
 				<div class="fg">
 					<label>Type de mariage *</label>
@@ -169,19 +174,16 @@
 						<div class="chip" data-val="SALLE">Salle</div>
 						<div class="chip" data-val="TRAITEUR">Traiteur</div>
 						<div class="chip" data-val="NEGGAFA">Neggafa (tenues incluses)</div>
-						<div class="chip" data-val="MAKEUP">Maquillage</div>
-						<div class="chip" data-val="COIFFURE">Coiffure</div>
-						<div class="chip" data-val="PHOTOGRAPHE">Photographe (photo + vidéo)</div>
+						<div class="chip" data-val="MAKEUP">Maquillage & coiffure</div>
+						<div class="chip" data-val="PHOTOGRAPHE">Photographe & vidéaste</div>
 						<div class="chip" data-val="ORCHESTRE">Orchestre</div>
 						<div class="chip" data-val="DJ">DJ</div>
 						<div class="chip" data-val="ISSAWA">Issawa / Dakka</div>
-						<div class="chip" data-val="FLEURISTE">Fleuriste (déco + fleurs)</div>
+						<div class="chip" data-val="DECORATION">Décoration & fleuriste</div>
 						<div class="chip" data-val="CAKE_DESIGNER">Gâteau de mariage</div>
 						<div class="chip" data-val="HENNAYA">Hennaya</div>
-						<div class="chip" data-val="WEDDING_PLANNER">Wedding planner</div>
 						<div class="chip" data-val="MYADI">Myadi / Tyafr</div>
 						<div class="chip" data-val="INVITATIONS">Invitations</div>
-						<div class="chip" data-val="VOYAGE">Voyage de noces</div>
 					</div>
 				</div>
 				<p class="h-sub" style="margin-top:14px;font-style:italic;color:#AEA0A8;">La répartition par poste sera calculée automatiquement par Ayora en fonction de vos priorités et du style de mariage choisi.</p>
@@ -239,14 +241,12 @@
 					<label class="svc-item"><input type="checkbox" data-svc="SALLE" checked>Salle de fête</label>
 					<label class="svc-item"><input type="checkbox" data-svc="TRAITEUR" checked>Traiteur</label>
 					<label class="svc-item"><input type="checkbox" data-svc="NEGGAFA" checked>Neggafa <small style="display:block;color:#7A6B74;font-weight:400;">(robe, tenues, lebssa)</small></label>
-					<label class="svc-item"><input type="checkbox" data-svc="MAKEUP">Maquilleuse</label>
-					<label class="svc-item"><input type="checkbox" data-svc="COIFFURE">Coiffure</label>
-					<label class="svc-item"><input type="checkbox" data-svc="PHOTOGRAPHE" checked>Photographe <small style="display:block;color:#7A6B74;font-weight:400;">(photo + vidéo)</small></label>
-					<label class="svc-item"><input type="checkbox" data-svc="FLEURISTE">Fleuriste <small style="display:block;color:#7A6B74;font-weight:400;">(décoration + fleurs)</small></label>
+					<label class="svc-item"><input type="checkbox" data-svc="MAKEUP">Maquillage & coiffure <small style="display:block;color:#7A6B74;font-weight:400;">(maquillage + coiffure mariée)</small></label>
+					<label class="svc-item"><input type="checkbox" data-svc="PHOTOGRAPHE" checked>Photographe & vidéaste <small style="display:block;color:#7A6B74;font-weight:400;">(photo + vidéo cinéma)</small></label>
+					<label class="svc-item"><input type="checkbox" data-svc="DECORATION">Décoration & fleuriste <small style="display:block;color:#7A6B74;font-weight:400;">(scénographie + compositions florales)</small></label>
 					<label class="svc-item"><input type="checkbox" data-svc="CAKE_DESIGNER">Gâteau / Cake</label>
 					<label class="svc-item"><input type="checkbox" data-svc="HENNAYA">Hennaya</label>
 					<label class="svc-item"><input type="checkbox" data-svc="INVITATIONS" checked>Invitations digitales</label>
-					<label class="svc-item"><input type="checkbox" data-svc="WEDDING_PLANNER">Wedding planner</label>
 					<label class="svc-item"><input type="checkbox" data-svc="MYADI">Myadi / Tyafr</label>
 				</div>
 
@@ -302,8 +302,29 @@
 				<p class="h-sub">Précisez l'atmosphère et l'esthétique que vous voulez créer.</p>
 
 				<div class="row">
-					<div class="fg"><label>Couleur principale</label><input id="couleurs" placeholder="Bordeaux & or, blush rose, vert sapin…"></div>
-					<div class="fg"><label>Thème souhaité</label><input id="theme" placeholder="Jardin oriental, Royal fassi, Bohème chic…"></div>
+					<div class="fg">
+						<label>Thème souhaité</label>
+						<select id="theme">
+							<option value="">— Choisir un thème —</option>
+							<option value="ROYAL_FASSI">Royal fassi (bordeaux & or)</option>
+							<option value="ORIENTAL">Jardin oriental (vert & or)</option>
+							<option value="BOHEME">Bohème chic (beige & terracotta)</option>
+							<option value="MINIMAL">Minimaliste (blanc & or rose)</option>
+							<option value="MAROCAIN">Marocain traditionnel (rouge & or)</option>
+							<option value="ANDALOU">Andalou (bordeaux & ivoire)</option>
+							<option value="ROMANTIQUE">Romantique (blush & doré)</option>
+							<option value="LUXE_NOIR">Luxe noir & doré</option>
+							<option value="JARDIN_ANGLAIS">Jardin anglais (vert sauge & blanc)</option>
+							<option value="EMERAUDE">Émeraude (vert profond & or)</option>
+							<option value="PERSONNALISE">Personnalisé (saisir librement)</option>
+						</select>
+						<p class="hint">La palette se met automatiquement à jour ↓</p>
+					</div>
+					<div class="fg">
+						<label>Couleur principale</label>
+						<input id="couleurs" placeholder="Choisissez d'abord un thème">
+						<p class="hint" id="paletteHint" style="display:none;">↑ palette suggérée par le thème — vous pouvez la modifier</p>
+					</div>
 				</div>
 				<div class="fg">
 					<label>Ambiance souhaitée</label>
@@ -316,7 +337,7 @@
 						<div class="chip" data-val="ROMANTIQUE">Romantique</div>
 					</div>
 				</div>
-				<div class="row col3">
+				<div class="row">
 					<div class="fg"><label>Type de lieu</label>
 						<select id="lieuCeremonie">
 							<option value="">--</option>
@@ -329,14 +350,6 @@
 							<option value="MIXTE">Mixte (intérieur + extérieur)</option>
 						</select>
 					</div>
-					<div class="fg"><label>Ambiance lieu</label>
-						<select id="indoorOutdoor">
-							<option value="">--</option>
-							<option value="INDOOR">Intérieur</option>
-							<option value="OUTDOOR">Extérieur</option>
-							<option value="MIXTE">Mixte</option>
-						</select>
-					</div>
 					<div class="fg"><label>Moment</label>
 						<select id="moment">
 							<option value="">--</option>
@@ -346,39 +359,101 @@
 						</select>
 					</div>
 				</div>
+				<input type="hidden" id="indoorOutdoor" value="">
 				<div class="row">
 					<div class="slider-row"><label>Importance tradition</label><input type="range" id="impTradition" min="1" max="5" value="3"><span class="val" id="impTraditionV">3</span></div>
 					<div class="slider-row"><label>Importance modernité</label><input type="range" id="impModernite" min="1" max="5" value="3"><span class="val" id="impModerniteV">3</span></div>
 				</div>
 			</div>
 
-			<!-- ===== SECTION 6 : Contraintes ===== -->
+			<!-- ===== SECTION 6 : Petits plus & moments forts ===== -->
 			<div class="card section" data-section="6">
-				<h2>6. Contraintes & notes</h2>
-				<p class="h-sub">Tout ce qui peut nous aider à mieux affiner les suggestions.</p>
+				<h2>6. Petits plus & moments forts</h2>
+				<p class="h-sub">Les détails qui rendront votre mariage unique et mémorable.</p>
 
-				<div class="row col3">
-					<div class="fg"><label>Budget strict ?</label>
-						<select id="budgetStrict"><option value="FLEXIBLE">Flexible</option><option value="STRICT">Strict</option></select>
-					</div>
-					<div class="fg"><label>Ville flexible ?</label>
-						<select id="villeFlexible"><option value="OUI">Oui</option><option value="NON">Non — uniquement la ville indiquée</option></select>
-					</div>
-					<div class="fg"><label>Nb invités flexible ?</label>
-						<select id="nbInvitesFlex"><option value="OUI">Oui</option><option value="NON">Non — fixe</option></select>
+				<!-- Mots-clés inspiration -->
+				<div class="fg">
+					<label>3 mots-clés qui décrivent votre mariage</label>
+					<p class="hint" style="margin-bottom:10px;">Ex : élégant · familial · joyeux — ils inspireront notre direction artistique.</p>
+					<div class="row col3">
+						<input id="motCle1" placeholder="Élégant" maxlength="20">
+						<input id="motCle2" placeholder="Familial" maxlength="20">
+						<input id="motCle3" placeholder="Joyeux" maxlength="20">
 					</div>
 				</div>
-				<div class="fg">
-					<label>Préférences particulières</label>
-					<textarea id="preferences" placeholder="Cuisine halal stricte, sans alcool, ambiance feutrée…"></textarea>
+
+				<!-- Moments à capturer (multi) -->
+				<div class="fg" style="margin-top:18px;">
+					<label>Moments forts à célébrer & capturer</label>
+					<p class="hint" style="margin-bottom:10px;">Multi-choix — Ayora coordonne le photographe et les artistes pour ne rien rater.</p>
+					<div class="chips multi" data-name="momentsForts">
+						<div class="chip" data-val="ENTREE_MARIEE">L'entrée de la mariée</div>
+						<div class="chip" data-val="HENNA">Soirée de henna</div>
+						<div class="chip" data-val="ZAFFA">Cortège & Zaffa</div>
+						<div class="chip" data-val="AMARIYA">Amariya / palanquin</div>
+						<div class="chip" data-val="DAKKA">Dakka marrakchia</div>
+						<div class="chip" data-val="ISSAWA_LIVE">Issawa live</div>
+						<div class="chip" data-val="OUVERTURE_BAL">Ouverture de bal (1ère danse)</div>
+						<div class="chip" data-val="DECOUPAGE_GATEAU">Découpage du gâteau</div>
+						<div class="chip" data-val="LANCER_BOUQUET">Lancer du bouquet</div>
+						<div class="chip" data-val="FEU_ARTIFICE">Feu d'artifice</div>
+						<div class="chip" data-val="PHOTOSHOOT">Séance photo couple</div>
+						<div class="chip" data-val="VIDEO_DRONE">Plan drone aérien</div>
+					</div>
 				</div>
-				<div class="fg">
-					<label>Prestataires à éviter (si besoin)</label>
-					<textarea id="prestaEviter" placeholder="Aucun, ou mentionner un nom"></textarea>
+
+				<!-- Détails pratiques -->
+				<div class="row" style="margin-top:18px;">
+					<div class="fg">
+						<label>Dress code des invités</label>
+						<select id="dressCode">
+							<option value="">— Aucun —</option>
+							<option value="CASUAL">Tenue de ville</option>
+							<option value="ELEGANT">Élégant</option>
+							<option value="TRADITIONNEL">Traditionnel marocain</option>
+							<option value="CRAVATE_NOIRE">Cravate noire / robe longue</option>
+							<option value="MIXTE">Tradi + occidental selon journée</option>
+						</select>
+					</div>
+					<div class="fg">
+						<label>Accessibilité PMR / personnes âgées</label>
+						<select id="accessibilite">
+							<option value="">— Pas de besoin spécifique —</option>
+							<option value="RAMPE">Rampe d'accès nécessaire</option>
+							<option value="ASCENSEUR">Ascenseur ou plain-pied</option>
+							<option value="ASSISES_RESERVEES">Places assises réservées</option>
+							<option value="MULTIPLE">Plusieurs besoins (préciser ci-dessous)</option>
+						</select>
+					</div>
 				</div>
+
+				<!-- Allergies & contraintes -->
 				<div class="fg">
-					<label>Notes supplémentaires</label>
-					<textarea id="notesSpeciales" placeholder="Allergies, contraintes religieuses, accessibilité…"></textarea>
+					<label>Allergies / régimes spéciaux des invités</label>
+					<input id="allergies" placeholder="Ex : 5 invités végétariens, 2 sans gluten, 1 allergie aux fruits de mer…">
+				</div>
+
+				<!-- Contact rapide -->
+				<div class="row">
+					<div class="fg">
+						<label>Numéro WhatsApp pour contact rapide</label>
+						<input id="whatsapp" type="tel" placeholder="06 12 34 56 78">
+						<p class="hint">Pour qu'Ayora puisse vous joindre rapidement.</p>
+					</div>
+					<div class="fg">
+						<label>Niveau de stress que vous voulez éviter</label>
+						<select id="stressLevel">
+							<option value="MINIMUM">Minimum — Ayora gère tout</option>
+							<option value="EQUILIBRE" selected>Équilibré — décisions partagées</option>
+							<option value="CONTROLE">Contrôle total — je veux tout valider</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Notes libres compactes -->
+				<div class="fg">
+					<label>Note pour Ayora (optionnel)</label>
+					<textarea id="notesSpeciales" rows="2" placeholder="Un détail important, une attente particulière…"></textarea>
 				</div>
 			</div>
 
@@ -511,6 +586,141 @@
 		// Initial (si la date est deja remplie)
 		updateSaisonFromDate();
 
+		// === Relation Thème ↔ Couleur principale ===
+		var THEME_PALETTES = {
+			'ROYAL_FASSI':    'Bordeaux & or',
+			'ORIENTAL':       'Vert sapin & or',
+			'BOHEME':         'Beige & terracotta',
+			'MINIMAL':        'Blanc cassé & or rose',
+			'MAROCAIN':       'Rouge profond & or',
+			'ANDALOU':        'Bordeaux & ivoire',
+			'ROMANTIQUE':     'Blush rose & doré',
+			'LUXE_NOIR':      'Noir & doré',
+			'JARDIN_ANGLAIS': 'Vert sauge & blanc',
+			'EMERAUDE':       'Vert émeraude & or',
+			'PERSONNALISE':   ''
+		};
+		var themeSelect = document.getElementById('theme');
+		var couleursInput = document.getElementById('couleurs');
+		var paletteHint = document.getElementById('paletteHint');
+		themeSelect.addEventListener('change', function() {
+			var pal = THEME_PALETTES[themeSelect.value] || '';
+			if (themeSelect.value === 'PERSONNALISE') {
+				couleursInput.value = '';
+				couleursInput.placeholder = 'Saisissez votre palette personnalisée';
+				couleursInput.removeAttribute('readonly');
+				paletteHint.style.display = 'none';
+			} else if (pal) {
+				couleursInput.value = pal;
+				couleursInput.removeAttribute('readonly'); // l'utilisateur peut tjs modifier
+				paletteHint.style.display = 'block';
+			} else {
+				couleursInput.value = '';
+				couleursInput.placeholder = 'Choisissez d\'abord un thème';
+				paletteHint.style.display = 'none';
+			}
+		});
+
+		// === Pré-remplissage du questionnaire depuis l'API (mode modification) ===
+		function prefillQuestionnaire(qa) {
+			if (!qa || qa.completed === false) return;
+			// Champs racines
+			if (qa.budgetTotal) document.getElementById('budgetTotal').value = qa.budgetTotal;
+			if (qa.budgetFlexibility) document.getElementById('budgetFlexibility').value = qa.budgetFlexibility;
+			if (qa.nbInvites) document.getElementById('nbInvites').value = qa.nbInvites;
+			if (qa.dateMariage) document.getElementById('dateMariage').value = qa.dateMariage.substring(0, 10);
+			if (qa.lieuCeremonie) document.getElementById('lieuCeremonie').value = qa.lieuCeremonie;
+			if (qa.niveauLuxe) document.getElementById('niveauLuxe').value = qa.niveauLuxe;
+			updateSaisonFromDate();
+
+			// Extras stockés dans notesSpeciales — peut être un objet (nouveau backend)
+			// ou une string JSON (ancien) ou une string brute (legacy)
+			var extras = {};
+			if (qa.notesSpeciales) {
+				if (typeof qa.notesSpeciales === 'object') {
+					extras = qa.notesSpeciales;
+				} else if (typeof qa.notesSpeciales === 'string') {
+					try { extras = JSON.parse(qa.notesSpeciales); } catch(e) {
+						// fallback : double-decode (cas du double escape)
+						try { extras = JSON.parse(qa.notesSpeciales.replace(/\\"/g, '"')); } catch(e2) {}
+					}
+				}
+			}
+			console.log('[Ayora] Prefill extras:', extras);
+
+			if (extras.nomMariee) document.getElementById('nomMariee').value = extras.nomMariee;
+			if (extras.nomMarie) document.getElementById('nomMarie').value = extras.nomMarie;
+			if (extras.villeMariage) document.getElementById('villeMariage').value = extras.villeMariage;
+			if (extras.heureMariage) document.getElementById('heureMariage').value = extras.heureMariage;
+			var lieuNomEl = document.getElementById('lieuMariageNom');
+			if (lieuNomEl && extras.lieuMariageNom) lieuNomEl.value = extras.lieuMariageNom;
+			if (extras.theme) {
+				themeSelect.value = extras.theme;
+				themeSelect.dispatchEvent(new Event('change'));
+			}
+			if (extras.couleurs) document.getElementById('couleurs').value = extras.couleurs;
+			if (extras.moment) document.getElementById('moment').value = extras.moment;
+			if (typeof extras.impTradition === 'number') {
+				document.getElementById('impTradition').value = extras.impTradition;
+				document.getElementById('impTraditionV').textContent = extras.impTradition;
+			}
+			if (typeof extras.impModernite === 'number') {
+				document.getElementById('impModernite').value = extras.impModernite;
+				document.getElementById('impModerniteV').textContent = extras.impModernite;
+			}
+
+			// Section 6
+			if (extras.motsCles && extras.motsCles.length) {
+				if (extras.motsCles[0]) document.getElementById('motCle1').value = extras.motsCles[0];
+				if (extras.motsCles[1]) document.getElementById('motCle2').value = extras.motsCles[1];
+				if (extras.motsCles[2]) document.getElementById('motCle3').value = extras.motsCles[2];
+			}
+			if (extras.dressCode) document.getElementById('dressCode').value = extras.dressCode;
+			if (extras.accessibilite) document.getElementById('accessibilite').value = extras.accessibilite;
+			if (extras.allergies) document.getElementById('allergies').value = extras.allergies;
+			if (extras.whatsapp) document.getElementById('whatsapp').value = extras.whatsapp;
+			if (extras.stressLevel) document.getElementById('stressLevel').value = extras.stressLevel;
+			if (extras.notesSpeciales) document.getElementById('notesSpeciales').value = extras.notesSpeciales;
+
+			// Chips single
+			function setChip(name, value) {
+				if (!value) return;
+				var c = document.querySelector('.chips[data-name="' + name + '"] .chip[data-val="' + value + '"]');
+				if (c) c.classList.add('active');
+			}
+			function setMultiChips(name, values) {
+				if (!values || !values.length) return;
+				values.forEach(function(v){ setChip(name, v); });
+			}
+			setChip('typeMariage', extras.typeMariage || qa.styleMariage);
+			setChip('ambiance', extras.ambiance || qa.ambiance);
+			setMultiChips('styles', extras.stylesPref);
+			setMultiChips('prioriteBudget', extras.prioriteBudget);
+			setMultiChips('momentsForts', extras.momentsForts);
+
+			// Services (checkboxes)
+			if (extras.services && extras.services.length) {
+				document.querySelectorAll('.svc-item input[data-svc]').forEach(function(cb){
+					cb.checked = extras.services.indexOf(cb.getAttribute('data-svc')) >= 0;
+					cb.parentElement.classList.toggle('checked', cb.checked);
+				});
+			}
+			// Animations
+			if (extras.animations && extras.animations.length) {
+				document.querySelectorAll('#animationGrid input[data-anim]').forEach(function(cb){
+					cb.checked = extras.animations.indexOf(cb.getAttribute('data-anim')) >= 0;
+					cb.parentElement.classList.toggle('checked', cb.checked);
+				});
+			}
+
+			showNotice('info', '✓ Vos réponses précédentes ont été chargées. Modifiez ce que vous voulez puis cliquez Sauvegarder.');
+		}
+
+		// Au chargement de la page : tenter de récupérer le questionnaire existant
+		api.get('/api/questionnaire').then(function(qa) {
+			if (qa && qa.completed) prefillQuestionnaire(qa);
+		}).catch(function(){});
+
 		function showNotice(type, msg) {
 			document.getElementById('globalNotice').innerHTML = msg ? '<div class="notice notice-' + type + '">' + msg + '</div>' : '';
 		}
@@ -540,11 +750,21 @@
 				animations.push(cb.getAttribute('data-anim'));
 			});
 
+			// Section 6 : moments forts + mots-cles + details pratiques
+			var momentsForts = getMultiChips('momentsForts');
+			var motsCles = [
+				document.getElementById('motCle1').value,
+				document.getElementById('motCle2').value,
+				document.getElementById('motCle3').value
+			].filter(function(m){return m && m.trim()});
+
 			// Pack new fields into notesSpeciales as JSON, plus keep core fields mapped to existing schema
 			var extras = {
 				nomMariee: document.getElementById('nomMariee').value,
 				nomMarie: document.getElementById('nomMarie').value,
 				villeMariage: document.getElementById('villeMariage').value,
+				heureMariage: document.getElementById('heureMariage').value,
+				lieuMariageNom: (document.getElementById('lieuMariageNom') ? document.getElementById('lieuMariageNom').value : ''),
 				typeMariage: getChipValue('typeMariage'),
 				stylesPref: getMultiChips('styles'),
 				prioriteBudget: getMultiChips('prioriteBudget'),
@@ -553,15 +773,17 @@
 				animations: animations,
 				couleurs: document.getElementById('couleurs').value,
 				theme: document.getElementById('theme').value,
-				indoorOutdoor: document.getElementById('indoorOutdoor').value,
 				moment: document.getElementById('moment').value,
 				impTradition: parseInt(document.getElementById('impTradition').value,10),
 				impModernite: parseInt(document.getElementById('impModernite').value,10),
-				budgetStrict: document.getElementById('budgetStrict').value,
-				villeFlexible: document.getElementById('villeFlexible').value,
-				nbInvitesFlex: document.getElementById('nbInvitesFlex').value,
-				preferences: document.getElementById('preferences').value,
-				prestaEviter: document.getElementById('prestaEviter').value
+				// Section 6 — Petits plus & moments forts
+				motsCles: motsCles,
+				momentsForts: momentsForts,
+				dressCode: document.getElementById('dressCode').value,
+				accessibilite: document.getElementById('accessibilite').value,
+				allergies: document.getElementById('allergies').value,
+				whatsapp: document.getElementById('whatsapp').value,
+				stressLevel: document.getElementById('stressLevel').value
 			};
 
 			var payload = {
