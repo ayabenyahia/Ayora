@@ -51,10 +51,10 @@ public class InvitationServlet extends HttpServlet {
 		TEMPLATE_CATALOG.put("emerald-night",  new String[]{"luxe",      "PREMIUM"});
 		TEMPLATE_CATALOG.put("andalusian",     new String[]{"luxe",      "PREMIUM"});
 		TEMPLATE_CATALOG.put("zellige-royal",  new String[]{"luxe",      "PREMIUM"});  // zellige marocain Premium
-		// === PREMIUM (video) ===
-		TEMPLATE_CATALOG.put("video-cinema",   new String[]{"video",     "PREMIUM"});
-		TEMPLATE_CATALOG.put("video-fassi",    new String[]{"video",     "PREMIUM"});
-		TEMPLATE_CATALOG.put("video-luxe",     new String[]{"video",     "PREMIUM"});
+		// === PREMIUM (nouveaux templates wow remplaçant les videos) ===
+		TEMPLATE_CATALOG.put("or-liquide",     new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("caftan-ivoire",  new String[]{"luxe",      "PREMIUM"});
+		TEMPLATE_CATALOG.put("imperial",       new String[]{"luxe",      "PREMIUM"});
 
 		// === retro-compat avec anciens slugs ===
 		TEMPLATE_CATALOG.put("classique",      new String[]{"classique", "FREE"});
@@ -246,28 +246,57 @@ public class InvitationServlet extends HttpServlet {
 		String emailMessage = "";
 
 		if (guest != null && guest.getEmail() != null && !guest.getEmail().isEmpty()) {
-			// Recuperer les infos du questionnaire pour la date et le lieu
-			String dateMariage = "";
-			String lieuMariage = "";
+			// Recupere les infos riches du questionnaire (date, heure, lieu, ville, noms du couple)
 			QuestionnaireAnswer qa = questionnaireDao.findByUserId(userId);
+			String dateRaw = "";
+			String heureMariage = "";
+			String villeMariage = "";
+			String lieuMariageNom = "";
+			String nomMariee = "";
+			String nomMarie = "";
+
 			if (qa != null) {
-				dateMariage = qa.getDateMariage() != null ? qa.getDateMariage() : "";
-				lieuMariage = qa.getLieuCeremonie() != null ? qa.getLieuCeremonie() : "";
+				dateRaw = qa.getDateMariage() != null ? qa.getDateMariage() : "";
+				String notes = qa.getNotesSpeciales();
+				if (notes != null && (notes.trim().startsWith("{") || notes.trim().startsWith("["))) {
+					nomMariee = nullSafe(JsonUtil.getStringValue(notes, "nomMariee"));
+					nomMarie = nullSafe(JsonUtil.getStringValue(notes, "nomMarie"));
+					heureMariage = nullSafe(JsonUtil.getStringValue(notes, "heureMariage"));
+					villeMariage = nullSafe(JsonUtil.getStringValue(notes, "villeMariage"));
+					lieuMariageNom = nullSafe(JsonUtil.getStringValue(notes, "lieuMariageNom"));
+				}
+				if (villeMariage.isEmpty() && qa.getLieuCeremonie() != null) {
+					villeMariage = qa.getLieuCeremonie();
+				}
 			}
 
-			String hostName = user != null ? (user.getFirstName() + " " + user.getLastName()) : "Les maries";
+			// hostName = "Mariée & Marié" si renseignes, sinon le compte utilisateur
+			String hostName;
+			if (!nomMariee.isEmpty() && !nomMarie.isEmpty()) {
+				hostName = firstWord(nomMariee) + " & " + firstWord(nomMarie);
+			} else if (user != null) {
+				hostName = user.getFirstName() + " " + user.getLastName();
+			} else {
+				hostName = "Les maries";
+			}
+
+			// dateMariage enrichie : "12 Juin 2026 a 19h00"
+			String dateMariage = formatDateLongFr(dateRaw);
+			if (!heureMariage.isEmpty()) {
+				dateMariage += " a " + heureMariage.replace(":", "h");
+			}
+
+			// lieuMariage enrichi : "Palais Mokri - Fes" ou juste "Fes"
+			StringBuilder lieuSb = new StringBuilder();
+			if (!lieuMariageNom.isEmpty()) lieuSb.append(lieuMariageNom);
+			if (!villeMariage.isEmpty()) {
+				if (lieuSb.length() > 0) lieuSb.append(" - ");
+				lieuSb.append(villeMariage);
+			}
+			String lieuMariage = lieuSb.toString();
+
 			String guestName = guest.getFirstName() + " " + guest.getLastName();
-
-			// Mappe le slug visible (ex: "royal", "soft-pink"...) vers le visuel HTML
-			// disponible dans EmailService (classique / moderne / luxe / video).
 			String visualTemplate = resolveVisual(targetInv.getTemplateName());
-
-			// Pour les modeles video, on enrichit le messagePerso avec le lien video
-			String finalMessage = targetInv.getMessagePerso();
-			if ("video".equals(visualTemplate) && targetInv.getVideoUrl() != null && !targetInv.getVideoUrl().isEmpty()) {
-				String prefix = (finalMessage != null && !finalMessage.isEmpty()) ? finalMessage + "\n\n" : "";
-				finalMessage = prefix + "[VIDEO_INVITATION_URL]=" + targetInv.getVideoUrl();
-			}
 
 			emailSent = emailService.sendInvitation(
 				guest.getEmail(),
@@ -276,7 +305,7 @@ public class InvitationServlet extends HttpServlet {
 				dateMariage,
 				lieuMariage,
 				visualTemplate,
-				finalMessage
+				targetInv.getMessagePerso()
 			);
 
 			emailMessage = emailSent ? "Email envoye a " + guest.getEmail() : "Echec envoi email";
@@ -343,5 +372,39 @@ public class InvitationServlet extends HttpServlet {
 				+ ",\"dateEnvoi\":\"" + JsonUtil.escapeJson(inv.getDateEnvoi() != null ? inv.getDateEnvoi() : "") + "\""
 				+ ",\"messagePerso\":\"" + JsonUtil.escapeJson(inv.getMessagePerso() != null ? inv.getMessagePerso() : "") + "\""
 				+ "}";
+	}
+
+	// ============================================================
+	// HELPERS pour enrichir les emails avec les infos du couple
+	// ============================================================
+
+	private static final String[] FR_MONTHS = {
+		"Janvier","Fevrier","Mars","Avril","Mai","Juin",
+		"Juillet","Aout","Septembre","Octobre","Novembre","Decembre"
+	};
+
+	/** Formate une date ISO YYYY-MM-DD en "12 Juin 2026". */
+	private String formatDateLongFr(String iso) {
+		if (iso == null || iso.length() < 10) return iso != null ? iso : "";
+		try {
+			int y = Integer.parseInt(iso.substring(0, 4));
+			int m = Integer.parseInt(iso.substring(5, 7));
+			int d = Integer.parseInt(iso.substring(8, 10));
+			if (m < 1 || m > 12) return iso;
+			return d + " " + FR_MONTHS[m - 1] + " " + y;
+		} catch (NumberFormatException e) {
+			return iso;
+		}
+	}
+
+	private String firstWord(String s) {
+		if (s == null) return "";
+		String t = s.trim();
+		int sp = t.indexOf(' ');
+		return sp > 0 ? t.substring(0, sp) : t;
+	}
+
+	private String nullSafe(String s) {
+		return s != null ? s : "";
 	}
 }
