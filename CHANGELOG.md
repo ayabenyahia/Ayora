@@ -1,5 +1,46 @@
 # Ayora — Changelog
 
+## v2.1 — Refonte recommandations + catégories + invitations dynamiques (2026-05-02)
+
+### Moteur de recommandation IA — Refonte
+- Nouveau modèle `UserProfile` synthétisant le questionnaire (style, ambiance, niveauLuxe, budgetTier, guestSize, prioriteCategories, moodKeywords)
+- Scoring **multi-critères** : Budget 30 + Luxe 20 + Style 20 + Préférences 20 + Priorité 10 + Popularité 5 + Mood 5 + Culturel 5
+- **Tags pertinents** : Coup de cœur, Bon rapport qualité/prix, Choix luxe, Petit budget, Style aligné, Préférence exacte, Authenticité fassie, Catégorie prioritaire, Hors budget, Format intime, Grand événement
+- **Raisons contextualisées** citant les réponses du questionnaire (budget, niveau de luxe, style, type de musique, neggafa…)
+- 7 **blocs thématiques** : Top picks, Vos priorités, Bon plan, Les plus chic, Petit budget, Sélection premium, À considérer
+- Servlet enrichi : profil + blocs + counts + categories + filtres avancés (category, gamme, minScore, maxPrice, tag)
+- Page recommandations refondue : sidebar profil sticky + onglets de blocs + cards riches (score ribbon, sub-scores, tags, raison, contacts SVG)
+
+### Refonte des catégories de prestations
+- Coiffure → fusionnée dans **Maquillage & Coiffure**
+- Fleuriste → fusionnée dans **Décoration & Fleuriste**
+- Vidéaste → fusionnée dans **Photographe & Vidéaste**
+- Transport et Wedding Planner **supprimés** (services non offerts par Ayora)
+- Mounia Ramsis Tounsi → reclassée **Neggafa** (plus Wedding Planner)
+- Numéros normalisés au format marocain 10 chiffres `06XX-XX-XX-XX`
+- Instagram en lowercase avec `@` préfixé (convention IG)
+
+### Invitations
+- 3 modèles vidéo retirés (UX bloquée, peu utilisés)
+- 3 nouveaux modèles wow Premium : **Or Liquide** (dégradé doré animé), **Caftan Ivoire** (broderies fassi), **Impérial Bordeaux** (sceau royal)
+- Pré-remplissage **dynamique** des aperçus avec les vraies données du couple : noms, date FR, heure (`19h00`), ville, lieu (palais/salle)
+- Email d'invitation enrichi : `Salma & Yassine` au lieu du compte utilisateur, ligne date `12 Juin 2026 à 19h00`, lieu `Palais Mokri - Fes`
+
+### Questionnaire
+- Champs `heureMariage` (input time) et `lieuMariageNom` ajoutés en section 1
+- Section 4 reflète les nouvelles catégories fusionnées
+- Pré-remplissage des nouveaux champs sur édition
+
+### Backend / Infra
+- `Database` facade alignée sur p01-jdbc + `Examples` runner standalone
+- Interface générique `Dao<T,K>` pour formaliser la couche d'accès aux données
+- Fix `JsonUtil.unescapeJson` + `inlineJsonOrString` : plus de double-escape sur `notesSpeciales`
+
+### UI
+- Carte de filtres avancés retirée de la page recommandations (les onglets suffisent)
+- Prix des prestataires : affiché uniquement "À partir de X DHS" (plus de plafond effrayant)
+- Tag "Plebiscite" retiré (signification floue)
+
 ## v2.0 — Refonte Pro/Premium + nouveaux prestataires
 
 ### Abonnements
