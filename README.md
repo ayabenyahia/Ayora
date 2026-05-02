@@ -1,8 +1,16 @@
 # Ayora — Planification de mariage à Fès
 
 Application web Jakarta EE 5.0 / Tomcat 10 pour organiser un mariage marocain de A à Z :
-questionnaire, prestataires vérifiés à Fès, invitations digitales (15 modèles dont vidéo Premium),
-abonnement Free / Pro / Premium.
+questionnaire en 6 sections, **moteur de recommandation IA** multi-critères avec tags et raisons
+contextualisées, 50+ prestataires vérifiés (Fès, Rabat-Salé-Témara-Kénitra), 15 invitations
+digitales pré-remplies dynamiquement (noms du couple, date, heure, lieu), abonnements
+Free / Pro (149 DHS) / Premium (299 DHS).
+
+> **v2.1 (mai 2026)** — Refonte complète du moteur de recommandation, fusion des catégories
+> redondantes (Coiffure→Maquillage, Fleuriste→Décoration, Vidéaste→Photographe), suppression
+> Transport et Wedding Planner, 3 nouveaux modèles d'invitations wow (Or Liquide animé, Caftan
+> Ivoire, Impérial Bordeaux). Voir [CHANGELOG.md](./CHANGELOG.md) et
+> [RECOMMENDATIONS.md](./RECOMMENDATIONS.md) pour le détail.
 
 ## Stack
 
