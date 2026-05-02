@@ -70,7 +70,38 @@ public class JsonUtil {
 		if (endQuote == -1) {
 			return null;
 		}
-		return json.substring(startQuote + 1, endQuote);
+		String raw = json.substring(startQuote + 1, endQuote);
+		// Decoder les sequences d'echappement JSON (\\" -> ", \\\\ -> \, \\n -> newline, ...)
+		return unescapeJson(raw);
+	}
+
+	/**
+	 * Dé-échappe les caracteres speciaux JSON dans une string.
+	 * Ordre important : \\\\ doit etre traite avant les autres \\X.
+	 */
+	public static String unescapeJson(String s) {
+		if (s == null || s.indexOf('\\') < 0) return s;
+		StringBuilder out = new StringBuilder(s.length());
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '\\' && i + 1 < s.length()) {
+				char next = s.charAt(i + 1);
+				switch (next) {
+					case '"':  out.append('"'); i++; break;
+					case '\\': out.append('\\'); i++; break;
+					case '/':  out.append('/'); i++; break;
+					case 'n':  out.append('\n'); i++; break;
+					case 't':  out.append('\t'); i++; break;
+					case 'r':  out.append('\r'); i++; break;
+					case 'b':  out.append('\b'); i++; break;
+					case 'f':  out.append('\f'); i++; break;
+					default:   out.append(c); break;
+				}
+			} else {
+				out.append(c);
+			}
+		}
+		return out.toString();
 	}
 
 	public static int getIntValue(String json, String key) {
