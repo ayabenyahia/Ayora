@@ -3,8 +3,93 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Ayora - Recommandations</title>
+	<title>Ayora - Recommandations personnalisées</title>
 	<link rel="stylesheet" href="css/styles.css">
+	<style>
+		.reco-layout { display:grid; grid-template-columns:300px 1fr; gap:20px; padding:20px; align-items:flex-start; }
+		@media (max-width: 980px) { .reco-layout { grid-template-columns: 1fr; } }
+
+		.profile-card { background:var(--white); border-radius:var(--radius-lg); padding:22px; box-shadow:var(--shadow-md); position:sticky; top:80px; }
+		.profile-card h3 { font-size:1.25rem; margin-bottom:14px; color:var(--primary-dark); border-bottom:2px solid var(--gold); padding-bottom:8px; }
+		.profile-row { display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed var(--border-light); font-size:13px; }
+		.profile-row:last-child { border-bottom:none; }
+		.profile-row .label { color:var(--text-muted); font-weight:500; }
+		.profile-row .value { color:var(--text-dark); font-weight:600; text-align:right; max-width:60%; }
+
+		.filters { background:var(--white); border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow-md); margin-top:16px; }
+		.filters h4 { font-size:1.05rem; margin-bottom:12px; color:var(--primary-dark); }
+		.filters label { display:block; font-size:12px; color:var(--text-muted); margin:10px 0 4px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+		.filters select, .filters input { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; background:var(--cream); }
+		.filters .filter-actions { display:flex; gap:8px; margin-top:14px; }
+		.filters .filter-actions button { flex:1; }
+
+		.block { background:var(--white); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-md); margin-bottom:24px; }
+		.block-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--gold-light); }
+		.block-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--primary-dark); font-weight:600; display:flex; align-items:center; gap:10px; }
+		.block-title .badge { background:var(--gold); color:var(--white); font-family:'Montserrat',sans-serif; font-size:11px; padding:2px 10px; border-radius:var(--radius-xl); font-weight:600; letter-spacing:0.5px; }
+		.block-subtitle { font-size:13px; color:var(--text-muted); }
+
+		.cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:18px; }
+
+		.reco-card { background:linear-gradient(180deg,var(--white) 0%,var(--cream) 100%); border-radius:var(--radius-md); border:1px solid var(--border-light); padding:18px; transition:var(--transition); position:relative; overflow:hidden; display:flex; flex-direction:column; }
+		.reco-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); border-color:var(--gold); }
+		.reco-card .score-ribbon { position:absolute; top:0; right:0; background:var(--primary-dark); color:var(--white); padding:4px 14px; font-size:13px; font-weight:700; border-bottom-left-radius:var(--radius-md); }
+		.reco-card .score-ribbon.excellent { background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%); }
+		.reco-card .score-ribbon.good { background:var(--success); }
+		.reco-card .score-ribbon.ok { background:var(--warning); color:var(--text-dark); }
+		.reco-card .score-ribbon.low { background:var(--text-light); }
+
+		.reco-card h4 { font-size:1.25rem; margin:6px 0 4px; color:var(--text-dark); padding-right:60px; }
+		.reco-card .reco-cat { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--gold-dark); font-weight:700; }
+
+		.reco-meta { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; font-size:12px; color:var(--text-muted); }
+		.reco-meta span { display:inline-flex; align-items:center; gap:4px; }
+		.reco-meta .gamme-eco { color:var(--gamme-eco); font-weight:600; }
+		.reco-meta .gamme-moyen { color:var(--gamme-moyen); font-weight:600; }
+		.reco-meta .gamme-premium { color:var(--gamme-premium); font-weight:600; }
+
+		.reco-tags { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+		.tag { background:var(--gold-soft); color:var(--gold-dark); padding:3px 10px; border-radius:var(--radius-xl); font-size:11px; font-weight:600; border:1px solid var(--gold-light); }
+		.tag.coup { background:var(--primary-soft); color:var(--primary-dark); border-color:var(--rose-gold); }
+		.tag.luxe { background:var(--text-dark); color:var(--gold-light); border-color:var(--gold); }
+		.tag.eco { background:var(--success-light); color:var(--sage-dark); border-color:var(--success); }
+		.tag.alert { background:var(--danger-light); color:var(--danger); border-color:var(--danger); }
+		.tag.priority { background:var(--info-light); color:var(--info); border-color:var(--info); }
+
+		.reco-raison { font-size:13px; color:var(--text-body); line-height:1.5; margin:10px 0; padding:10px; background:var(--cream); border-left:3px solid var(--gold); border-radius:var(--radius-sm); }
+
+		.subscores { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin:10px 0; }
+		.subscore { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-muted); }
+		.subscore .bar { flex:1; height:5px; background:var(--border-light); border-radius:3px; overflow:hidden; }
+		.subscore .bar > div { height:100%; background:linear-gradient(90deg,var(--gold) 0%,var(--gold-dark) 100%); }
+		.subscore .sval { font-weight:700; color:var(--text-dark); min-width:30px; text-align:right; }
+
+		.reco-price { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--primary-dark); font-weight:600; margin:8px 0; }
+		.reco-price small { font-size:11px; color:var(--text-muted); font-family:'Montserrat',sans-serif; font-weight:500; }
+
+		.contact-bar { display:flex; gap:0; margin-top:auto; padding-top:14px; border-top:1px solid var(--border-light); align-items:stretch; }
+		.contact-bar a { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 6px; font-size:12px; font-weight:600; color:var(--text-muted); text-decoration:none; border-right:1px solid var(--border-light); transition:var(--transition-fast); position:relative; }
+		.contact-bar a:last-child { border-right:none; }
+		.contact-bar a:hover { background:var(--gold-soft); color:var(--primary-dark); }
+		.contact-bar a.disabled { opacity:0.35; pointer-events:none; }
+		.contact-bar .ico { width:18px; height:18px; display:inline-block; vertical-align:middle; }
+		.contact-bar .ico svg { width:18px; height:18px; fill:currentColor; }
+		.contact-bar .lab { display:none; }
+		@media (min-width: 1200px) { .contact-bar .lab { display:inline; } }
+
+		.empty-block { padding:30px; text-align:center; color:var(--text-muted); font-style:italic; }
+
+		.summary-bar { background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 100%); color:var(--white); padding:18px 22px; border-radius:var(--radius-lg); margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:var(--shadow-md); }
+		.summary-bar h2 { color:var(--white); font-size:1.5rem; margin:0; }
+		.summary-bar .stat { text-align:center; }
+		.summary-bar .stat .num { font-size:1.6rem; font-weight:700; font-family:'Cormorant Garamond',serif; color:var(--gold-light); display:block; }
+		.summary-bar .stat .lab { font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.85; }
+
+		.tabs { display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap; }
+		.tabs button { background:var(--white); border:1px solid var(--border); padding:8px 16px; border-radius:var(--radius-xl); cursor:pointer; font-weight:600; font-size:13px; color:var(--text-muted); transition:var(--transition-fast); }
+		.tabs button:hover { border-color:var(--gold); color:var(--text-dark); }
+		.tabs button.active { background:var(--primary); color:var(--white); border-color:var(--primary); }
+	</style>
 </head>
 <body>
 
@@ -23,146 +108,295 @@
 		</div>
 	</div>
 
-	<!-- FILTER -->
-	<div class="filter-bar">
-		<label class="text-navy text-bold">Filtrer par catégorie :</label>
-		<select id="filterCategory" onchange="filterRecommendations()">
-			<option value="">Toutes les catégories</option>
-		</select>
-		<button class="btn btn-small btn-primary" onclick="refreshRecommendations()">Recalculer</button>
-		<button class="btn btn-small btn-secondary" onclick="location.href='questionnaire.html'">Modifier le questionnaire</button>
-	</div>
+	<div class="reco-layout">
 
-	<!-- RECOMMENDATIONS -->
-	<div class="panel" style="margin:20px;">
-		<header>Vos recommandations personnalisées <span id="recCount" class="text-muted" style="font-weight:normal;font-size:14px;"></span></header>
-		<div class="content">
-			<div id="recommendationsList" class="loading">
-				<div class="spinner"></div>
-				<p>Chargement de vos recommandations...</p>
+		<!-- SIDEBAR : profil + filtres -->
+		<aside>
+			<div class="profile-card" id="profileCard">
+				<h3>Votre profil</h3>
+				<div id="profileBody" class="text-muted text-center" style="padding:20px 0;">Chargement…</div>
+				<div style="display:flex;flex-direction:column;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border-light);">
+					<button class="btn btn-small btn-primary" onclick="refreshRecommendations()">Recalculer mes recommandations</button>
+					<button class="btn btn-small btn-secondary" onclick="location.href='questionnaire.html'">Modifier le questionnaire</button>
+				</div>
 			</div>
-		</div>
+		</aside>
+
+		<!-- MAIN : blocs de recommandations -->
+		<main>
+			<div class="summary-bar">
+				<div>
+					<h2>Vos recommandations personnalisées</h2>
+					<p style="opacity:0.85;font-size:13px;margin:4px 0 0;">Calculées à partir de votre questionnaire — score multi-critères, tags et raisons.</p>
+				</div>
+				<div class="stat"><span class="num" id="statTotal">—</span><span class="lab">Prestataires</span></div>
+				<div class="stat"><span class="num" id="statTop">—</span><span class="lab">Top match</span></div>
+				<div class="stat"><span class="num" id="statValue">—</span><span class="lab">Bon plan</span></div>
+				<div class="stat"><span class="num" id="statChic">—</span><span class="lab">Premium</span></div>
+			</div>
+
+			<div class="tabs" id="blockTabs"></div>
+
+			<div id="blocksContainer" class="loading">
+				<div class="spinner"></div>
+				<p>Chargement de vos recommandations…</p>
+			</div>
+		</main>
+
 	</div>
 
-	<footer>
-		<p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p>
-	</footer>
+	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
 
 	<script src="js/api.js"></script>
 	<script>
-		var user = checkAuth();
-		var allRecommendations = [];
+	var user = checkAuth();
+	if (user) document.getElementById('userName').textContent = user.firstName;
 
-		if (user) {
-			document.getElementById('userName').textContent = user.firstName;
-		}
+	var STATE = { profile:null, blocks:{}, all:[], categories:[], counts:{} };
+	var ACTIVE_BLOCK = 'topPicks';
 
-		api.get('/api/vendors/categories').then(function(categories) {
-			var select = document.getElementById('filterCategory');
-			for (var i = 0; i < categories.length; i++) {
-				var opt = document.createElement('option');
-				opt.value = categories[i].nameFr;
-				opt.textContent = categories[i].nameFr;
-				select.appendChild(opt);
+	var BLOCK_META = {
+		topPicks:       { title:'Les meilleurs pour vous',         subtitle:'Score global le plus élevé selon votre profil',                   badge:'Top' },
+		prioritePicks:  { title:'Vos priorités',                   subtitle:'Catégories que vous avez classées en priorité dans le questionnaire', badge:'Prioritaire' },
+		bestValue:      { title:'Meilleur rapport qualité / prix', subtitle:'Bon score à un budget maîtrisé',                                badge:'Bon plan' },
+		mostChic:       { title:'Les plus chic',                    subtitle:'Gamme premium avec un excellent match',                          badge:'Chic' },
+		economic:       { title:'Petit budget',                     subtitle:'Gamme économique mais soignée',                                  badge:'Éco' },
+		premium:        { title:'Sélection premium',                subtitle:'Pour un mariage haut de gamme',                                   badge:'Premium' },
+		alternatives:   { title:'À considérer',                     subtitle:'Score correct, à comparer avec vos coups de cœur',               badge:'Alternative' }
+	};
+
+	loadRecommendations();
+
+	function loadRecommendations(qs) {
+		var url = '/api/recommendations' + (qs || '');
+		document.getElementById('blocksContainer').innerHTML =
+			'<div class="loading"><div class="spinner"></div><p>Chargement…</p></div>';
+		api.get(url).then(function(data) {
+			if (!data || data.completed === false) {
+				renderEmpty();
+				return;
 			}
+			STATE = data;
+			renderProfile(data.profile);
+			populateCategoryFilter(data.categories);
+			renderTabs(data.blocks);
+			renderActiveBlock();
+			updateStats();
+		}).catch(function(err) {
+			document.getElementById('blocksContainer').innerHTML =
+				'<div class="empty-block">Aucune recommandation disponible. <a href="questionnaire.html">Remplissez le questionnaire</a> pour en obtenir.</div>';
 		});
+	}
 
-		loadRecommendations();
+	function renderEmpty() {
+		document.getElementById('profileBody').innerHTML = '<p>Aucun questionnaire trouvé.</p>';
+		document.getElementById('blocksContainer').innerHTML =
+			'<div class="empty-block">Pour obtenir des recommandations personnalisées, <a href="questionnaire.html">remplissez d\'abord le questionnaire</a>.</div>';
+	}
 
-		function loadRecommendations() {
-			api.get('/api/recommendations').then(function(data) {
-				allRecommendations = data;
-				renderRecommendations(data);
-			}).catch(function() {
-				document.getElementById('recommendationsList').innerHTML =
-					'<p class="text-muted text-center">Aucune recommandation disponible. <a href="questionnaire.html">Remplissez le questionnaire</a> pour en obtenir.</p>';
-			});
+	function renderProfile(p) {
+		if (!p) return;
+		var rows = [];
+		if (p.style)         rows.push(['Style mariage', humanize(p.style)]);
+		if (p.ambiance)      rows.push(['Ambiance', humanize(p.ambiance)]);
+		if (p.niveauLuxe)    rows.push(['Niveau de luxe', humanize(p.niveauLuxe)]);
+		if (p.themeCouleur)  rows.push(['Thème / couleur', humanize(p.themeCouleur)]);
+		if (p.saison)        rows.push(['Saison', humanize(p.saison)]);
+		if (p.budgetTotal)   rows.push(['Budget total', formatPrice(p.budgetTotal)]);
+		if (p.budgetTier)    rows.push(['Tier budget', humanize(p.budgetTier)]);
+		if (p.nbInvites)     rows.push(['Invités', p.nbInvites + ' (' + humanize(p.guestSize) + ')']);
+		if (p.budgetPerGuest) rows.push(['Budget / invité', formatPrice(p.budgetPerGuest)]);
+		if (p.typeMusique)   rows.push(['Musique', humanize(p.typeMusique)]);
+		if (p.typeCuisine)   rows.push(['Cuisine', humanize(p.typeCuisine)]);
+		if (p.prefDecoration)rows.push(['Décoration', humanize(p.prefDecoration)]);
+		if (p.styleNeggafa)  rows.push(['Neggafa', humanize(p.styleNeggafa) + ' / ' + p.nbTenuesNeggafa + ' tenues']);
+
+		var html = '';
+		for (var i = 0; i < rows.length; i++) {
+			html += '<div class="profile-row"><span class="label">' + rows[i][0] + '</span><span class="value">' + rows[i][1] + '</span></div>';
+		}
+		document.getElementById('profileBody').innerHTML = html || '<p class="text-muted text-center">Profil incomplet.</p>';
+	}
+
+	function humanize(s) {
+		if (!s) return '—';
+		return s.toString().toLowerCase().replace(/_/g,' ').replace(/^\w/, function(c){ return c.toUpperCase(); });
+	}
+
+	function populateCategoryFilter(_categories) {
+		// Filtres avances retires de l'UI ; on garde la fonction comme no-op pour
+		// la compatibilite, le filtrage par categorie se fait via les tabs.
+	}
+
+	function renderTabs(blocks) {
+		var keys = Object.keys(BLOCK_META);
+		var html = '';
+		for (var i = 0; i < keys.length; i++) {
+			var k = keys[i];
+			var list = blocks[k] || [];
+			if (list.length === 0 && k !== 'topPicks') continue;
+			var active = (k === ACTIVE_BLOCK) ? 'active' : '';
+			html += '<button class="' + active + '" onclick="setBlock(\'' + k + '\')">' +
+				BLOCK_META[k].title + ' <span style="opacity:0.7;">(' + list.length + ')</span></button>';
+		}
+		document.getElementById('blockTabs').innerHTML = html;
+	}
+
+	function setBlock(key) {
+		ACTIVE_BLOCK = key;
+		var btns = document.querySelectorAll('#blockTabs button');
+		for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+		var nodes = document.querySelectorAll('#blockTabs button');
+		for (var j = 0; j < nodes.length; j++) {
+			if (nodes[j].textContent.indexOf(BLOCK_META[key].title) === 0) nodes[j].classList.add('active');
+		}
+		renderActiveBlock();
+	}
+
+	function renderActiveBlock() {
+		var meta = BLOCK_META[ACTIVE_BLOCK] || BLOCK_META.topPicks;
+		var list = (STATE.blocks && STATE.blocks[ACTIVE_BLOCK]) || [];
+
+		var html = '<section class="block">';
+		html += '<div class="block-header">';
+		html += '<div><div class="block-title">' + meta.title + ' <span class="badge">' + meta.badge + '</span></div>';
+		html += '<div class="block-subtitle">' + meta.subtitle + '</div></div>';
+		html += '<div class="text-muted" style="font-size:12px;">' + list.length + ' résultat' + (list.length>1?'s':'') + '</div>';
+		html += '</div>';
+
+		if (list.length === 0) {
+			html += '<div class="empty-block">Aucun prestataire dans ce bloc avec les filtres actuels.</div>';
+		} else {
+			html += '<div class="cards-grid">';
+			for (var i = 0; i < list.length; i++) html += cardHtml(list[i]);
+			html += '</div>';
+		}
+		html += '</section>';
+
+		// Si on est sur "topPicks", on affiche aussi un grouping par categorie en complement
+		if (ACTIVE_BLOCK === 'topPicks' && STATE.all && STATE.all.length > 0) {
+			html += renderByCategory();
 		}
 
-		function filterRecommendations() {
-			var category = document.getElementById('filterCategory').value;
-			if (!category) {
-				renderRecommendations(allRecommendations);
-				return;
+		document.getElementById('blocksContainer').innerHTML = html;
+	}
+
+	function renderByCategory() {
+		var groups = {};
+		for (var i = 0; i < STATE.all.length; i++) {
+			var r = STATE.all[i];
+			if (!groups[r.category]) groups[r.category] = [];
+			groups[r.category].push(r);
+		}
+		var html = '<section class="block">';
+		html += '<div class="block-header"><div class="block-title">Par catégorie <span class="badge">Tout</span></div>';
+		html += '<div class="block-subtitle">Vos prestataires triés par score, regroupés par poste</div></div>';
+		var keys = Object.keys(groups);
+		for (var k = 0; k < keys.length; k++) {
+			var cat = keys[k];
+			var recs = groups[cat];
+			html += '<h3 style="margin:18px 0 12px;color:var(--primary-dark);font-size:1.2rem;">' + cat + ' <small style="font-size:13px;color:var(--text-muted);font-weight:400;">(' + recs.length + ')</small></h3>';
+			html += '<div class="cards-grid">';
+			var lim = Math.min(6, recs.length);
+			for (var j = 0; j < lim; j++) html += cardHtml(recs[j]);
+			html += '</div>';
+		}
+		html += '</section>';
+		return html;
+	}
+
+	function cardHtml(r) {
+		var sc = Math.round(r.score);
+		var ribbonClass = sc >= 85 ? 'excellent' : sc >= 70 ? 'good' : sc >= 55 ? 'ok' : 'low';
+		var gShort = r.gamme === 'ECONOMIQUE' ? 'eco' : r.gamme === 'MOYEN' ? 'moyen' : r.gamme === 'PREMIUM' ? 'premium' : '';
+		var gammeClass = gShort ? 'gamme-' + gShort : '';
+		var gammeLabel = r.gamme === 'ECONOMIQUE' ? 'Économique' : r.gamme === 'MOYEN' ? 'Moyenne' : r.gamme === 'PREMIUM' ? 'Premium' : (r.gamme || '');
+
+		// Tags
+		var tagsHtml = '';
+		if (r.tags && r.tags.length) {
+			for (var i = 0; i < r.tags.length; i++) {
+				var t = r.tags[i];
+				var cls = 'tag';
+				if (/coup de coeur/i.test(t)) cls += ' coup';
+				else if (/luxe|premium|chic/i.test(t)) cls += ' luxe';
+				else if (/budget|qualite|prix|petit/i.test(t)) cls += ' eco';
+				else if (/hors budget/i.test(t)) cls += ' alert';
+				else if (/priorit/i.test(t)) cls += ' priority';
+				tagsHtml += '<span class="' + cls + '">' + t + '</span>';
 			}
-			var filtered = [];
-			for (var i = 0; i < allRecommendations.length; i++) {
-				if (allRecommendations[i].category === category) {
-					filtered.push(allRecommendations[i]);
-				}
-			}
-			renderRecommendations(filtered);
 		}
 
-		function renderRecommendations(recommendations) {
-			var container = document.getElementById('recommendationsList');
-			document.getElementById('recCount').textContent = '(' + recommendations.length + ' résultats)';
-
-			if (!recommendations || recommendations.length === 0) {
-				container.innerHTML = '<p class="text-muted text-center p-20">Aucune recommandation disponible. <a href="questionnaire.html">Remplissez le questionnaire</a> pour en obtenir.</p>';
-				return;
-			}
-
-			var categories = {};
-			for (var i = 0; i < recommendations.length; i++) {
-				var rec = recommendations[i];
-				if (!categories[rec.category]) {
-					categories[rec.category] = [];
-				}
-				categories[rec.category].push(rec);
-			}
-
-			var html = '';
-			for (var cat in categories) {
-				var recs = categories[cat];
-				html += '<h3 class="text-navy" style="margin:24px 0 12px;">' + cat + ' (' + recs.length + ')</h3>';
-				html += '<div class="card-list" style="justify-content:flex-start;">';
-
-				for (var j = 0; j < recs.length; j++) {
-					var rec = recs[j];
-					var scoreClass = getScoreClass(rec.score);
-					var scorePercent = Math.round(rec.score);
-
-					html += '<article>';
-					html += '<header>' + rec.vendorName + '</header>';
-					html += '<div class="card-body">';
-					html += '<p><span class="card-gamme ' + getGammeClass(rec.gamme) + '">' + getGammeLabel(rec.gamme) + '</span></p>';
-					html += '<p class="card-price">À partir de ' + formatPrice(rec.prixMin) + '</p>';
-					html += '<p class="text-muted" style="font-size:13px;">' + rec.raison + '</p>';
-
-					html += '<div style="margin-top:12px;">';
-					html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
-					html += '<span class="text-muted" style="font-size:12px;">Compatibilité</span>';
-					html += '<span class="text-bold" style="font-size:14px;color:' + (scorePercent >= 70 ? 'var(--sage-dark)' : scorePercent >= 40 ? 'var(--gold-dark)' : 'var(--rose-dark)') + ';">' + scorePercent + '%</span>';
-					html += '</div>';
-					html += '<div class="score-bar"><div class="score-fill ' + scoreClass + '" style="width:' + scorePercent + '%"></div></div>';
-					html += '</div>';
-
-					html += '</div>';
-					html += '<div class="card-footer">';
-					html += '<button class="btn btn-small btn-secondary" onclick="location.href=\'vendors.html\'">Voir le profil</button>';
-					html += '</div>';
-					html += '</article>';
-				}
-				html += '</div>';
-			}
-
-			container.innerHTML = html;
+		// Sub-scores
+		var subs = '';
+		var keys = [['scoreBudget','Budget'],['scoreLuxe','Luxe'],['scoreStyle','Style'],['scorePopularite','Popularité']];
+		for (var k = 0; k < keys.length; k++) {
+			var v = Math.round(r[keys[k][0]] || 0);
+			subs += '<div class="subscore"><span style="min-width:60px;">' + keys[k][1] + '</span><div class="bar"><div style="width:' + v + '%;"></div></div><span class="sval">' + v + '</span></div>';
 		}
 
-		function refreshRecommendations() {
-			document.getElementById('recommendationsList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Recalcul en cours...</p></div>';
+		// Contact bar : icones unifiees (phone, WhatsApp, Instagram, mail)
+		var ICO_PHONE = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2a11.7 11.7 0 0 0 3.7.6c.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.7.1.3 0 .7-.2 1L6.6 10.8z"/></svg></span>';
+		var ICO_WA = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.4-2 1.4-.5.1-1.2.1-2-.1a13 13 0 0 1-5.7-3.3 7 7 0 0 1-1.6-2.7c0-.7.4-1.3.7-1.6.2-.2.4-.3.6-.3l.5-.1c.2 0 .3.1.5.4l.7 1.7c.1.2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6.4.6 1 1.4 1.6 2 1 .9 1.8 1.2 2.1 1.4.2.1.4.1.5-.1l.7-.8c.2-.2.4-.2.6-.1l1.7.8c.2.1.4.2.4.4.1.2.1.5 0 .7z"/></svg></span>';
+		var ICO_IG = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1a6.6 6.6 0 0 1 2.2.4 4.5 4.5 0 0 1 2.3 2.3c.2.6.4 1.2.4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8a6.6 6.6 0 0 1-.4 2.2 4.5 4.5 0 0 1-2.3 2.3c-.6.2-1.2.4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1a6.6 6.6 0 0 1-2.2-.4 4.5 4.5 0 0 1-2.3-2.3c-.2-.6-.4-1.2-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c0-1 .2-1.6.4-2.2A4.5 4.5 0 0 1 5 2.7c.6-.2 1.2-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-.9 0-1.4.2-1.7.3-.4.2-.7.4-1 .7s-.5.6-.7 1c-.1.3-.3.8-.3 1.7-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c0 .9.2 1.4.3 1.7.2.4.4.7.7 1s.6.5 1 .7c.3.1.8.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c.9 0 1.4-.2 1.7-.3.4-.2.7-.4 1-.7s.5-.6.7-1c.1-.3.3-.8.3-1.7.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c0-.9-.2-1.4-.3-1.7a2.7 2.7 0 0 0-.7-1c-.3-.3-.6-.5-1-.7-.3-.1-.8-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 8a3.1 3.1 0 1 0 0-6.2 3.1 3.1 0 0 0 0 6.2zm6.2-8.2a1.1 1.1 0 1 1-2.3 0 1.1 1.1 0 0 1 2.3 0z"/></svg></span>';
+		var ICO_LINK = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M10.6 13.4a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.7 1.7 1.4 1.4 1.7-1.7a2 2 0 0 1 2.8 2.8l-3 3a2 2 0 0 1-2.8 0l-1.4 1.5zm2.8-2.8a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.7-1.7-1.4-1.4-1.7 1.7a2 2 0 0 1-2.8-2.8l3-3a2 2 0 0 1 2.8 0l1.4-1.5z"/></svg></span>';
 
-			api.post('/api/recommendations/refresh', {}).then(function(result) {
-				if (result.success) {
-					loadRecommendations();
-				} else {
-					loadRecommendations();
-				}
-			}).catch(function() {
-				loadRecommendations();
-			});
+		var contacts = '<div class="contact-bar">';
+		if (r.phone) {
+			var clean = r.phone.replace(/[^\d+]/g,'');
+			var wa = clean.replace(/^0/,'212');
+			contacts += '<a href="tel:' + clean + '" title="Appeler ' + r.phone + '">' + ICO_PHONE + '<span class="lab">Appeler</span></a>';
+			contacts += '<a href="https://wa.me/' + wa + '" target="_blank" rel="noopener" title="WhatsApp">' + ICO_WA + '<span class="lab">WhatsApp</span></a>';
+		} else {
+			contacts += '<a class="disabled" title="Pas de numéro">' + ICO_PHONE + '<span class="lab">Téléphone</span></a>';
 		}
+		if (r.instagram) {
+			var ig = r.instagram.replace('@','').trim();
+			contacts += '<a href="https://instagram.com/' + ig + '" target="_blank" rel="noopener" title="@' + ig + ' sur Instagram">' + ICO_IG + '<span class="lab">Instagram</span></a>';
+		} else {
+			contacts += '<a class="disabled" title="Pas d\'Instagram">' + ICO_IG + '<span class="lab">Instagram</span></a>';
+		}
+		contacts += '</div>';
+
+		// Prix : on n'affiche que "À partir de X DHS" (pas de fourchette haute)
+		var priceLine = 'À partir de ' + formatPrice(r.prixMin);
+
+		var rating = (r.rating && r.rating > 0) ? '⭐ ' + r.rating + ' (' + (r.nbAvis||0) + ' avis)' : '';
+
+		return '<article class="reco-card">' +
+			'<div class="score-ribbon ' + ribbonClass + '">' + sc + '%</div>' +
+			'<div class="reco-cat">' + (r.category || '') + '</div>' +
+			'<h4>' + (r.vendorName || '') + '</h4>' +
+			'<div class="reco-meta">' +
+				'<span class="' + gammeClass + '">● ' + gammeLabel + '</span>' +
+				(r.city ? '<span>📍 ' + r.city + '</span>' : '') +
+				(rating ? '<span>' + rating + '</span>' : '') +
+			'</div>' +
+			(tagsHtml ? '<div class="reco-tags">' + tagsHtml + '</div>' : '') +
+			'<div class="reco-price">' + priceLine + '</div>' +
+			'<div class="subscores">' + subs + '</div>' +
+			'<div class="reco-raison">' + (r.raison || '') + '</div>' +
+			contacts +
+		'</article>';
+	}
+
+	function refreshRecommendations() {
+		document.getElementById('blocksContainer').innerHTML =
+			'<div class="loading"><div class="spinner"></div><p>Recalcul à partir du questionnaire…</p></div>';
+		api.post('/api/recommendations/refresh', {}).then(function() {
+			loadRecommendations('');
+		}).catch(function() {
+			loadRecommendations('');
+		});
+	}
+
+	function updateStats() {
+		var total = (STATE.counts && STATE.counts.filtered) || (STATE.all || []).length;
+		document.getElementById('statTotal').textContent = total;
+		document.getElementById('statTop').textContent = ((STATE.blocks && STATE.blocks.topPicks) || []).length;
+		document.getElementById('statValue').textContent = ((STATE.blocks && STATE.blocks.bestValue) || []).length;
+		document.getElementById('statChic').textContent = ((STATE.blocks && STATE.blocks.mostChic) || []).length;
+	}
 	</script>
 </body>
 </html>
