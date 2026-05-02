@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora — Invitations</title>
-	<link rel="stylesheet" href="css/styles.css?v=21">
+	<link rel="stylesheet" href="css/styles.css?v=22">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Italiana&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -155,38 +155,76 @@
 		pointer-events:none;
 	}
 
-	/* === VIDEO templates === */
-	.p-video-cinema, .p-video-fassi, .p-video-luxe { color:#fff; position:relative; }
-	.p-video-cinema { background:linear-gradient(160deg,#1a0a30 0%, #2C1810 60%, #5C2A8C 100%); }
-	.p-video-fassi  { background:linear-gradient(160deg,#0d0904 0%, #5C1A2B 50%, #0d0904 100%); color:#D4B370; }
-	.p-video-luxe   { background:linear-gradient(160deg,#000 0%, #1a0a10 50%, #000 100%); color:#D4B370; }
-	.p-video-cinema::before, .p-video-fassi::before, .p-video-luxe::before {
-		content:""; position:absolute; inset:0;
-		background-image:radial-gradient(circle at 50% 50%, rgba(255,255,255,.08), transparent 60%);
+	/* === NOUVEAUX TEMPLATES WOW (remplacent les videos) === */
+
+	/* Or Liquide — degrade dore anime, signature absolue */
+	.p-or-liquide {
+		background:
+			radial-gradient(circle at 30% 20%, #FFF4D6 0%, transparent 40%),
+			radial-gradient(circle at 70% 80%, #C99A2C 0%, transparent 50%),
+			linear-gradient(135deg, #B8821C 0%, #F0D58A 30%, #B8821C 60%, #FFE9A8 100%);
+		background-size: 200% 200%;
+		animation: orShine 8s ease-in-out infinite;
+		color:#3A2410;
+		position:relative;
+	}
+	@keyframes orShine {
+		0%, 100% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
+	}
+	.p-or-liquide::before {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(58,36,16,.4); border-radius:6px;
+		box-shadow:inset 0 0 30px rgba(255,235,180,.4);
 		pointer-events:none;
 	}
-	/* Play icon pour les models video */
-	.preview.video-tpl .play-icon {
-		position:absolute; top:50%; left:50%;
-		width:64px; height:64px; transform:translate(-50%,-50%);
-		background:rgba(255,255,255,.92); border-radius:50%;
-		display:flex; align-items:center; justify-content:center;
-		box-shadow:0 8px 32px rgba(0,0,0,.4);
-		z-index:3;
+	.p-or-liquide::after {
+		content:""; position:absolute; inset:22px;
+		border:1px dashed rgba(58,36,16,.25); border-radius:4px;
+		pointer-events:none;
 	}
-	.preview.video-tpl .play-icon::after {
-		content:""; width:0; height:0;
-		border-left:18px solid #1A0A10;
-		border-top:11px solid transparent;
-		border-bottom:11px solid transparent;
-		margin-left:5px;
+
+	/* Caftan Ivoire — broderies dorees, ivoire luxueux */
+	.p-caftan {
+		background:
+			radial-gradient(ellipse at top, #FFF8EE 0%, #F0DEC5 60%, #E2C99C 100%);
+		color:#5C3A1A;
+		position:relative;
 	}
-	.video-tag {
-		position:absolute; bottom:14px; left:14px;
-		padding:5px 12px; border-radius:50px;
-		background:rgba(255,255,255,.92); color:#8B1A2B;
-		font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase;
-		font-weight:600; z-index:3;
+	.p-caftan::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			repeating-linear-gradient(0deg, transparent 0 22px, rgba(180,138,52,.08) 22px 23px),
+			repeating-linear-gradient(90deg, transparent 0 22px, rgba(180,138,52,.08) 22px 23px);
+		pointer-events:none;
+	}
+	.p-caftan::after {
+		content:""; position:absolute; inset:18px;
+		border:2px solid rgba(180,138,52,.6); border-radius:8px;
+		box-shadow:inset 0 0 0 4px rgba(255,255,255,.5), inset 0 0 0 6px rgba(180,138,52,.4);
+		pointer-events:none;
+	}
+
+	/* Imperial Bordeaux — sceau royal, bordeaux profond + or */
+	.p-imperial {
+		background:
+			radial-gradient(circle at 50% 30%, #5C1A2B 0%, #2A0A14 100%);
+		color:#F0D8B8;
+		position:relative;
+	}
+	.p-imperial::before {
+		content:""; position:absolute; inset:0;
+		background:
+			radial-gradient(circle at 50% 50%, rgba(212,168,83,.18), transparent 55%);
+		pointer-events:none;
+	}
+	.p-imperial::after {
+		content:""; position:absolute; top:24px; left:50%; transform:translateX(-50%);
+		width:46px; height:46px; border-radius:50%;
+		background:linear-gradient(145deg, #E5C68A, #B8821C);
+		box-shadow:0 4px 18px rgba(0,0,0,.4), inset 0 1px 2px rgba(255,255,255,.4);
+		opacity:.9;
+		pointer-events:none;
 	}
 
 	/* Selected check */
@@ -307,7 +345,7 @@
 			<span class="acc">— La collection —</span>
 			<h2>Choisissez votre modèle</h2>
 			<div class="ornament">◆</div>
-			<p>10 designs exclusifs, signés par notre studio. Les modèles Pro et Premium révèlent toute leur élégance.</p>
+			<p>15 designs exclusifs, signés par notre studio. Pré-remplis automatiquement avec vos noms, votre date, votre heure et votre lieu de cérémonie.</p>
 		</div>
 
 		<div class="filters">
@@ -345,18 +383,14 @@
 				<select id="selectGuest"><option value="">— Choisir un invité —</option></select>
 				<label>Modèle choisi</label>
 				<input id="selTplName" readonly>
-				<div id="videoField" style="display:none;">
-					<label>Lien de la vidéo d'invitation</label>
-					<input id="videoUrl" type="url" placeholder="https://youtu.be/... ou https://drive.google.com/...">
-					<p style="font-size:12px;color:#7A6B74;margin:6px 0 0;font-style:italic;">Le lien sera inclus dans l'email envoyé à l'invité. YouTube, Vimeo, Google Drive, Dropbox acceptés.</p>
-				</div>
 				<label>Message personnalisé (optionnel)</label>
 				<textarea id="messagePerso" placeholder="Une attention pour cet invité…"></textarea>
 				<div class="confirm-summary" id="confirmSummary" style="display:none;">
 					<div><span>Invité</span><span id="sumGuest">—</span></div>
 					<div><span>Email</span><span id="sumEmail">—</span></div>
 					<div><span>Modèle</span><span id="sumTpl">—</span></div>
-					<div id="sumVideoRow" style="display:none;"><span>Vidéo</span><span id="sumVideo">—</span></div>
+					<div><span>Date</span><span id="sumDate">—</span></div>
+					<div><span>Lieu</span><span id="sumLieu">—</span></div>
 				</div>
 			</div>
 			<div class="modal-foot">
@@ -375,9 +409,17 @@
 		var subscription = null;
 		var guests = [];
 
-		// Noms dynamiques recuperes depuis le questionnaire (fallback "Ayla & Youssef")
-		var coupleNames = "Ayla & Youssef";
-		var coupleInitials = "A&Y";
+		// === Donnees du mariage (recuperees depuis le questionnaire) ===
+		// Pre-remplies a partir des reponses de la mariee : noms, date, heure, ville, lieu.
+		var weddingInfo = {
+			coupleNames: "Ayla & Youssef",   // par defaut
+			coupleInitials: "A&Y",
+			dateLong: "12 Juin 2026",        // ex : "12 Juin 2026"
+			dateShort: "12 . 06 . 2026",
+			heure: "19:00",
+			ville: "Fès",
+			lieu: ""                         // nom du palais / salle si renseigne
+		};
 
 		function getInitials(s) {
 			var parts = s.replace(/\s*&\s*/g, ' & ').split('&');
@@ -385,48 +427,85 @@
 			return s.substring(0, 3);
 		}
 
-		// === 15 templates premium (3 FREE, 5 PRO incl. zellige, 7 PREMIUM dont 3 video) ===
+		var FRENCH_MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+		function formatDateLong(iso) {
+			if (!iso) return '';
+			var d = new Date(iso);
+			if (isNaN(d.getTime())) return iso;
+			return d.getDate() + ' ' + FRENCH_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+		}
+		function formatDateShort(iso) {
+			if (!iso) return '';
+			var d = new Date(iso);
+			if (isNaN(d.getTime())) return iso;
+			var pad = function(n){return (n<10?'0':'')+n;};
+			return pad(d.getDate()) + ' . ' + pad(d.getMonth()+1) + ' . ' + d.getFullYear();
+		}
+		function formatHeure(h) {
+			if (!h) return '';
+			return h.replace(':', 'h');   // 19:00 -> 19h00
+		}
+
+		// Lieu complet : "Palais Mokri · Fes" ou juste "Fes" si pas de salle
+		function lieuComplet() {
+			if (weddingInfo.lieu && weddingInfo.ville) return weddingInfo.lieu + ' · ' + weddingInfo.ville;
+			return weddingInfo.lieu || weddingInfo.ville || 'Maroc';
+		}
+		function dateHeureLine() {
+			var d = weddingInfo.dateLong;
+			var h = weddingInfo.heure ? ' · ' + formatHeure(weddingInfo.heure) : '';
+			return d + h;
+		}
+
+		// === 15 templates premium (3 FREE, 5 PRO, 7 PREMIUM) — pre-remplis avec weddingInfo ===
 		function buildTemplates() {
-			var n = coupleNames; var m = coupleInitials;
+			var n = weddingInfo.coupleNames;
+			var m = weddingInfo.coupleInitials;
+			var dLong = weddingInfo.dateLong;
+			var dShort = weddingInfo.dateShort;
+			var dh = dateHeureLine();
+			var lieu = lieuComplet();
+			var year = (weddingInfo.dateLong.match(/\d{4}/) || ['2026'])[0];
+
 			return [
 			// === FREE ===
-			{ slug:'ivory-gold',     name:'Ivory Gold',         desc:'Ivoire & or fin, double cadre raffine',     level:'FREE',    palette:'p-ivory',    type:'card',
-			  pv:{acc:'Save the Date', mono:m, title:'Vous etes invite', name:n, sub:'Ceremonie · 12 Juin 2026', orn:'◆ ◆ ◆', date:'Fes - Maroc'} },
-			{ slug:'minimal-luxury', name:'Minimal Luxury',     desc:'Minimalisme epure, typographie italienne',  level:'FREE',    palette:'p-minimal',  type:'card',
-			  pv:{acc:'Wedding 2026', title:'Save the Date', name:m.replace('&',' · '), sub:'12 . 06 . 2026', orn:'—', date:'Fes'} },
-			{ slug:'soft-cal',       name:'Soft Calligraphy',   desc:'Calligraphie elegante, doux et raffine',    level:'FREE',    palette:'p-cal',      type:'card',
-			  pv:{acc:'L\'invitation', mono:m, title:'Notre mariage', name:n, sub:'Avec amour', orn:'◊', date:'12 Juin 2026 · Fes'} },
+			{ slug:'ivory-gold',     name:'Ivory Gold',         desc:'Ivoire & or fin, double cadre raffiné',     level:'FREE',    palette:'p-ivory',
+			  pv:{acc:'Save the Date', mono:m, title:'Vous êtes invités', name:n, sub:'Cérémonie · ' + dh, orn:'◆ ◆ ◆', date:lieu} },
+			{ slug:'minimal-luxury', name:'Minimal Luxury',     desc:'Minimalisme épuré, typographie italienne',  level:'FREE',    palette:'p-minimal',
+			  pv:{acc:'Wedding ' + year, title:'Save the Date', name:m.replace('&',' · '), sub:dShort, orn:'—', date:lieu} },
+			{ slug:'soft-cal',       name:'Soft Calligraphy',   desc:'Calligraphie élégante, doux et raffiné',    level:'FREE',    palette:'p-cal',
+			  pv:{acc:'L\'invitation', mono:m, title:'Notre mariage', name:n, sub:'Avec amour · ' + formatHeure(weddingInfo.heure), orn:'◊', date:dLong + ' · ' + weddingInfo.ville} },
 
 			// === PRO ===
-			{ slug:'desert-rose',    name:'Desert Rose',        desc:'Rose poudre, feminin, contemporain',        level:'PRO',     palette:'p-desert',   type:'card',
-			  pv:{acc:'Save the Date', mono:m, title:'Notre mariage', name:n, sub:'Avec joie', orn:'❀ ❀ ❀', date:'12 Juin 2026 · Fes'} },
-			{ slug:'garden-elegance',name:'Garden Elegance',    desc:'Vert botanique sage, fraicheur naturelle',  level:'PRO',     palette:'p-garden',   type:'card',
-			  pv:{acc:'Garden Wedding', title:'You are invited', name:n, sub:'Sunday 12.06.26', orn:'❦', date:'Riad Maison Bleue'} },
-			{ slug:'pearl',          name:'Moroccan Pearl',     desc:'Perle nacree, touche fassi elegante',       level:'PRO',     palette:'p-pearl',    type:'card',
-			  pv:{acc:'Wedding Invitation', mono:m, title:'Ceremonie de mariage', name:n, sub:'Tradition fassi', orn:'❋', date:'12 Juin 2026'} },
-			// === ZELLIGE PRO (style marocain authentique) ===
-			{ slug:'zellige-pearl',  name:'Zellige Pearl',      desc:'Mosaique de zellige, art fassi raffine',    level:'PRO',     palette:'p-zellige-pearl', type:'card',
-			  pv:{acc:'Mariage marocain', mono:m, title:'Vous etes convie(e)', name:n, sub:'Tradition & elegance', orn:'❋ ◆ ❋', date:'12 Juin 2026 · Fes'} },
-			{ slug:'palace-cream',   name:'Palace Cream',       desc:'Creme imperial, lignes dorees royales',     level:'PRO',     palette:'p-palace',   type:'card',
-			  pv:{acc:'Royal Invitation', mono:m, title:'Ceremonie de mariage', name:n, sub:'Palais Faraj - Fes', orn:'◇ ◆ ◇', date:'12 Juin 2026'} },
+			{ slug:'desert-rose',    name:'Desert Rose',        desc:'Rose poudré, féminin, contemporain',        level:'PRO',     palette:'p-desert',
+			  pv:{acc:'Save the Date', mono:m, title:'Notre mariage', name:n, sub:dh, orn:'❀ ❀ ❀', date:lieu} },
+			{ slug:'garden-elegance',name:'Garden Elegance',    desc:'Vert botanique sage, fraîcheur naturelle',  level:'PRO',     palette:'p-garden',
+			  pv:{acc:'Garden Wedding', title:'You are invited', name:n, sub:dShort, orn:'❦', date:lieu + (weddingInfo.heure ? ' · ' + formatHeure(weddingInfo.heure) : '')} },
+			{ slug:'pearl',          name:'Moroccan Pearl',     desc:'Perle nacrée, touche fassi élégante',       level:'PRO',     palette:'p-pearl',
+			  pv:{acc:'Wedding Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:'Tradition fassi · ' + formatHeure(weddingInfo.heure), orn:'❋', date:dLong + ' · ' + weddingInfo.ville} },
+			{ slug:'zellige-pearl',  name:'Zellige Pearl',      desc:'Mosaïque de zellige, art fassi raffiné',    level:'PRO',     palette:'p-zellige-pearl',
+			  pv:{acc:'Mariage marocain', mono:m, title:'Vous êtes convié(e)', name:n, sub:'Tradition & élégance', orn:'❋ ◆ ❋', date:dh + ' · ' + weddingInfo.ville} },
+			{ slug:'palace-cream',   name:'Palace Cream',       desc:'Crème impérial, lignes dorées royales',     level:'PRO',     palette:'p-palace',
+			  pv:{acc:'Royal Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:lieu, orn:'◇ ◆ ◇', date:dh} },
 
-			// === PREMIUM === (statiques + video)
-			{ slug:'royal-black',    name:'Royal Black',        desc:'Noir profond & or, prestige absolu',        level:'PREMIUM', palette:'p-royal',    type:'card',
-			  pv:{acc:'Invitation Prestige', mono:m, title:'Ceremonie privee', name:n, sub:'Le 12 Juin 2026', orn:'◆ ◆ ◆', date:'Palais Faraj · Fes'} },
-			{ slug:'emerald-night',  name:'Emerald Night',      desc:'Emeraude profond, cadre en or fin',         level:'PREMIUM', palette:'p-emerald',  type:'card',
-			  pv:{acc:'A Night to Remember', mono:m, title:'Notre union', name:n, sub:'12 Juin 2026', orn:'❋ ❋ ❋', date:'Fes - Riad Maison Bleue'} },
-			{ slug:'andalusian',     name:'Andalusian Touch',   desc:'Bordeaux & ivoire, heritage andalou',       level:'PREMIUM', palette:'p-andalou',  type:'card',
-			  pv:{acc:'Ceremonie de mariage', mono:m, title:'Vous etes invite(e)', name:n, sub:'Avec honneur', orn:'❋ ◆ ❋', date:'12 Juin 2026 · Fes'} },
-			{ slug:'zellige-royal',  name:'Zellige Royal',      desc:'Zellige royal noir & or, signature marocaine', level:'PREMIUM', palette:'p-zellige-royal', type:'card',
-			  pv:{acc:'Invitation marocaine', mono:m, title:'Mariage royal', name:n, sub:'Heritage fassi · 2026', orn:'◆ ❋ ◆', date:'Fes - Maroc'} },
+			// === PREMIUM === (statiques)
+			{ slug:'royal-black',    name:'Royal Black',        desc:'Noir profond & or, prestige absolu',        level:'PREMIUM', palette:'p-royal',
+			  pv:{acc:'Invitation Prestige', mono:m, title:'Cérémonie privée', name:n, sub:'Le ' + dLong + ' · ' + formatHeure(weddingInfo.heure), orn:'◆ ◆ ◆', date:lieu} },
+			{ slug:'emerald-night',  name:'Emerald Night',      desc:'Émeraude profond, cadre en or fin',         level:'PREMIUM', palette:'p-emerald',
+			  pv:{acc:'A Night to Remember', mono:m, title:'Notre union', name:n, sub:dh, orn:'❋ ❋ ❋', date:lieu} },
+			{ slug:'andalusian',     name:'Andalusian Touch',   desc:'Bordeaux & ivoire, héritage andalou',       level:'PREMIUM', palette:'p-andalou',
+			  pv:{acc:'Cérémonie de mariage', mono:m, title:'Vous êtes invité(e)', name:n, sub:'Avec honneur · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + weddingInfo.ville} },
+			{ slug:'zellige-royal',  name:'Zellige Royal',      desc:'Zellige royal noir & or, signature marocaine', level:'PREMIUM', palette:'p-zellige-royal',
+			  pv:{acc:'Invitation marocaine', mono:m, title:'Mariage royal', name:n, sub:'Héritage fassi · ' + dLong, orn:'◆ ❋ ◆', date:lieu} },
 
-			// === MODELES VIDEO PREMIUM ===
-			{ slug:'video-cinema',   name:'Cinema Wedding',     desc:'Invitation video cinematique, lien envoye par email', level:'PREMIUM', palette:'p-video-cinema', type:'video',
-			  pv:{acc:'Cinema Wedding', mono:m, title:'Save the Date', name:n, sub:'Une invitation video unique', orn:'▶', date:'Cliquez pour voir'} },
-			{ slug:'video-fassi',    name:'Fassi Royal Video',  desc:'Video signature fassi avec zellige & or', level:'PREMIUM', palette:'p-video-fassi', type:'video',
-			  pv:{acc:'Invitation Video', mono:m, title:'Mariage royal fassi', name:n, sub:'Une experience immersive', orn:'▶', date:'Lien personnalise'} },
-			{ slug:'video-luxe',     name:'Black Velvet Video', desc:'Velours noir & or, cinematic premium',    level:'PREMIUM', palette:'p-video-luxe',  type:'video',
-			  pv:{acc:'Cinematic Invitation', mono:m, title:'Ceremonie privee', name:n, sub:'Video exclusive Premium', orn:'▶', date:'Pour vos invites VIP'} }
+			// === NOUVEAUX TEMPLATES WOW (remplacent les videos retirees) ===
+			{ slug:'or-liquide',     name:'Or Liquide',         desc:'Or fluide animé, signature absolue Ayora',  level:'PREMIUM', palette:'p-or-liquide',
+			  pv:{acc:'L\'union dorée', mono:m, title:'Cérémonie de mariage', name:n, sub:dh, orn:'✦ ✦ ✦', date:lieu} },
+			{ slug:'caftan-ivoire',  name:'Caftan Ivoire',      desc:'Broderies ivoire & or, esprit caftan royal', level:'PREMIUM', palette:'p-caftan',
+			  pv:{acc:'Invitation royale', mono:m, title:'Vous êtes convié(e)', name:n, sub:'À nos noces · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + lieu} },
+			{ slug:'imperial',       name:'Impérial Bordeaux',  desc:'Sceau royal bordeaux & or, prestige fassi',  level:'PREMIUM', palette:'p-imperial',
+			  pv:{acc:'Sceau d\'honneur', mono:m, title:'Notre cérémonie', name:n, sub:dh, orn:'◆ ❋ ◆', date:lieu} }
 			];
 		}
 
@@ -442,20 +521,37 @@
 		loadGuests();
 		renderTemplates('all');
 
-		// Charger les noms du couple depuis le questionnaire
+		// Charger les infos du mariage (noms, date, heure, ville, lieu) depuis le questionnaire
 		function loadCoupleNames() {
 			api.get('/api/questionnaire').then(function(qa) {
 				if (!qa) return;
 				try {
-					var extras = qa.notesSpeciales ? JSON.parse(qa.notesSpeciales) : null;
-					if (extras && extras.nomMariee && extras.nomMarie) {
-						// Garde uniquement le prenom pour rester compact dans l'invitation
-						var first = function(s){ return (s||'').trim().split(' ')[0] || ''; };
-						coupleNames = first(extras.nomMariee) + ' & ' + first(extras.nomMarie);
-						coupleInitials = getInitials(coupleNames);
-					} else if (user && user.firstName) {
-						coupleNames = user.firstName + ' & ...';
-						coupleInitials = (user.firstName[0] || 'A') + '&Y';
+					var extras = null;
+					if (qa.notesSpeciales) {
+						extras = (typeof qa.notesSpeciales === 'object')
+							? qa.notesSpeciales
+							: JSON.parse(qa.notesSpeciales);
+					}
+					var first = function(s){ return (s||'').trim().split(' ')[0] || ''; };
+
+					if (extras) {
+						if (extras.nomMariee && extras.nomMarie) {
+							weddingInfo.coupleNames = first(extras.nomMariee) + ' & ' + first(extras.nomMarie);
+							weddingInfo.coupleInitials = getInitials(weddingInfo.coupleNames);
+						}
+						if (extras.heureMariage) weddingInfo.heure = extras.heureMariage;
+						if (extras.villeMariage) weddingInfo.ville = extras.villeMariage;
+						if (extras.lieuMariageNom) weddingInfo.lieu = extras.lieuMariageNom;
+					}
+					if (qa.dateMariage) {
+						weddingInfo.dateLong = formatDateLong(qa.dateMariage);
+						weddingInfo.dateShort = formatDateShort(qa.dateMariage);
+					}
+					if (!weddingInfo.coupleNames || weddingInfo.coupleNames === 'Ayla & Youssef') {
+						if (user && user.firstName) {
+							weddingInfo.coupleNames = user.firstName + ' & ...';
+							weddingInfo.coupleInitials = (user.firstName[0] || 'A') + '&Y';
+						}
 					}
 				} catch(e){}
 				TEMPLATES = buildTemplates();
@@ -484,12 +580,11 @@
 
 				var pv = t.pv;
 				var monoHtml = pv.mono ? '<div class="pv-monogram">' + pv.mono + '</div>' : '';
-				var isVideo = t.type === 'video';
 
 				div.innerHTML =
 					'<div class="tpl-check">✓</div>' +
 					'<span class="tier tier-' + t.level + '">' + t.level + '</span>' +
-					'<div class="preview ' + t.palette + (isVideo ? ' video-tpl' : '') + '">' +
+					'<div class="preview ' + t.palette + '">' +
 						monoHtml +
 						'<div class="pv-acc">' + pv.acc + '</div>' +
 						'<div class="pv-title">' + pv.title + '</div>' +
@@ -499,14 +594,13 @@
 						'<div class="pv-sub">' + pv.sub + '</div>' +
 						'<div class="pv-ornament">' + pv.orn + '</div>' +
 						'<div class="pv-date">' + pv.date + '</div>' +
-						(isVideo ? '<div class="play-icon"></div><span class="video-tag">Video</span>' : '') +
 					'</div>' +
 					(locked ? '<div class="lock lock-tier-' + t.level + '">' +
 						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="11" width="16" height="11" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>' +
 						'<span>Disponible avec ' + t.level + '</span>' +
 					'</div>' : '') +
 					'<div class="tpl-info">' +
-						'<h4>' + t.name + (isVideo ? ' <span style="font-size:10px;color:#B8922F;letter-spacing:1.5px;font-family:Cinzel,serif;">· VIDEO</span>' : '') + '</h4>' +
+						'<h4>' + t.name + '</h4>' +
 						'<p class="d">' + t.desc + '</p>' +
 						(locked
 							? '<button class="btn-locked" data-slug="' + t.slug + '" data-locked="1">Passer en ' + t.level + '</button>'
@@ -543,9 +637,6 @@
 			document.getElementById('confirmSummary').style.display = 'none';
 			document.getElementById('messagePerso').value = '';
 			document.getElementById('selectGuest').value = '';
-			document.getElementById('videoUrl').value = '';
-			document.getElementById('videoField').style.display = (t.type === 'video') ? 'block' : 'none';
-			document.getElementById('sumVideoRow').style.display = 'none';
 			var btn = document.getElementById('btnConfirm');
 			btn.disabled = false;
 			btn.textContent = 'Confirmer & envoyer';
@@ -562,21 +653,9 @@
 				document.getElementById('sumGuest').textContent = g.firstName + ' ' + g.lastName;
 				document.getElementById('sumEmail').textContent = g.email || '— (pas d\'email)';
 				document.getElementById('sumTpl').textContent = t.name + ' · ' + t.level;
-				if (t.type === 'video') {
-					var vu = document.getElementById('videoUrl').value.trim();
-					document.getElementById('sumVideo').textContent = vu || '(aucun lien — sera demandé)';
-					document.getElementById('sumVideoRow').style.display = 'flex';
-				} else {
-					document.getElementById('sumVideoRow').style.display = 'none';
-				}
+				document.getElementById('sumDate').textContent = dateHeureLine();
+				document.getElementById('sumLieu').textContent = lieuComplet();
 				document.getElementById('confirmSummary').style.display = 'block';
-			}
-		});
-
-		document.getElementById('videoUrl').addEventListener('input', function() {
-			var vu = this.value.trim();
-			if (document.getElementById('confirmSummary').style.display === 'block') {
-				document.getElementById('sumVideo').textContent = vu || '(aucun lien)';
 			}
 		});
 
@@ -584,24 +663,11 @@
 			var gid = parseInt(document.getElementById('selectGuest').value, 10);
 			if (!gid) { showModalNotice('error', 'Veuillez choisir un invité.'); return; }
 			var msg = document.getElementById('messagePerso').value.trim();
-			var t = TEMPLATES.find(function(x){return x.slug===selectedTemplate});
-			var videoUrl = '';
-			if (t && t.type === 'video') {
-				videoUrl = document.getElementById('videoUrl').value.trim();
-				if (!videoUrl) {
-					showModalNotice('error', 'Veuillez coller le lien de votre vidéo d\'invitation.');
-					return;
-				}
-				if (!/^https?:\/\//i.test(videoUrl)) {
-					showModalNotice('error', 'Le lien doit commencer par http:// ou https://');
-					return;
-				}
-			}
 			var btn = document.getElementById('btnConfirm');
 			btn.disabled = true; btn.textContent = 'Création…';
 
 			api.post('/api/invitations', {
-				guestId: gid, templateName: selectedTemplate, messagePerso: msg, videoUrl: videoUrl
+				guestId: gid, templateName: selectedTemplate, messagePerso: msg
 			}).then(function(r){
 				if (!r || r.error || !r.id) {
 					showModalNotice('error', (r && r.error) || 'Erreur lors de la création.');
