@@ -154,7 +154,12 @@ public class VendorDao {
 		Connection connection = null;
 		try {
 			connection = DatabaseConnection.getConnection();
-			String sql = "SELECT * FROM vendor_categories ORDER BY name_fr";
+			// On masque les categories marquees [Obsolete] (fusionnees) et [Supprime]
+			// (Transport / Wedding Planner) - la migration v4 les a desactivees mais
+			// on garde les lignes pour ne pas casser les FK historiques.
+			String sql = "SELECT * FROM vendor_categories "
+					+ "WHERE name_fr NOT LIKE '[Obsolete]%' AND name_fr NOT LIKE '[Supprime]%' "
+					+ "ORDER BY name_fr";
 			PreparedStatement ps = connection.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
