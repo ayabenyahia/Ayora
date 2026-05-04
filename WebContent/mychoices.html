@@ -28,6 +28,14 @@
 		.choice-card .meta .gamme-premium { color: var(--gamme-premium); font-weight: 600; }
 		.choice-card .price { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--primary-dark); font-weight: 600; margin: 6px 0; }
 		.choice-card .desc { color: var(--text-body); font-size: 13px; line-height: 1.5; }
+		.choice-card .actions { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
+		.choice-card .actions .btn { padding: 8px 14px; font-size: 12px; text-align: center; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: var(--transition-fast); border: 1px solid transparent; }
+		.choice-card .actions .btn-modify { background: var(--cream-dark); color: var(--text-dark); border-color: var(--border); }
+		.choice-card .actions .btn-modify:hover { background: var(--gold-light); }
+		.choice-card .actions .btn-remove { background: var(--white); color: var(--danger); border-color: var(--danger-light); }
+		.choice-card .actions .btn-remove:hover { background: var(--danger-light); }
+		.choice-card .actions .btn-contact { background: var(--primary); color: var(--white); border-color: var(--primary); }
+		.choice-card .actions .btn-contact:hover { background: var(--primary-dark); }
 	</style>
 </head>
 <body>
