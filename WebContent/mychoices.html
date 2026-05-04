@@ -152,6 +152,21 @@
 			content.innerHTML = html;
 		}
 
+		function escapeQ(s) { return (s || '').replace(/'/g, "\\'"); }
+
+		function modifyChoice(categoryId, categoryName) {
+			// Renvoie vers la page recommandations en filtrant la catégorie
+			location.href = 'recommendations.html?category=' + encodeURIComponent(categoryName);
+		}
+
+		function removeChoice(vendorId, vendorName) {
+			if (!confirm('Retirer "' + vendorName + '" de vos choix ?')) return;
+			api.del('/api/picks/' + vendorId).then(function(r) {
+				if (r && r.success) loadChoices();
+				else alert('Erreur lors de la suppression');
+			}).catch(function() { alert('Erreur réseau'); });
+		}
+
 		function cardHtml(p) {
 			var gShort = p.gamme === 'ECONOMIQUE' ? 'eco' : p.gamme === 'MOYEN' ? 'moyen' : p.gamme === 'PREMIUM' ? 'premium' : '';
 			var gLabel = p.gamme === 'ECONOMIQUE' ? 'Économique' : p.gamme === 'MOYEN' ? 'Moyenne' : p.gamme === 'PREMIUM' ? 'Premium' : (p.gamme || '');
