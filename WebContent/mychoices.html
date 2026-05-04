@@ -123,6 +123,33 @@
 				document.getElementById('statCats').textContent = '0';
 				return;
 			}
+
+			// Grouper par catégorie en respectant l'ordre d'arrivée
+			var groups = {};
+			var order = [];
+			for (var i = 0; i < picks.length; i++) {
+				var p = picks[i];
+				if (!groups[p.category]) { groups[p.category] = []; order.push(p.category); }
+				groups[p.category].push(p);
+			}
+			document.getElementById('statCats').textContent = order.length;
+
+			var html = '';
+			for (var k = 0; k < order.length; k++) {
+				var cat = order[k];
+				var items = groups[cat];
+				html += '<section class="cat-section">';
+				html += '<h3>' + cat + ' <span class="badge-choisi">✓ Choisi</span></h3>';
+				for (var j = 0; j < items.length; j++) html += cardHtml(items[j]);
+				html += '</section>';
+			}
+
+			html += '<div class="suggestions-banner">' +
+				'<div class="ico">✨</div>' +
+				'<p>Vous voulez comparer ou changer ? <a href="recommendations.html">Retournez aux recommandations</a> et choisissez un autre prestataire — il remplacera automatiquement votre choix actuel pour cette catégorie.</p>' +
+			'</div>';
+
+			content.innerHTML = html;
 		}
 	</script>
 
