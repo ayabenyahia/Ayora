@@ -60,6 +60,14 @@ public class QuestionnaireServlet extends HttpServlet {
 		int userId = (int) session.getAttribute("userId");
 		String body = JsonUtil.readRequestBody(request);
 
+		// Path /lieu : update partiel du nom du lieu (saisi sur la page invitations
+		// apres avoir vu les recommandations).
+		String path = request.getPathInfo();
+		if ("/lieu".equals(path)) {
+			handleLieuUpdate(userId, body, response);
+			return;
+		}
+
 		QuestionnaireAnswer answer = parseAnswer(body, userId);
 
 		// Verifier si une reponse existe deja
@@ -195,5 +203,71 @@ public class QuestionnaireServlet extends HttpServlet {
 
 	private String nullSafe(String s) {
 		return s != null ? s : "";
+	}
+
+	/**
+	 * Update partiel : modifie uniquement lieuMariageNom dans notesSpeciales.
+	 * Appele depuis invitations.html avant l'envoi des invitations, une fois
+	 * que la mariee a choisi sa salle parmi les recommandations.
+	 *
+	 * Body attendu : {"lieuMariageNom": "Palais Mokri"}
+	 */
+	private void handleLieuUpdate(int userId, String body, HttpServletResponse response) throws IOException {
+		String lieuNom = JsonUtil.getStringValue(body, "lieuMariageNom");
+		if (lieuNom == null) lieuNom = "";
+
+		QuestionnaireAnswer existing = questionnaireDao.findByUserId(userId);
+		if (existing == null) {
+			JsonUtil.sendError(response, 400, "Remplissez d'abord le questionnaire");
+			return;
+		}
+
+		String notes = existing.getNotesSpeciales();
+		String updated = upsertJsonField(notes, "lieuMariageNom", lieuNom);
+		existing.setNotesSpeciales(updated);
+
+		boolean ok = questionnaireDao.update(existing);
+		if (!ok) {
+			JsonUtil.sendError(response, 500, "Echec mise a jour du lieu");
+			return;
+		}
+		JsonUtil.sendJson(response,
+			"{\"success\":true,\"lieuMariageNom\":\"" + JsonUtil.escapeJson(lieuNom) + "\"}");
+	}
+
+	/**
+	 * Met a jour une cle dans un JSON simple (objet plat). Si la cle existe,
+	 * remplace sa valeur. Sinon, ajoute la paire avant l'accolade fermante.
+	 * Si la chaine n'est pas un objet JSON, en cree un avec juste cette cle.
+	 */
+	private String upsertJsonField(String json, String key, String value) {
+		String escapedValue = JsonUtil.escapeJson(value);
+		String pair = "\"" + key + "\":\"" + escapedValue + "\"";
+
+		if (json == null || json.trim().isEmpty()
+				|| !json.trim().startsWith("{") || !json.trim().endsWith("}")) {
+			return "{" + pair + "}";
+		}
+
+		String trimmed = json.trim();
+		String search = "\"" + key + "\"";
+		int idx = trimmed.indexOf(search);
+		if (idx < 0) {
+			// Cle absente : on l'ajoute avant la }
+			String inner = trimmed.substring(1, trimmed.length() - 1).trim();
+			if (inner.isEmpty()) return "{" + pair + "}";
+			return "{" + inner + "," + pair + "}";
+		}
+		// Cle presente : on remplace sa valeur (string)
+		int colon = trimmed.indexOf(":", idx + search.length());
+		if (colon < 0) return trimmed;
+		int valStart = trimmed.indexOf("\"", colon + 1);
+		if (valStart < 0) return trimmed;
+		int valEnd = trimmed.indexOf("\"", valStart + 1);
+		while (valEnd > 0 && trimmed.charAt(valEnd - 1) == '\\') {
+			valEnd = trimmed.indexOf("\"", valEnd + 1);
+		}
+		if (valEnd < 0) return trimmed;
+		return trimmed.substring(0, valStart + 1) + escapedValue + trimmed.substring(valEnd);
 	}
 }
