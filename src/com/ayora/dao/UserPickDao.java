@@ -117,6 +117,23 @@ public class UserPickDao {
 		}
 	}
 
+	public boolean unpickByCategory(int userId, int categoryId) {
+		Connection c = null;
+		try {
+			c = DatabaseConnection.getConnection();
+			PreparedStatement ps = c.prepareStatement(
+				"DELETE FROM user_picks WHERE user_id = ? AND category_id = ?");
+			ps.setInt(1, userId);
+			ps.setInt(2, categoryId);
+			return ps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			System.out.println("## Erreur unpickByCategory : " + e.getMessage());
+			return false;
+		} finally {
+			DatabaseConnection.closeConnection(c);
+		}
+	}
+
 	private UserPick map(ResultSet rs) throws SQLException {
 		UserPick p = new UserPick();
 		p.setId(rs.getInt("id"));
