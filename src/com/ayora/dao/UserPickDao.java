@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import java.util.HashSet;
+import java.util.Set;
 import com.ayora.model.UserPick;
 import com.ayora.util.DatabaseConnection;
 
@@ -45,6 +47,26 @@ public class UserPickDao {
 			DatabaseConnection.closeConnection(c);
 		}
 		return list;
+	}
+
+	/** Retourne les vendor_id deja choisis par cet utilisateur. Sert a marquer
+	 *  les cards comme "Choisi" cote frontend. */
+	public Set<Integer> findPickedVendorIds(int userId) {
+		Set<Integer> ids = new HashSet<Integer>();
+		Connection c = null;
+		try {
+			c = DatabaseConnection.getConnection();
+			PreparedStatement ps = c.prepareStatement(
+				"SELECT vendor_id FROM user_picks WHERE user_id = ?");
+			ps.setInt(1, userId);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) ids.add(rs.getInt(1));
+		} catch (SQLException e) {
+			System.out.println("## Erreur findPickedVendorIds : " + e.getMessage());
+		} finally {
+			DatabaseConnection.closeConnection(c);
+		}
+		return ids;
 	}
 
 	private UserPick map(ResultSet rs) throws SQLException {
