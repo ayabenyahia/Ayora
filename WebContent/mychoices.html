@@ -151,6 +151,36 @@
 
 			content.innerHTML = html;
 		}
+
+		function cardHtml(p) {
+			var gShort = p.gamme === 'ECONOMIQUE' ? 'eco' : p.gamme === 'MOYEN' ? 'moyen' : p.gamme === 'PREMIUM' ? 'premium' : '';
+			var gLabel = p.gamme === 'ECONOMIQUE' ? 'Économique' : p.gamme === 'MOYEN' ? 'Moyenne' : p.gamme === 'PREMIUM' ? 'Premium' : (p.gamme || '');
+			var desc = (p.description || '').substring(0, 180);
+			if ((p.description || '').length > 180) desc += '…';
+
+			var phoneBtn = p.phone ? '<a class="btn btn-contact" href="tel:' + p.phone.replace(/[^\d+]/g,'') + '">📞 Appeler</a>' : '';
+			var igBtn = p.instagram ? '<a class="btn btn-contact" href="https://instagram.com/' + p.instagram.replace('@','') + '" target="_blank">📷 Instagram</a>' : '';
+
+			return '<article class="choice-card">' +
+				'<div class="body">' +
+					'<h4>' + (p.vendorName || '') + '</h4>' +
+					'<div class="meta">' +
+						'<span class="gamme-' + gShort + '">● ' + gLabel + '</span>' +
+						(p.city ? '<span>📍 ' + p.city + '</span>' : '') +
+						(p.phone ? '<span>📞 ' + p.phone + '</span>' : '') +
+						(p.instagram ? '<span>' + p.instagram + '</span>' : '') +
+					'</div>' +
+					'<p class="price">À partir de ' + formatPrice(p.prixMin) + '</p>' +
+					(desc ? '<p class="desc">' + desc + '</p>' : '') +
+				'</div>' +
+				'<div class="actions">' +
+					phoneBtn +
+					igBtn +
+					'<button class="btn btn-modify" onclick="modifyChoice(' + p.categoryId + ',\'' + escapeQ(p.category) + '\')">Modifier</button>' +
+					'<button class="btn btn-remove" onclick="removeChoice(' + p.vendorId + ',\'' + escapeQ(p.vendorName) + '\')">Retirer</button>' +
+				'</div>' +
+			'</article>';
+		}
 	</script>
 
 </body>
