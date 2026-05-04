@@ -36,6 +36,24 @@
 		.choice-card .actions .btn-remove:hover { background: var(--danger-light); }
 		.choice-card .actions .btn-contact { background: var(--primary); color: var(--white); border-color: var(--primary); }
 		.choice-card .actions .btn-contact:hover { background: var(--primary-dark); }
+
+		.empty-state { background: var(--white); padding: 60px 40px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-sm); }
+		.empty-state .ico { font-size: 48px; opacity: .35; margin-bottom: 16px; }
+		.empty-state h3 { color: var(--text-dark); font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; margin: 0 0 10px; }
+		.empty-state p { color: var(--text-muted); max-width: 480px; margin: 0 auto 20px; line-height: 1.6; }
+		.empty-state .btn-cta { display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); text-decoration: none; border-radius: 50px; font-weight: 600; letter-spacing: .5px; transition: var(--transition-fast); }
+		.empty-state .btn-cta:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+		.suggestions-banner { background: linear-gradient(135deg, var(--gold-soft), #FEF3E0); border: 1px solid var(--gold-light); border-radius: var(--radius-md); padding: 16px 22px; margin-top: 22px; display: flex; align-items: center; gap: 14px; }
+		.suggestions-banner .ico { font-size: 24px; }
+		.suggestions-banner p { flex: 1; margin: 0; font-size: 13.5px; color: var(--text-body); }
+		.suggestions-banner a { color: var(--primary-dark); font-weight: 600; }
+
+		@media (max-width: 720px) {
+			.choice-card { grid-template-columns: 1fr; }
+			.choice-card .actions { flex-direction: row; flex-wrap: wrap; }
+			.choice-card .actions .btn { flex: 1; min-width: 100px; }
+		}
 	</style>
 </head>
 <body>
