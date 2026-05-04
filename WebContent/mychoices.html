@@ -107,6 +107,23 @@
 				render([]);
 			});
 		}
+
+		function render(picks) {
+			var content = document.getElementById('content');
+			document.getElementById('statTotal').textContent = picks.length;
+
+			if (!picks || picks.length === 0) {
+				content.innerHTML =
+					'<div class="empty-state">' +
+						'<div class="ico">💍</div>' +
+						'<h3>Aucun prestataire retenu pour le moment</h3>' +
+						'<p>Allez voir vos recommandations personnalisées et cliquez sur <strong>"Choisir ce prestataire"</strong> pour le retenir. Vos sélections apparaîtront ici, regroupées par catégorie.</p>' +
+						'<a class="btn-cta" href="recommendations.html">Voir mes recommandations</a>' +
+					'</div>';
+				document.getElementById('statCats').textContent = '0';
+				return;
+			}
+		}
 	</script>
 
 </body>
