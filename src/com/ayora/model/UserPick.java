@@ -31,4 +31,19 @@ public class UserPick {
 		this.vendorId = vendorId;
 		this.categoryId = categoryId;
 	}
+
+	public int getId() { return id; }
+	public void setId(int id) { this.id = id; }
+
+	public int getUserId() { return userId; }
+	public void setUserId(int userId) { this.userId = userId; }
+
+	public int getVendorId() { return vendorId; }
+	public void setVendorId(int vendorId) { this.vendorId = vendorId; }
+
+	public int getCategoryId() { return categoryId; }
+	public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
+
+	public String getPickedAt() { return pickedAt; }
+	public void setPickedAt(String pickedAt) { this.pickedAt = pickedAt; }
 }
