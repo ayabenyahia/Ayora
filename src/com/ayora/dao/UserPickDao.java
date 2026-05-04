@@ -69,6 +69,37 @@ public class UserPickDao {
 		return ids;
 	}
 
+	/** Choisit (ou remplace) le prestataire pour une categorie. Comme la cle
+	 *  unique est (user_id, category_id), on supprime la ligne existante puis
+	 *  on insere la nouvelle, dans une transaction. */
+	public boolean pick(int userId, int vendorId, int categoryId) {
+		Connection c = null;
+		try {
+			c = DatabaseConnection.getConnection();
+			c.setAutoCommit(false);
+			PreparedStatement del = c.prepareStatement(
+				"DELETE FROM user_picks WHERE user_id = ? AND category_id = ?");
+			del.setInt(1, userId);
+			del.setInt(2, categoryId);
+			del.executeUpdate();
+			PreparedStatement ins = c.prepareStatement(
+				"INSERT INTO user_picks (user_id, vendor_id, category_id) VALUES (?, ?, ?)");
+			ins.setInt(1, userId);
+			ins.setInt(2, vendorId);
+			ins.setInt(3, categoryId);
+			boolean ok = ins.executeUpdate() > 0;
+			c.commit();
+			return ok;
+		} catch (SQLException e) {
+			System.out.println("## Erreur pick : " + e.getMessage());
+			try { if (c != null) c.rollback(); } catch (SQLException ignore) {}
+			return false;
+		} finally {
+			try { if (c != null) c.setAutoCommit(true); } catch (SQLException ignore) {}
+			DatabaseConnection.closeConnection(c);
+		}
+	}
+
 	private UserPick map(ResultSet rs) throws SQLException {
 		UserPick p = new UserPick();
 		p.setId(rs.getInt("id"));
