@@ -58,4 +58,16 @@ public class UserPick {
 
 	public double getVendorPrixMin() { return vendorPrixMin; }
 	public void setVendorPrixMin(double v) { this.vendorPrixMin = v; }
+
+	public String getVendorCity() { return vendorCity; }
+	public void setVendorCity(String s) { this.vendorCity = s; }
+
+	public String getVendorPhone() { return vendorPhone; }
+	public void setVendorPhone(String s) { this.vendorPhone = s; }
+
+	public String getVendorInstagram() { return vendorInstagram; }
+	public void setVendorInstagram(String s) { this.vendorInstagram = s; }
+
+	public String getVendorDescription() { return vendorDescription; }
+	public void setVendorDescription(String s) { this.vendorDescription = s; }
 }
