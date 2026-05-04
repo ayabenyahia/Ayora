@@ -14,5 +14,15 @@ public class UserPick {
 	private int categoryId;
 	private String pickedAt;
 
+	// Joined fields (depuis vendors lors du SELECT JOIN dans le DAO)
+	private String vendorName;
+	private String vendorCategory;
+	private String vendorGamme;
+	private double vendorPrixMin;
+	private String vendorCity;
+	private String vendorPhone;
+	private String vendorInstagram;
+	private String vendorDescription;
+
 	public UserPick() {}
 }
