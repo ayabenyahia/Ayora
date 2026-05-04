@@ -25,4 +25,10 @@ public class UserPick {
 	private String vendorDescription;
 
 	public UserPick() {}
+
+	public UserPick(int userId, int vendorId, int categoryId) {
+		this.userId = userId;
+		this.vendorId = vendorId;
+		this.categoryId = categoryId;
+	}
 }
