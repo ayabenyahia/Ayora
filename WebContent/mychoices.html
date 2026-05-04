@@ -95,6 +95,20 @@
 
 	<script src="js/api.js"></script>
 	<script>
+		/* ============================================================
+		   Mes Choix — flux de donnees
+		   ------------------------------------------------------------
+		   1. checkAuth() lit l'utilisateur depuis localStorage
+		   2. loadChoices() -> GET /api/picks via api.js (cookies inclus)
+		   3. render(picks) :
+		         - si vide  : empty-state avec CTA recommandations
+		         - sinon    : groupes par categorie + cards
+		   4. Boutons par card :
+		         - Modifier  -> location.href recommendations.html?category=
+		         - Retirer   -> DELETE /api/picks/{vendorId} puis reload
+		         - Appeler   -> tel: lien
+		         - Instagram -> https://instagram.com/{handle} new tab
+		   ============================================================ */
 		var user = checkAuth();
 		if (user) document.getElementById('userName').textContent = user.firstName;
 
