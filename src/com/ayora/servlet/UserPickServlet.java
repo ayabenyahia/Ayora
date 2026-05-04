@@ -84,6 +84,29 @@ public class UserPickServlet extends HttpServlet {
 			+ ",\"message\":\"" + JsonUtil.escapeJson(v.getName()) + " retenu pour " + JsonUtil.escapeJson(v.getCategoryName()) + "\"}");
 	}
 
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		if (session == null || session.getAttribute("userId") == null) {
+			JsonUtil.sendError(response, 401, "Non authentifie");
+			return;
+		}
+		int userId = (int) session.getAttribute("userId");
+		String path = request.getPathInfo();
+		if (path == null || path.length() < 2) {
+			JsonUtil.sendError(response, 400, "vendorId manquant dans l'URL");
+			return;
+		}
+		try {
+			int vendorId = Integer.parseInt(path.substring(1));
+			boolean ok = pickDao.unpick(userId, vendorId);
+			JsonUtil.sendJson(response, "{\"success\":" + ok + "}");
+		} catch (NumberFormatException e) {
+			JsonUtil.sendError(response, 400, "vendorId invalide");
+		}
+	}
+
 	private String toJson(UserPick p) {
 		return "{"
 			+ "\"vendorId\":" + p.getVendorId()
