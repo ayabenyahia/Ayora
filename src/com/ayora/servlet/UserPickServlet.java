@@ -1,7 +1,10 @@
 package com.ayora.servlet;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
+import com.ayora.dao.UserPickDao;
+import com.ayora.dao.VendorDao;
 
 /**
  * API des choix utilisateur (page "Mes Choix").
@@ -13,4 +16,13 @@ import jakarta.servlet.http.HttpServlet;
  */
 @WebServlet("/api/picks/*")
 public class UserPickServlet extends HttpServlet {
+
+	private UserPickDao pickDao;
+	private VendorDao vendorDao;
+
+	@Override
+	public void init() throws ServletException {
+		pickDao = new UserPickDao();
+		vendorDao = new VendorDao();
+	}
 }
