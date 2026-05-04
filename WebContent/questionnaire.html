@@ -136,7 +136,9 @@
 				</div>
 				<div class="row">
 					<div class="fg"><label>Nb invités *</label><input type="number" id="nbInvites" required placeholder="300" min="10"></div>
-					<div class="fg"><label>Lieu de la cérémonie</label><input id="lieuMariageNom" placeholder="Nom de la salle / palais (ex : Palais Mokri)"></div>
+					<div class="fg"><label style="color:#7A6B74;font-weight:500;">Lieu de la cérémonie</label>
+						<p style="margin:6px 0 0;font-size:12px;color:#AEA0A8;font-style:italic;">Vous choisirez le palais / salle parmi vos recommandations, puis vous saisirez le nom exact sur la page <strong>Invitations</strong>.</p>
+					</div>
 				</div>
 				<div class="fg">
 					<label>Type de mariage *</label>
@@ -350,11 +352,11 @@
 							<option value="MIXTE">Mixte (intérieur + extérieur)</option>
 						</select>
 					</div>
-					<div class="fg"><label>Moment</label>
-						<select id="moment">
-							<option value="">--</option>
-							<option value="JOURNEE">Journée</option>
-							<option value="SOIREE">Soirée</option>
+					<div class="fg"><label>Moment <span style="font-weight:400;text-transform:none;color:#AEA0A8;letter-spacing:0;font-size:11px;">(déduit de l'heure)</span></label>
+						<select id="moment" disabled style="background:#FDF2F8;color:#8B1A2B;cursor:not-allowed;font-weight:600;">
+							<option value="">— renseignez l'heure de la cérémonie —</option>
+							<option value="JOURNEE">Journée (10h - 17h30)</option>
+							<option value="SOIREE">Soirée (à partir de 18h)</option>
 							<option value="WEEKEND">Week-end complet</option>
 						</select>
 					</div>
@@ -393,7 +395,10 @@
 						<div class="chip" data-val="AMARIYA">Amariya / palanquin</div>
 						<div class="chip" data-val="DAKKA">Dakka marrakchia</div>
 						<div class="chip" data-val="ISSAWA_LIVE">Issawa live</div>
-						<div class="chip" data-val="OUVERTURE_BAL">Ouverture de bal (1ère danse)</div>
+						<div class="chip" data-val="LEBSSA">Changements de tenues (Lebssa fassia)</div>
+						<div class="chip" data-val="ZAGHROUTA">Zaghrouta / Youyous</div>
+						<div class="chip" data-val="TBARGUIA">Tbarek llah / Bénédictions familiales</div>
+						<div class="chip" data-val="TAYFOR">Cérémonie du thé / Tayfor</div>
 						<div class="chip" data-val="DECOUPAGE_GATEAU">Découpage du gâteau</div>
 						<div class="chip" data-val="LANCER_BOUQUET">Lancer du bouquet</div>
 						<div class="chip" data-val="FEU_ARTIFICE">Feu d'artifice</div>
@@ -586,6 +591,25 @@
 		// Initial (si la date est deja remplie)
 		updateSaisonFromDate();
 
+		// === Auto-detection du moment (Journee / Soiree) depuis l'heure de ceremonie ===
+		// Regle metier : 18h ou plus -> SOIREE, 10h a 17h30 -> JOURNEE
+		var heureInput = document.getElementById('heureMariage');
+		var momentSelect = document.getElementById('moment');
+		function updateMomentFromHeure() {
+			var v = heureInput.value;
+			if (!v) { momentSelect.value = ''; return; }
+			var parts = v.split(':');
+			var h = parseInt(parts[0], 10);
+			var m = parseInt(parts[1] || '0', 10);
+			var minutes = h * 60 + m;
+			if (minutes >= 18 * 60) momentSelect.value = 'SOIREE';
+			else if (minutes >= 10 * 60 && minutes <= 17 * 60 + 30) momentSelect.value = 'JOURNEE';
+			else momentSelect.value = '';
+		}
+		heureInput.addEventListener('change', updateMomentFromHeure);
+		heureInput.addEventListener('input', updateMomentFromHeure);
+		updateMomentFromHeure();
+
 		// === Relation Thème ↔ Couleur principale ===
 		var THEME_PALETTES = {
 			'ROYAL_FASSI':    'Bordeaux & or',
@@ -651,9 +675,11 @@
 			if (extras.nomMariee) document.getElementById('nomMariee').value = extras.nomMariee;
 			if (extras.nomMarie) document.getElementById('nomMarie').value = extras.nomMarie;
 			if (extras.villeMariage) document.getElementById('villeMariage').value = extras.villeMariage;
-			if (extras.heureMariage) document.getElementById('heureMariage').value = extras.heureMariage;
-			var lieuNomEl = document.getElementById('lieuMariageNom');
-			if (lieuNomEl && extras.lieuMariageNom) lieuNomEl.value = extras.lieuMariageNom;
+			if (extras.heureMariage) {
+				document.getElementById('heureMariage').value = extras.heureMariage;
+				updateMomentFromHeure();
+			}
+			// lieuMariageNom n'est plus saisi ici - se renseigne sur la page Invitations
 			if (extras.theme) {
 				themeSelect.value = extras.theme;
 				themeSelect.dispatchEvent(new Event('change'));
@@ -764,7 +790,7 @@
 				nomMarie: document.getElementById('nomMarie').value,
 				villeMariage: document.getElementById('villeMariage').value,
 				heureMariage: document.getElementById('heureMariage').value,
-				lieuMariageNom: (document.getElementById('lieuMariageNom') ? document.getElementById('lieuMariageNom').value : ''),
+				// lieuMariageNom est saisi sur la page Invitations (apres avoir vu les recommandations)
 				typeMariage: getChipValue('typeMariage'),
 				stylesPref: getMultiChips('styles'),
 				prioriteBudget: getMultiChips('prioriteBudget'),
