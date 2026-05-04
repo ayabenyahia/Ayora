@@ -7,5 +7,22 @@
 	<link rel="stylesheet" href="css/styles.css?v=24">
 </head>
 <body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span class="active" onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+		</div>
+	</div>
+
 </body>
 </html>
