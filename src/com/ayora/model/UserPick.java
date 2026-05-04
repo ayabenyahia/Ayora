@@ -46,4 +46,16 @@ public class UserPick {
 
 	public String getPickedAt() { return pickedAt; }
 	public void setPickedAt(String pickedAt) { this.pickedAt = pickedAt; }
+
+	public String getVendorName() { return vendorName; }
+	public void setVendorName(String s) { this.vendorName = s; }
+
+	public String getVendorCategory() { return vendorCategory; }
+	public void setVendorCategory(String s) { this.vendorCategory = s; }
+
+	public String getVendorGamme() { return vendorGamme; }
+	public void setVendorGamme(String s) { this.vendorGamme = s; }
+
+	public double getVendorPrixMin() { return vendorPrixMin; }
+	public void setVendorPrixMin(double v) { this.vendorPrixMin = v; }
 }
