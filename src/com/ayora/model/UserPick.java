@@ -8,5 +8,11 @@ package com.ayora.model;
  */
 public class UserPick {
 
+	private int id;
+	private int userId;
+	private int vendorId;
+	private int categoryId;
+	private String pickedAt;
+
 	public UserPick() {}
 }
