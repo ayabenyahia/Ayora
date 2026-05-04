@@ -37,6 +37,24 @@
 	.stat-card .v { font-family:'Italiana',serif; font-size:2.4rem; color:var(--gold); line-height:1; }
 	.stat-card .l { font-size:11px; color:var(--muted); margin-top:8px; text-transform:uppercase; letter-spacing:2px; }
 
+	/* ===== Venue bar (lieu de la ceremonie) ===== */
+	.venue-bar { display:flex; gap:22px; align-items:flex-start; background:linear-gradient(135deg,#FFF8EE 0%, #F4EFE6 100%); border:1.5px solid var(--gold-light); border-radius:24px; padding:26px 30px; margin-bottom:36px; box-shadow:0 6px 22px rgba(184,146,47,.08); position:relative; overflow:hidden; }
+	.venue-bar::before { content:""; position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(184,146,47,.18), transparent 70%); pointer-events:none; }
+	.venue-icon { font-size:38px; line-height:1; flex-shrink:0; padding-top:4px; }
+	.venue-body { flex:1; position:relative; z-index:1; }
+	.venue-acc { font-size:11px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; margin-bottom:6px; }
+	.venue-body h3 { font-family:'Italiana',serif; font-size:1.4rem; color:var(--ink); margin:0 0 6px; font-weight:400; }
+	.venue-body p { color:var(--muted); font-size:13px; margin:0 0 14px; line-height:1.5; }
+	.venue-input-row { display:flex; gap:10px; flex-wrap:wrap; }
+	.venue-input-row input { flex:1; min-width:240px; padding:12px 16px; border:1px solid var(--border); border-radius:10px; font-size:14px; font-family:inherit; color:var(--ink); background:#fff; }
+	.venue-input-row input:focus { outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,146,47,.12); }
+	.venue-save { padding:12px 26px; border:none; background:var(--ink); color:var(--gold); border-radius:10px; font-weight:600; cursor:pointer; font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; transition:all .2s; }
+	.venue-save:hover { background:var(--noir-2); transform:translateY(-1px); }
+	.venue-save:disabled { opacity:.55; cursor:wait; }
+	.venue-status { margin-top:10px; font-size:12.5px; }
+	.venue-status.ok { color:var(--emerald); }
+	.venue-status.err { color:#B83B5E; }
+
 	/* ===== Section title ===== */
 	.section-head { text-align:center; margin:48px 0 28px; }
 	.section-head .acc { display:block; font-size:11px; letter-spacing:6px; color:var(--gold); margin-bottom:12px; text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; }
@@ -340,6 +358,21 @@
 
 		<div id="globalNotice"></div>
 
+		<!-- LIEU DE LA CÉRÉMONIE — saisie ici (après avoir vu les recommandations) -->
+		<div class="venue-bar" id="venueBar">
+			<div class="venue-icon">📍</div>
+			<div class="venue-body">
+				<div class="venue-acc">— Lieu de la cérémonie —</div>
+				<h3>Indiquez le palais ou la salle choisis parmi vos recommandations</h3>
+				<p>Cette information apparaîtra automatiquement sur tous vos modèles d'invitations et dans les emails envoyés à vos invités.</p>
+				<div class="venue-input-row">
+					<input id="venueInput" type="text" placeholder="Ex : Palais Mokri, Riad Maison Bleue, Salle Al Andalous…" maxlength="100">
+					<button class="venue-save" id="venueSave" onclick="saveVenue()">Enregistrer</button>
+				</div>
+				<div class="venue-status" id="venueStatus"></div>
+			</div>
+		</div>
+
 		<!-- COLLECTION -->
 		<div class="section-head">
 			<span class="acc">— La collection —</span>
@@ -554,9 +587,39 @@
 						}
 					}
 				} catch(e){}
+				// Initialise le champ "Lieu de la ceremonie" du bandeau
+				var venueIn = document.getElementById('venueInput');
+				if (venueIn) venueIn.value = weddingInfo.lieu || '';
 				TEMPLATES = buildTemplates();
 				renderTemplates(document.querySelector('.filter.active').getAttribute('data-f'));
 			}).catch(function(){});
+		}
+
+		// === Save venue (lieu de ceremonie) - update partiel via POST /api/questionnaire/lieu ===
+		function saveVenue() {
+			var input = document.getElementById('venueInput');
+			var btn = document.getElementById('venueSave');
+			var status = document.getElementById('venueStatus');
+			var val = input.value.trim();
+			btn.disabled = true; btn.textContent = 'Enregistrement...';
+			status.className = 'venue-status'; status.textContent = '';
+			api.post('/api/questionnaire/lieu', { lieuMariageNom: val }).then(function(r) {
+				btn.disabled = false; btn.textContent = 'Enregistrer';
+				if (r && r.success) {
+					status.className = 'venue-status ok';
+					status.textContent = '✓ Lieu enregistré : "' + (val || '(aucun)') + '". Vos modèles d\'invitations sont mis à jour.';
+					weddingInfo.lieu = val;
+					TEMPLATES = buildTemplates();
+					renderTemplates(document.querySelector('.filter.active').getAttribute('data-f'));
+				} else {
+					status.className = 'venue-status err';
+					status.textContent = (r && r.error) || 'Erreur lors de la sauvegarde';
+				}
+			}).catch(function() {
+				btn.disabled = false; btn.textContent = 'Enregistrer';
+				status.className = 'venue-status err';
+				status.textContent = 'Erreur réseau, réessayez';
+			});
 		}
 
 		function updatePlanUI() {
