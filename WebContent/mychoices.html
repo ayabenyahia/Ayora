@@ -93,5 +93,21 @@
 
 	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
 
+	<script src="js/api.js"></script>
+	<script>
+		var user = checkAuth();
+		if (user) document.getElementById('userName').textContent = user.firstName;
+
+		loadChoices();
+
+		function loadChoices() {
+			api.get('/api/picks').then(function(data) {
+				render(data && data.picks ? data.picks : []);
+			}).catch(function() {
+				render([]);
+			});
+		}
+	</script>
+
 </body>
 </html>
