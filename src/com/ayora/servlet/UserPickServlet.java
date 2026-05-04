@@ -53,6 +53,37 @@ public class UserPickServlet extends HttpServlet {
 		JsonUtil.sendJson(response, sb.toString());
 	}
 
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		if (session == null || session.getAttribute("userId") == null) {
+			JsonUtil.sendError(response, 401, "Non authentifie");
+			return;
+		}
+		int userId = (int) session.getAttribute("userId");
+		String body = JsonUtil.readRequestBody(request);
+		int vendorId = JsonUtil.getIntValue(body, "vendorId");
+		if (vendorId <= 0) {
+			JsonUtil.sendError(response, 400, "vendorId requis");
+			return;
+		}
+		com.ayora.model.Vendor v = vendorDao.findById(vendorId);
+		if (v == null) {
+			JsonUtil.sendError(response, 404, "Prestataire introuvable");
+			return;
+		}
+		boolean ok = pickDao.pick(userId, vendorId, v.getCategoryId());
+		if (!ok) {
+			JsonUtil.sendError(response, 500, "Echec de la sauvegarde du choix");
+			return;
+		}
+		JsonUtil.sendJson(response,
+			"{\"success\":true,\"vendorId\":" + vendorId
+			+ ",\"category\":\"" + JsonUtil.escapeJson(v.getCategoryName()) + "\""
+			+ ",\"message\":\"" + JsonUtil.escapeJson(v.getName()) + " retenu pour " + JsonUtil.escapeJson(v.getCategoryName()) + "\"}");
+	}
+
 	private String toJson(UserPick p) {
 		return "{"
 			+ "\"vendorId\":" + p.getVendorId()
