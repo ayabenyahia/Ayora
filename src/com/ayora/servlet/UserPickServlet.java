@@ -11,14 +11,16 @@ import jakarta.servlet.http.HttpSession;
 import com.ayora.dao.UserPickDao;
 import com.ayora.dao.VendorDao;
 import com.ayora.model.UserPick;
+import com.ayora.model.Vendor;
 import com.ayora.util.JsonUtil;
 
 /**
  * API des choix utilisateur (page "Mes Choix").
  *
  * Routes :
- *   GET    /api/picks                 -> liste des choix de la mariee
- *   POST   /api/picks                 -> retient un prestataire
+ *   GET    /api/picks                 -> liste des choix de la mariee, groupes par categorie
+ *   POST   /api/picks                 -> body {vendorId} : retient ce prestataire
+ *                                          (remplace eventuel choix precedent dans la meme categorie)
  *   DELETE /api/picks/{vendorId}      -> retire ce choix
  */
 @WebServlet("/api/picks/*")
@@ -68,7 +70,7 @@ public class UserPickServlet extends HttpServlet {
 			JsonUtil.sendError(response, 400, "vendorId requis");
 			return;
 		}
-		com.ayora.model.Vendor v = vendorDao.findById(vendorId);
+		Vendor v = vendorDao.findById(vendorId);
 		if (v == null) {
 			JsonUtil.sendError(response, 404, "Prestataire introuvable");
 			return;
