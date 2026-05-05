@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Questionnaire</title>
-	<link rel="stylesheet" href="css/styles.css?v=24">
+	<link rel="stylesheet" href="css/styles.css?v=26">
 	<style>
 	body { background:#FCF8F5; }
 	.q-wrap { max-width: 920px; margin:0 auto; padding: 24px 24px 80px; }
@@ -91,7 +91,16 @@
 
 	<div class="menu-bar">
 		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
-		<nav><span id="userGreeting"></span></nav>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
+		</div>
 	</div>
 
 	<div class="q-wrap">
@@ -126,8 +135,8 @@
 				<p class="h-sub">Quelques informations essentielles pour personnaliser votre projet.</p>
 
 				<div class="row">
-					<div class="fg"><label>Nom de la mariée *</label><input id="nomMariee" required placeholder="Salma Bennani"></div>
-					<div class="fg"><label>Nom du marié *</label><input id="nomMarie" required placeholder="Yassine Alami"></div>
+					<div class="fg"><label>Nom complet de la mariée *</label><input id="nomMariee" required placeholder="Salma Bennani"></div>
+					<div class="fg"><label>Nom complet du marié *</label><input id="nomMarie" required placeholder="Yassine Alami"></div>
 				</div>
 				<div class="row col3">
 					<div class="fg"><label>Date prévue *</label><input type="date" id="dateMariage" required></div>
@@ -473,7 +482,11 @@
 	<script src="js/api.js"></script>
 	<script>
 		var user = checkAuth();
-		if (user) document.getElementById('userGreeting').textContent = 'Bonjour ' + user.firstName;
+		if (user) {
+			var nameEl = document.getElementById('userName');
+			if (nameEl) nameEl.textContent = user.firstName || '';
+			applyAccountHeader(user);
+		}
 
 		var current = 1;
 		var total = 6;
