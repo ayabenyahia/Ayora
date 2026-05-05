@@ -93,6 +93,38 @@ function logout() {
 }
 
 /* ============================================
+   Zone compte (navbar) - badge plan visible partout
+   Appelle automatiquement /api/auth/me pour avoir le plan a jour
+   et synchronise le DOM #userBadge sur toutes les pages.
+   ============================================ */
+function applyAccountHeader(user) {
+	if (!user) return;
+	var nameEl = document.getElementById('userName');
+	if (nameEl && !nameEl.textContent) nameEl.textContent = user.firstName || 'Utilisateur';
+	syncPlanBadge(user.subscriptionType);
+	// Verifie aupres du serveur (au cas ou le plan a change)
+	api.get('/api/auth/me').then(function(d) {
+		if (d && d.user && d.user.subscriptionType) {
+			syncPlanBadge(d.user.subscriptionType);
+			// Mise a jour du localStorage pour cohérence
+			try {
+				var u = JSON.parse(localStorage.getItem('user') || '{}');
+				u.subscriptionType = d.user.subscriptionType;
+				localStorage.setItem('user', JSON.stringify(u));
+			} catch(e) {}
+		}
+	}).catch(function(){});
+}
+
+function syncPlanBadge(plan) {
+	var el = document.getElementById('userBadge');
+	if (!el) return;
+	var p = (plan || 'FREE').toUpperCase();
+	el.textContent = p;
+	el.className = 'badge-' + p.toLowerCase();
+}
+
+/* ============================================
    Fonctions utilitaires
    ============================================ */
 function formatPrice(price) {
