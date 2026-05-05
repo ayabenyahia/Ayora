@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Tableau de bord</title>
-	<link rel="stylesheet" href="css/styles.css?v=27">
+	<link rel="stylesheet" href="css/styles.css?v=28">
 	<style>
 	/* ============================================================
 	   DASHBOARD v2 — Refonte premium
@@ -47,42 +47,54 @@
 	/* --- Wedding progress --- */
 	.progress-bar-bg { background: var(--cream-dark); height: 12px; border-radius: 50px; overflow: hidden; margin: 12px 0 18px; }
 	.progress-bar-fill { background: linear-gradient(90deg, var(--gold) 0%, var(--gold-dark) 100%); height: 100%; border-radius: 50px; transition: width 0.6s ease; }
-	.steps-list { display: flex; flex-direction: column; gap: 10px; }
 
-	/* Grille 3 colonnes : check | contenu (titre + meta) | tail (badge + bouton) */
+	.steps-list { display: block; }
+
+	/* === STEP : layout flex robuste === */
 	.step {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto;
-		gap: 14px;
+		display: flex !important;
 		align-items: center;
-		padding: 12px 16px;
+		gap: 14px;
+		width: 100%;
+		box-sizing: border-box;
+		padding: 14px 16px;
+		margin-bottom: 10px;
 		background: var(--cream);
 		border-radius: var(--radius-md);
 		border: 1px solid var(--border-light);
-		transition: var(--transition-fast);
 	}
+	.step:last-child { margin-bottom: 0; }
 	.step:hover { border-color: var(--gold-light); }
 
-	/* Col 1 : checkmark / numero */
-	.step .check {
-		width: 28px; height: 28px; border-radius: 50%;
-		display: flex; align-items: center; justify-content: center;
+	.step > .check {
+		flex: 0 0 30px;
+		width: 30px; height: 30px; border-radius: 50%;
+		display: flex !important; align-items: center; justify-content: center;
 		font-weight: 700; font-size: 14px;
 		background: var(--white); border: 2px solid var(--border);
 		color: var(--text-muted);
 	}
 
-	/* Col 2 : contenu (peut wrapper proprement) */
-	.step .step-content { min-width: 0; }
-	.step .step-title { font-size: 14px; color: var(--text-body); font-weight: 600; line-height: 1.3; }
-	.step .step-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.2; }
+	.step > .step-content {
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow: hidden;
+	}
+	.step .step-title { font-size: 14px; color: var(--text-body); font-weight: 600; line-height: 1.3; margin: 0; }
+	.step .step-meta  { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.2; }
 
-	/* Col 3 : tail (badge etat + bouton optionnel) */
-	.step .step-tail { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+	.step > .step-tail {
+		flex: 0 0 auto;
+		display: flex !important;
+		gap: 6px;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
 	.step .step-state {
 		font-size: 10px;
 		font-weight: 700;
-		padding: 3px 9px;
+		padding: 3px 10px;
 		border-radius: 50px;
 		text-transform: uppercase;
 		letter-spacing: 0.4px;
@@ -101,25 +113,23 @@
 	}
 	.step .step-action:hover { background: var(--primary); color: #fff; }
 
-	/* === Etat DONE (vert) === */
-	.step.done { background: var(--success-light); border-color: var(--success); }
-	.step.done .check { background: var(--success); color: #fff; border-color: var(--success); }
-	.step.done .step-title { color: var(--sage-dark); }
-	.step.done .step-state { background: var(--success); color: #fff; }
+	/* Etats */
+	.step.done            { background: var(--success-light); border-color: var(--success); }
+	.step.done > .check   { background: var(--success); color: #fff; border-color: var(--success); }
+	.step.done .step-title{ color: var(--sage-dark); }
+	.step.done .step-state{ background: var(--success); color: #fff; }
 
-	/* === Etat IN PROGRESS (or/jaune) === */
-	.step.in-progress { background: #FFF7E0; border-color: var(--gold-light); }
-	.step.in-progress .check { background: var(--gold); color: #fff; border-color: var(--gold); }
+	.step.in-progress           { background: #FFF7E0; border-color: var(--gold-light); }
+	.step.in-progress > .check  { background: var(--gold); color: #fff; border-color: var(--gold); }
 	.step.in-progress .step-title { color: var(--gold-dark); }
 	.step.in-progress .step-state { background: var(--gold); color: #fff; }
 
-	/* === Etat TODO (gris doux) === */
 	.step.todo .step-state { background: var(--border); color: var(--text-muted); }
 
-	/* Sur mobile : empile titre/meta en colonne et tail dessous */
-	@media (max-width: 520px) {
-		.step { grid-template-columns: auto 1fr; }
-		.step .step-tail { grid-column: 1 / -1; justify-content: flex-start; padding-left: 42px; }
+	/* Sur tres petit ecran : la queue passe sous le contenu */
+	@media (max-width: 540px) {
+		.step { flex-wrap: wrap; }
+		.step > .step-tail { width: 100%; padding-left: 44px; justify-content: flex-start; }
 	}
 
 	/* --- Next actions --- */
