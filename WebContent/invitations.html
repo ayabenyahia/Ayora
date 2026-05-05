@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora — Invitations</title>
-	<link rel="stylesheet" href="css/styles.css?v=26">
+	<link rel="stylesheet" href="css/styles.css?v=29">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Italiana&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -245,6 +245,122 @@
 		pointer-events:none;
 	}
 
+	/* ============================================================
+	   5 NOUVELLES PALETTES (lot ajoute)
+	   ============================================================ */
+
+	/* 1. SUNSET MARRAKECH - degrade radial soleil couchant orange/corail */
+	.p-sunset-marrakech {
+		background:
+			radial-gradient(circle at 50% 90%, #FFD89A 0%, #FF9966 28%, #E55A4A 60%, #B83B5E 100%);
+		color:#FFF8EC;
+		position:relative;
+	}
+	.p-sunset-marrakech::before {
+		content:""; position:absolute; bottom:0; left:0; right:0; height:60%;
+		background:linear-gradient(to top, rgba(184,59,94,.4), transparent);
+		pointer-events:none;
+	}
+	.p-sunset-marrakech::after {
+		content:""; position:absolute; top:30px; left:50%; transform:translateX(-50%);
+		width:80px; height:80px; border-radius:50%;
+		background:radial-gradient(circle, #FFE9B0 0%, #FFB870 50%, transparent 70%);
+		box-shadow:0 0 60px rgba(255,184,112,.6);
+		opacity:.85;
+		pointer-events:none;
+	}
+
+	/* 2. ART DECO ONYX - geometrique 20s noir mat + eventails or */
+	.p-art-deco {
+		background:linear-gradient(135deg, #0F0F1A 0%, #1A1626 50%, #0F0F1A 100%);
+		color:#E8C77A;
+		position:relative;
+	}
+	.p-art-deco::before {
+		content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+		width:0; height:0;
+		border-left:140px solid transparent;
+		border-right:140px solid transparent;
+		border-top:90px solid rgba(232,199,122,.18);
+		pointer-events:none;
+	}
+	.p-art-deco::after {
+		content:""; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+		width:0; height:0;
+		border-left:140px solid transparent;
+		border-right:140px solid transparent;
+		border-bottom:90px solid rgba(232,199,122,.12);
+		pointer-events:none;
+	}
+
+	/* 3. OCEAN BLUSH - turquoise pastel + rose poudre, esprit cote */
+	.p-ocean-blush {
+		background:
+			radial-gradient(ellipse at 20% 0%, #E5F4F0 0%, transparent 50%),
+			radial-gradient(ellipse at 80% 100%, #FCD9D9 0%, transparent 55%),
+			linear-gradient(135deg, #BFE0DA 0%, #F4D9D9 100%);
+		color:#3D5A6C;
+		position:relative;
+	}
+	.p-ocean-blush::before {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(61,90,108,.25); border-radius:6px;
+		pointer-events:none;
+	}
+	.p-ocean-blush::after {
+		content:"~ ~ ~"; position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+		font-size:18px; color:rgba(61,90,108,.4); letter-spacing:6px;
+	}
+
+	/* 4. VINTAGE POSTCARD - papier kraft + timbre + cachet rond */
+	.p-vintage-postcard {
+		background:
+			repeating-linear-gradient(0deg, transparent 0 30px, rgba(120,80,40,.03) 30px 31px),
+			linear-gradient(180deg, #F4E8D2 0%, #E8D5B0 100%);
+		color:#5C3A1A;
+		position:relative;
+	}
+	.p-vintage-postcard::before {
+		content:""; position:absolute; top:14px; right:14px;
+		width:50px; height:60px;
+		background:linear-gradient(135deg, #B83B5E, #8B1A2B);
+		border:3px dashed #F4E8D2;
+		box-shadow:0 0 0 2px #B83B5E, 0 4px 12px rgba(0,0,0,.2);
+	}
+	.p-vintage-postcard::after {
+		content:""; position:absolute; top:90px; right:18px;
+		width:70px; height:70px; border-radius:50%;
+		border:2px solid rgba(92,58,26,.35);
+		background:radial-gradient(circle, transparent 50%, rgba(92,58,26,.08) 50%, rgba(92,58,26,.08) 56%, transparent 56%);
+		opacity:.7;
+	}
+
+	/* 5. CONSTELLATION - etoiles or sur fond indigo profond */
+	.p-constellation {
+		background:
+			radial-gradient(circle at 18% 22%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 78% 35%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 35% 65%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 62% 80%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 88% 18%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 12% 75%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 50% 50%, rgba(212,175,55,.15), transparent 60%),
+			linear-gradient(180deg, #0A0E2E 0%, #1A1F4F 60%, #0A0E2E 100%);
+		background-size: 100% 100%;
+		color:#E5C77A;
+		position:relative;
+	}
+	.p-constellation::before {
+		content:"✦"; position:absolute; top:40px; left:50%; transform:translateX(-50%);
+		font-size:24px; color:#FFE9B0; opacity:.8;
+		text-shadow:0 0 12px rgba(255,233,176,.6);
+	}
+	.p-constellation::after {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(229,199,122,.3); border-radius:8px;
+		pointer-events:none;
+	}
+
 	/* Selected check */
 	.tpl.selected { border-color:var(--gold); box-shadow:0 12px 36px rgba(184,146,47,.18); }
 	.tpl-check { position:absolute; top:14px; left:14px; width:28px; height:28px; background:var(--gold); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:6; opacity:0; transform:scale(.6); transition:all .25s; font-size:14px; }
@@ -379,7 +495,7 @@
 			<span class="acc">— La collection —</span>
 			<h2>Choisissez votre modèle</h2>
 			<div class="ornament">◆</div>
-			<p>15 designs exclusifs, signés par notre studio. Pré-remplis automatiquement avec vos noms, votre date, votre heure et votre lieu de cérémonie.</p>
+			<p>20 designs exclusifs, signés par notre studio. Pré-remplis automatiquement avec vos noms, votre date, votre heure et votre lieu de cérémonie.</p>
 		</div>
 
 		<div class="filters">
@@ -539,7 +655,19 @@
 			{ slug:'caftan-ivoire',  name:'Caftan Ivoire',      desc:'Broderies ivoire & or, esprit caftan royal', level:'PREMIUM', palette:'p-caftan',
 			  pv:{acc:'Invitation royale', mono:m, title:'Vous êtes convié(e)', name:n, sub:'À nos noces · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + lieu} },
 			{ slug:'imperial',       name:'Impérial Bordeaux',  desc:'Sceau royal bordeaux & or, prestige fassi',  level:'PREMIUM', palette:'p-imperial',
-			  pv:{acc:'Sceau d\'honneur', mono:m, title:'Notre cérémonie', name:n, sub:dh, orn:'◆ ❋ ◆', date:lieu} }
+			  pv:{acc:'Sceau d\'honneur', mono:m, title:'Notre cérémonie', name:n, sub:dh, orn:'◆ ❋ ◆', date:lieu} },
+
+			// === 5 NOUVEAUX STYLES (lot ajoute) ===
+			{ slug:'ocean-blush',       name:'Ocean Blush',       desc:'Turquoise pastel & rose poudré, esprit côte', level:'FREE',    palette:'p-ocean-blush',
+			  pv:{acc:'Save the Date', mono:m, title:'Notre union', name:n, sub:dh, orn:'~ ~ ~', date:lieu} },
+			{ slug:'sunset-marrakech',  name:'Sunset Marrakech',  desc:'Coucher de soleil corail & or, oriental moderne', level:'PRO',     palette:'p-sunset-marrakech',
+			  pv:{acc:'Sunset Wedding', mono:m, title:'Vous êtes invité(e)', name:n, sub:dh, orn:'☀', date:lieu} },
+			{ slug:'vintage-postcard',  name:'Vintage Postcard',  desc:'Carte postale kraft, timbre & cachet rétro', level:'PRO',     palette:'p-vintage-postcard',
+			  pv:{acc:'Carte d\'invitation', mono:m, title:'À nos noces', name:n, sub:'le ' + dLong, orn:'· · ·', date:lieu} },
+			{ slug:'art-deco-onyx',     name:'Art Déco Onyx',     desc:'Géométrie années 20, noir mat & or fin',  level:'PREMIUM', palette:'p-art-deco',
+			  pv:{acc:'Gatsby Wedding', mono:m, title:'Cérémonie privée', name:n, sub:dh, orn:'◊ ◇ ◊', date:lieu} },
+			{ slug:'constellation',     name:'Constellation',     desc:'Étoiles dorées sur indigo profond, célestial', level:'PREMIUM', palette:'p-constellation',
+			  pv:{acc:'Sous les étoiles', mono:m, title:'Notre nuit étoilée', name:n, sub:dh, orn:'✦ ✧ ✦', date:lieu} }
 			];
 		}
 
