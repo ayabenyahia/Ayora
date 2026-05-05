@@ -63,6 +63,11 @@ public class InvitationServlet extends HttpServlet {
 		TEMPLATE_CATALOG.put("art-deco-onyx",     new String[]{"luxe",      "PREMIUM"});
 		TEMPLATE_CATALOG.put("constellation",     new String[]{"luxe",      "PREMIUM"});
 
+		// === 3 styles supplementaires (lot final) ===
+		TEMPLATE_CATALOG.put("lavender-dream",    new String[]{"classique", "FREE"});
+		TEMPLATE_CATALOG.put("henna-garden",      new String[]{"classique", "PRO"});
+		TEMPLATE_CATALOG.put("marble-rose-gold",  new String[]{"luxe",      "PREMIUM"});
+
 		// === retro-compat avec anciens slugs ===
 		TEMPLATE_CATALOG.put("classique",      new String[]{"classique", "FREE"});
 		TEMPLATE_CATALOG.put("blanc-dore",     new String[]{"classique", "FREE"});

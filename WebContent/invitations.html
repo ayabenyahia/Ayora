@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora — Invitations</title>
-	<link rel="stylesheet" href="css/styles.css?v=29">
+	<link rel="stylesheet" href="css/styles.css?v=30">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Italiana&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -361,6 +361,77 @@
 		pointer-events:none;
 	}
 
+	/* ============================================================
+	   3 PALETTES SUPPLEMENTAIRES (lot final)
+	   ============================================================ */
+
+	/* 6. LAVENDER DREAM (FREE) - lavande champetre + violet doux */
+	.p-lavender {
+		background:
+			radial-gradient(circle at 20% 20%, #E8D5F0 0%, transparent 45%),
+			radial-gradient(circle at 80% 80%, #D4B8E8 0%, transparent 45%),
+			linear-gradient(160deg, #F4E8F8 0%, #DCC5EC 100%);
+		color:#5C3A6B;
+		position:relative;
+	}
+	.p-lavender::before {
+		content:""; position:absolute; inset:14px;
+		border:1px solid rgba(92,58,107,.25); border-radius:8px;
+		pointer-events:none;
+	}
+	.p-lavender::after {
+		content:"❀ ❀ ❀"; position:absolute; bottom:22px; left:50%;
+		transform:translateX(-50%);
+		font-size:14px; color:rgba(92,58,107,.5); letter-spacing:8px;
+	}
+
+	/* 7. HENNA GARDEN (PRO) - motifs henne orange/terra cotta sur ivoire */
+	.p-henna {
+		background:
+			radial-gradient(circle at 0% 0%, rgba(204,86,42,.08) 0%, transparent 35%),
+			radial-gradient(circle at 100% 100%, rgba(204,86,42,.08) 0%, transparent 35%),
+			linear-gradient(180deg, #FBF4E5 0%, #F1E0C0 100%);
+		color:#8B3A1A;
+		position:relative;
+	}
+	.p-henna::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			radial-gradient(circle at 12% 18%, rgba(204,86,42,.18) 1px, transparent 2px),
+			radial-gradient(circle at 88% 22%, rgba(204,86,42,.15) 1px, transparent 2px),
+			radial-gradient(circle at 18% 82%, rgba(204,86,42,.15) 1px, transparent 2px),
+			radial-gradient(circle at 82% 78%, rgba(204,86,42,.18) 1px, transparent 2px),
+			repeating-linear-gradient(45deg, rgba(204,86,42,.05) 0 1px, transparent 1px 14px),
+			repeating-linear-gradient(-45deg, rgba(204,86,42,.05) 0 1px, transparent 1px 14px);
+		background-size: 50px 50px, 50px 50px, 50px 50px, 50px 50px, auto, auto;
+		pointer-events:none;
+	}
+	.p-henna::after {
+		content:"❋"; position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+		font-size:22px; color:#CC562A; opacity:.7;
+	}
+
+	/* 8. MARBLE ROSE GOLD (PREMIUM) - marbre blanc veine + rose gold */
+	.p-marble-rose {
+		background:
+			linear-gradient(135deg, #FFFFFF 0%, #F8F0EE 40%, #FFFFFF 70%, #F2E5E0 100%);
+		color:#7A4A55;
+		position:relative;
+	}
+	.p-marble-rose::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			linear-gradient(115deg, transparent 0%, transparent 35%, rgba(212,159,142,.18) 36%, rgba(212,159,142,.18) 38%, transparent 39%, transparent 62%, rgba(212,159,142,.12) 63%, rgba(212,159,142,.12) 65%, transparent 66%),
+			linear-gradient(40deg, transparent 0%, transparent 45%, rgba(212,159,142,.10) 46%, rgba(212,159,142,.10) 47%, transparent 48%);
+		pointer-events:none;
+	}
+	.p-marble-rose::after {
+		content:""; position:absolute; inset:14px;
+		border:2px solid rgba(212,159,142,.55); border-radius:6px;
+		box-shadow:inset 0 0 0 5px #fff, inset 0 0 0 6px rgba(212,159,142,.3);
+		pointer-events:none;
+	}
+
 	/* Selected check */
 	.tpl.selected { border-color:var(--gold); box-shadow:0 12px 36px rgba(184,146,47,.18); }
 	.tpl-check { position:absolute; top:14px; left:14px; width:28px; height:28px; background:var(--gold); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:6; opacity:0; transform:scale(.6); transition:all .25s; font-size:14px; }
@@ -495,7 +566,7 @@
 			<span class="acc">— La collection —</span>
 			<h2>Choisissez votre modèle</h2>
 			<div class="ornament">◆</div>
-			<p>20 designs exclusifs, signés par notre studio. Pré-remplis automatiquement avec vos noms, votre date, votre heure et votre lieu de cérémonie.</p>
+			<p>24 designs exclusifs (5 FREE • 8 PRO • 11 PREMIUM), signés par notre studio. Pré-remplis automatiquement avec vos noms, date, heure et lieu de cérémonie.</p>
 		</div>
 
 		<div class="filters">
@@ -619,55 +690,63 @@
 			var year = (weddingInfo.dateLong.match(/\d{4}/) || ['2026'])[0];
 
 			return [
-			// === FREE ===
+			// ==============================
+			// === FREE (6 modèles) ===
+			// ==============================
 			{ slug:'ivory-gold',     name:'Ivory Gold',         desc:'Ivoire & or fin, double cadre raffiné',     level:'FREE',    palette:'p-ivory',
 			  pv:{acc:'Save the Date', mono:m, title:'Vous êtes invités', name:n, sub:'Cérémonie · ' + dh, orn:'◆ ◆ ◆', date:lieu} },
 			{ slug:'minimal-luxury', name:'Minimal Luxury',     desc:'Minimalisme épuré, typographie italienne',  level:'FREE',    palette:'p-minimal',
 			  pv:{acc:'Wedding ' + year, title:'Save the Date', name:m.replace('&',' · '), sub:dShort, orn:'—', date:lieu} },
 			{ slug:'soft-cal',       name:'Soft Calligraphy',   desc:'Calligraphie élégante, doux et raffiné',    level:'FREE',    palette:'p-cal',
 			  pv:{acc:'L\'invitation', mono:m, title:'Notre mariage', name:n, sub:'Avec amour · ' + formatHeure(weddingInfo.heure), orn:'◊', date:dLong + ' · ' + weddingInfo.ville} },
-
-			// === PRO ===
-			{ slug:'desert-rose',    name:'Desert Rose',        desc:'Rose poudré, féminin, contemporain',        level:'PRO',     palette:'p-desert',
-			  pv:{acc:'Save the Date', mono:m, title:'Notre mariage', name:n, sub:dh, orn:'❀ ❀ ❀', date:lieu} },
-			{ slug:'garden-elegance',name:'Garden Elegance',    desc:'Vert botanique sage, fraîcheur naturelle',  level:'PRO',     palette:'p-garden',
-			  pv:{acc:'Garden Wedding', title:'You are invited', name:n, sub:dShort, orn:'❦', date:lieu + (weddingInfo.heure ? ' · ' + formatHeure(weddingInfo.heure) : '')} },
-			{ slug:'pearl',          name:'Moroccan Pearl',     desc:'Perle nacrée, touche fassi élégante',       level:'PRO',     palette:'p-pearl',
-			  pv:{acc:'Wedding Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:'Tradition fassi · ' + formatHeure(weddingInfo.heure), orn:'❋', date:dLong + ' · ' + weddingInfo.ville} },
-			{ slug:'zellige-pearl',  name:'Zellige Pearl',      desc:'Mosaïque de zellige, art fassi raffiné',    level:'PRO',     palette:'p-zellige-pearl',
-			  pv:{acc:'Mariage marocain', mono:m, title:'Vous êtes convié(e)', name:n, sub:'Tradition & élégance', orn:'❋ ◆ ❋', date:dh + ' · ' + weddingInfo.ville} },
-			{ slug:'palace-cream',   name:'Palace Cream',       desc:'Crème impérial, lignes dorées royales',     level:'PRO',     palette:'p-palace',
-			  pv:{acc:'Royal Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:lieu, orn:'◇ ◆ ◇', date:dh} },
-
-			// === PREMIUM === (statiques)
-			{ slug:'royal-black',    name:'Royal Black',        desc:'Noir profond & or, prestige absolu',        level:'PREMIUM', palette:'p-royal',
-			  pv:{acc:'Invitation Prestige', mono:m, title:'Cérémonie privée', name:n, sub:'Le ' + dLong + ' · ' + formatHeure(weddingInfo.heure), orn:'◆ ◆ ◆', date:lieu} },
-			{ slug:'emerald-night',  name:'Emerald Night',      desc:'Émeraude profond, cadre en or fin',         level:'PREMIUM', palette:'p-emerald',
-			  pv:{acc:'A Night to Remember', mono:m, title:'Notre union', name:n, sub:dh, orn:'❋ ❋ ❋', date:lieu} },
-			{ slug:'andalusian',     name:'Andalusian Touch',   desc:'Bordeaux & ivoire, héritage andalou',       level:'PREMIUM', palette:'p-andalou',
-			  pv:{acc:'Cérémonie de mariage', mono:m, title:'Vous êtes invité(e)', name:n, sub:'Avec honneur · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + weddingInfo.ville} },
-			{ slug:'zellige-royal',  name:'Zellige Royal',      desc:'Zellige royal noir & or, signature marocaine', level:'PREMIUM', palette:'p-zellige-royal',
-			  pv:{acc:'Invitation marocaine', mono:m, title:'Mariage royal', name:n, sub:'Héritage fassi · ' + dLong, orn:'◆ ❋ ◆', date:lieu} },
-
-			// === NOUVEAUX TEMPLATES WOW (remplacent les videos retirees) ===
-			{ slug:'or-liquide',     name:'Or Liquide',         desc:'Or fluide animé, signature absolue Ayora',  level:'PREMIUM', palette:'p-or-liquide',
-			  pv:{acc:'L\'union dorée', mono:m, title:'Cérémonie de mariage', name:n, sub:dh, orn:'✦ ✦ ✦', date:lieu} },
-			{ slug:'caftan-ivoire',  name:'Caftan Ivoire',      desc:'Broderies ivoire & or, esprit caftan royal', level:'PREMIUM', palette:'p-caftan',
-			  pv:{acc:'Invitation royale', mono:m, title:'Vous êtes convié(e)', name:n, sub:'À nos noces · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + lieu} },
-			{ slug:'imperial',       name:'Impérial Bordeaux',  desc:'Sceau royal bordeaux & or, prestige fassi',  level:'PREMIUM', palette:'p-imperial',
-			  pv:{acc:'Sceau d\'honneur', mono:m, title:'Notre cérémonie', name:n, sub:dh, orn:'◆ ❋ ◆', date:lieu} },
-
-			// === 5 NOUVEAUX STYLES (lot ajoute) ===
-			{ slug:'ocean-blush',       name:'Ocean Blush',       desc:'Turquoise pastel & rose poudré, esprit côte', level:'FREE',    palette:'p-ocean-blush',
+			{ slug:'ocean-blush',    name:'Ocean Blush',        desc:'Turquoise pastel & rose poudré, esprit côte', level:'FREE',  palette:'p-ocean-blush',
 			  pv:{acc:'Save the Date', mono:m, title:'Notre union', name:n, sub:dh, orn:'~ ~ ~', date:lieu} },
-			{ slug:'sunset-marrakech',  name:'Sunset Marrakech',  desc:'Coucher de soleil corail & or, oriental moderne', level:'PRO',     palette:'p-sunset-marrakech',
+			{ slug:'lavender-dream', name:'Lavender Dream',     desc:'Lavande champêtre & violet doux, romantique', level:'FREE',  palette:'p-lavender',
+			  pv:{acc:'Lavender Wedding', mono:m, title:'Sous la lavande', name:n, sub:dh, orn:'❀ ❀ ❀', date:lieu} },
+
+			// ==============================
+			// === PRO (8 modèles) ===
+			// ==============================
+			{ slug:'desert-rose',     name:'Desert Rose',       desc:'Rose poudré, féminin, contemporain',        level:'PRO',     palette:'p-desert',
+			  pv:{acc:'Save the Date', mono:m, title:'Notre mariage', name:n, sub:dh, orn:'❀ ❀ ❀', date:lieu} },
+			{ slug:'garden-elegance', name:'Garden Elegance',   desc:'Vert botanique sage, fraîcheur naturelle',  level:'PRO',     palette:'p-garden',
+			  pv:{acc:'Garden Wedding', title:'You are invited', name:n, sub:dShort, orn:'❦', date:lieu + (weddingInfo.heure ? ' · ' + formatHeure(weddingInfo.heure) : '')} },
+			{ slug:'pearl',           name:'Moroccan Pearl',    desc:'Perle nacrée, touche fassi élégante',       level:'PRO',     palette:'p-pearl',
+			  pv:{acc:'Wedding Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:'Tradition fassi · ' + formatHeure(weddingInfo.heure), orn:'❋', date:dLong + ' · ' + weddingInfo.ville} },
+			{ slug:'zellige-pearl',   name:'Zellige Pearl',     desc:'Mosaïque de zellige, art fassi raffiné',    level:'PRO',     palette:'p-zellige-pearl',
+			  pv:{acc:'Mariage marocain', mono:m, title:'Vous êtes convié(e)', name:n, sub:'Tradition & élégance', orn:'❋ ◆ ❋', date:dh + ' · ' + weddingInfo.ville} },
+			{ slug:'palace-cream',    name:'Palace Cream',      desc:'Crème impérial, lignes dorées royales',     level:'PRO',     palette:'p-palace',
+			  pv:{acc:'Royal Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:lieu, orn:'◇ ◆ ◇', date:dh} },
+			{ slug:'sunset-marrakech',name:'Sunset Marrakech',  desc:'Coucher de soleil corail & or, oriental moderne', level:'PRO', palette:'p-sunset-marrakech',
 			  pv:{acc:'Sunset Wedding', mono:m, title:'Vous êtes invité(e)', name:n, sub:dh, orn:'☀', date:lieu} },
-			{ slug:'vintage-postcard',  name:'Vintage Postcard',  desc:'Carte postale kraft, timbre & cachet rétro', level:'PRO',     palette:'p-vintage-postcard',
+			{ slug:'vintage-postcard',name:'Vintage Postcard',  desc:'Carte postale kraft, timbre & cachet rétro', level:'PRO',    palette:'p-vintage-postcard',
 			  pv:{acc:'Carte d\'invitation', mono:m, title:'À nos noces', name:n, sub:'le ' + dLong, orn:'· · ·', date:lieu} },
-			{ slug:'art-deco-onyx',     name:'Art Déco Onyx',     desc:'Géométrie années 20, noir mat & or fin',  level:'PREMIUM', palette:'p-art-deco',
+			{ slug:'henna-garden',    name:'Henna Garden',      desc:'Motifs henné orange & terra cotta sur ivoire', level:'PRO', palette:'p-henna',
+			  pv:{acc:'Mariage oriental', mono:m, title:'Sous le henné', name:n, sub:dh, orn:'❋ ❋ ❋', date:lieu} },
+
+			// ==============================
+			// === PREMIUM (11 modèles) ===
+			// ==============================
+			{ slug:'royal-black',     name:'Royal Black',       desc:'Noir profond & or, prestige absolu',        level:'PREMIUM', palette:'p-royal',
+			  pv:{acc:'Invitation Prestige', mono:m, title:'Cérémonie privée', name:n, sub:'Le ' + dLong + ' · ' + formatHeure(weddingInfo.heure), orn:'◆ ◆ ◆', date:lieu} },
+			{ slug:'emerald-night',   name:'Emerald Night',     desc:'Émeraude profond, cadre en or fin',         level:'PREMIUM', palette:'p-emerald',
+			  pv:{acc:'A Night to Remember', mono:m, title:'Notre union', name:n, sub:dh, orn:'❋ ❋ ❋', date:lieu} },
+			{ slug:'andalusian',      name:'Andalusian Touch',  desc:'Bordeaux & ivoire, héritage andalou',       level:'PREMIUM', palette:'p-andalou',
+			  pv:{acc:'Cérémonie de mariage', mono:m, title:'Vous êtes invité(e)', name:n, sub:'Avec honneur · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + weddingInfo.ville} },
+			{ slug:'zellige-royal',   name:'Zellige Royal',     desc:'Zellige royal noir & or, signature marocaine', level:'PREMIUM', palette:'p-zellige-royal',
+			  pv:{acc:'Invitation marocaine', mono:m, title:'Mariage royal', name:n, sub:'Héritage fassi · ' + dLong, orn:'◆ ❋ ◆', date:lieu} },
+			{ slug:'or-liquide',      name:'Or Liquide',        desc:'Or fluide animé, signature absolue Ayora',  level:'PREMIUM', palette:'p-or-liquide',
+			  pv:{acc:'L\'union dorée', mono:m, title:'Cérémonie de mariage', name:n, sub:dh, orn:'✦ ✦ ✦', date:lieu} },
+			{ slug:'caftan-ivoire',   name:'Caftan Ivoire',     desc:'Broderies ivoire & or, esprit caftan royal', level:'PREMIUM', palette:'p-caftan',
+			  pv:{acc:'Invitation royale', mono:m, title:'Vous êtes convié(e)', name:n, sub:'À nos noces · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + lieu} },
+			{ slug:'imperial',        name:'Impérial Bordeaux', desc:'Sceau royal bordeaux & or, prestige fassi',  level:'PREMIUM', palette:'p-imperial',
+			  pv:{acc:'Sceau d\'honneur', mono:m, title:'Notre cérémonie', name:n, sub:dh, orn:'◆ ❋ ◆', date:lieu} },
+			{ slug:'art-deco-onyx',   name:'Art Déco Onyx',     desc:'Géométrie années 20, noir mat & or fin',     level:'PREMIUM', palette:'p-art-deco',
 			  pv:{acc:'Gatsby Wedding', mono:m, title:'Cérémonie privée', name:n, sub:dh, orn:'◊ ◇ ◊', date:lieu} },
-			{ slug:'constellation',     name:'Constellation',     desc:'Étoiles dorées sur indigo profond, célestial', level:'PREMIUM', palette:'p-constellation',
-			  pv:{acc:'Sous les étoiles', mono:m, title:'Notre nuit étoilée', name:n, sub:dh, orn:'✦ ✧ ✦', date:lieu} }
+			{ slug:'constellation',   name:'Constellation',     desc:'Étoiles dorées sur indigo profond, célestial', level:'PREMIUM', palette:'p-constellation',
+			  pv:{acc:'Sous les étoiles', mono:m, title:'Notre nuit étoilée', name:n, sub:dh, orn:'✦ ✧ ✦', date:lieu} },
+			{ slug:'marble-rose-gold',name:'Marble Rose Gold',  desc:'Marbre blanc veiné rose gold, ultra moderne', level:'PREMIUM', palette:'p-marble-rose',
+			  pv:{acc:'Modern Luxe', mono:m, title:'Notre union', name:n, sub:dh, orn:'◇ ◆ ◇', date:lieu} }
 			];
 		}
 
