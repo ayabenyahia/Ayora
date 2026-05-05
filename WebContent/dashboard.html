@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Tableau de bord</title>
-	<link rel="stylesheet" href="css/styles.css?v=28">
+	<link rel="stylesheet" href="css/styles.css?v=29">
 	<style>
 	/* ============================================================
 	   DASHBOARD v2 — Refonte premium
@@ -471,28 +471,34 @@
 		// Picks : done si on a 6+ choix (1 par categorie principale), in-progress si 1-5, todo si 0
 		var stPicks = picksCount === 0 ? 'todo' : (picksCount >= 6 ? 'done' : 'in-progress');
 
-		// Invites : done si nbInvitesTarget renseigne ET guestsCount >= 80% target
-		//           in-progress si guestsCount > 0 mais < target
-		//           todo sinon
+		// Tolerance ±20% autour du nombre d'invites prevu (questionnaire).
+		// Ex : 250 invites prevus -> intervalle acceptable [200 - 300]
+		// L'etape devient 'done' des que le compte atteint la borne basse.
+		var lowerBound = nbInvitesTarget > 0 ? Math.floor(nbInvitesTarget * 0.8) : 0;
+		var upperBound = nbInvitesTarget > 0 ? Math.ceil(nbInvitesTarget * 1.2)  : 0;
+		var rangeLabel = nbInvitesTarget > 0 ? '[' + lowerBound + '-' + upperBound + ']' : '';
+
+		// Invites :
+		//   todo  : 0 invite
+		//   done  : nbInvitesTarget renseigne ET guestsCount >= borne basse
+		//   in-progress : sinon (compte > 0 mais sous la borne basse)
 		var stGuests;
 		if (guestsCount === 0) stGuests = 'todo';
-		else if (nbInvitesTarget > 0 && guestsCount >= Math.floor(nbInvitesTarget * 0.8)) stGuests = 'done';
+		else if (nbInvitesTarget > 0 && guestsCount >= lowerBound) stGuests = 'done';
 		else stGuests = 'in-progress';
 
-		// Invitations envoyees : done si invSent >= guestsCount (et guests > 0)
-		//                       in-progress si invSent > 0 mais < guestsCount
-		//                       todo sinon
+		// Invitations envoyees : meme logique de tolerance ±20%
 		var stInvites;
 		if (STATE.invSent === 0) stInvites = 'todo';
-		else if (guestsCount > 0 && STATE.invSent >= guestsCount) stInvites = 'done';
+		else if (nbInvitesTarget > 0 && STATE.invSent >= lowerBound) stInvites = 'done';
 		else stInvites = 'in-progress';
 
 		var metaPicks = picksCount + ' choix';
 		var metaGuests = nbInvitesTarget > 0
-			? guestsCount + ' / ' + nbInvitesTarget + ' invités'
+			? guestsCount + ' / ' + rangeLabel + ' invités'
 			: guestsCount + ' invités';
-		var metaInvites = guestsCount > 0
-			? STATE.invSent + ' / ' + guestsCount + ' envoyées'
+		var metaInvites = nbInvitesTarget > 0
+			? STATE.invSent + ' / ' + rangeLabel + ' envoyées'
 			: STATE.invSent + ' envoyées';
 
 		var steps = [
