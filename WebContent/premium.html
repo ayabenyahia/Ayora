@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Passer Premium</title>
-	<link rel="stylesheet" href="css/styles.css?v=22">
+	<link rel="stylesheet" href="css/styles.css?v=24">
 </head>
 <body>
 
@@ -13,6 +13,7 @@
 		<nav>
 			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
 			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
 			<span onclick="location.href='vendors.html'">Prestataires</span>
 			<span onclick="location.href='guests.html'">Invités</span>
 			<span onclick="location.href='invitations.html'">Invitations</span>
@@ -201,7 +202,7 @@
 
 	<script src="js/api.js"></script>
 	<script>
-		var user = checkAuth();
+		var user = checkAuth(); if (user) applyAccountHeader(user);
 		var planTarget = 'PREMIUM';
 		if (user) {
 			document.getElementById('userName').textContent = user.firstName + ' ' + user.lastName;
