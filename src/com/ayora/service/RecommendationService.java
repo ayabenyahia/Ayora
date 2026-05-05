@@ -895,6 +895,54 @@ public class RecommendationService {
 		return blocks;
 	}
 
+	/**
+	 * Vue principale "3 prestataires par categorie".
+	 *
+	 * Pour chaque categorie active, retient les 3 meilleurs prestataires (tries
+	 * par score). C'est la vue la plus actionnable : la mariee voit 3 options
+	 * pour Salle, 3 pour Traiteur, 3 pour Photographe... et en choisit un par
+	 * categorie via le bouton "Choisir" qui appelle POST /api/picks.
+	 *
+	 * Retour : LinkedHashMap pour conserver l'ordre par priorite utilisateur
+	 * (les categories prioritaires apparaissent en premier).
+	 */
+	public Map<String, List<Recommendation>> buildTopPerCategory(List<Recommendation> all, UserProfile p) {
+		// Grouper par categorie
+		Map<Integer, List<Recommendation>> grouped = new LinkedHashMap<Integer, List<Recommendation>>();
+
+		// On commence par les categories prioritaires de l'utilisateur (ordre meaningful)
+		List<Integer> ordered = new ArrayList<Integer>();
+		if (p.getTopCategoryIds() != null) ordered.addAll(p.getTopCategoryIds());
+
+		for (int i = 0; i < all.size(); i++) {
+			Recommendation r = all.get(i);
+			Integer cat = r.getVendorCategoryId();
+			if (!grouped.containsKey(cat)) grouped.put(cat, new ArrayList<Recommendation>());
+			grouped.get(cat).add(r);
+		}
+
+		// Reordonner : prioritaires d'abord, puis le reste
+		LinkedHashMap<String, List<Recommendation>> out = new LinkedHashMap<String, List<Recommendation>>();
+		java.util.Set<Integer> used = new java.util.HashSet<Integer>();
+		for (int i = 0; i < ordered.size(); i++) {
+			Integer cat = ordered.get(i);
+			List<Recommendation> recs = grouped.get(cat);
+			if (recs == null || recs.isEmpty()) continue;
+			used.add(cat);
+			String name = recs.get(0).getVendorCategory();
+			out.put(name, takeTop(recs, 3));
+		}
+		// Puis les autres categories
+		for (Map.Entry<Integer, List<Recommendation>> e : grouped.entrySet()) {
+			if (used.contains(e.getKey())) continue;
+			List<Recommendation> recs = e.getValue();
+			if (recs.isEmpty()) continue;
+			String name = recs.get(0).getVendorCategory();
+			out.put(name, takeTop(recs, 3));
+		}
+		return out;
+	}
+
 	private List<Recommendation> filterByMinScore(List<Recommendation> all, double min) {
 		List<Recommendation> out = new ArrayList<Recommendation>();
 		for (int i = 0; i < all.size(); i++) {
