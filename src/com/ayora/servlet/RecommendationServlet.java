@@ -11,22 +11,26 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import com.ayora.dao.QuestionnaireDao;
+import com.ayora.dao.UserPickDao;
 import com.ayora.model.QuestionnaireAnswer;
 import com.ayora.model.Recommendation;
 import com.ayora.model.UserProfile;
 import com.ayora.service.RecommendationService;
 import com.ayora.util.JsonUtil;
+import java.util.Set;
 
 @WebServlet("/api/recommendations/*")
 public class RecommendationServlet extends HttpServlet {
 
 	private QuestionnaireDao questionnaireDao;
 	private RecommendationService recommendationService;
+	private UserPickDao userPickDao;
 
 	@Override
 	public void init() throws ServletException {
 		questionnaireDao = new QuestionnaireDao();
 		recommendationService = new RecommendationService();
+		userPickDao = new UserPickDao();
 	}
 
 	/**
@@ -78,6 +82,10 @@ public class RecommendationServlet extends HttpServlet {
 		List<Recommendation> filtered = applyFilters(all, fCategory, fGamme, fTag, fMinScore, fMaxPrice);
 
 		Map<String, List<Recommendation>> blocks = recommendationService.buildBlocks(filtered, profile);
+		Map<String, List<Recommendation>> topPerCategory = recommendationService.buildTopPerCategory(filtered, profile);
+
+		// Choix deja faits par la mariee : sert a marquer les cards "Choisi"
+		Set<Integer> pickedIds = userPickDao.findPickedVendorIds(userId);
 
 		// Construire JSON
 		StringBuilder json = new StringBuilder();
@@ -86,9 +94,13 @@ public class RecommendationServlet extends HttpServlet {
 		json.append(",\"counts\":{");
 		json.append("\"total\":").append(all.size());
 		json.append(",\"filtered\":").append(filtered.size());
+		json.append(",\"picked\":").append(pickedIds.size());
 		json.append("}");
+		json.append(",\"pickedVendorIds\":").append(intSetToJson(pickedIds));
 		json.append(",\"blocks\":");
 		json.append(blocksToJson(blocks));
+		json.append(",\"topPerCategory\":");
+		json.append(blocksToJson(topPerCategory));
 		json.append(",\"all\":").append(listToJson(filtered));
 		json.append(",\"categories\":").append(categoryCountsJson(filtered));
 		json.append("}");
@@ -156,6 +168,18 @@ public class RecommendationServlet extends HttpServlet {
 	// ============================================================
 	// JSON BUILDERS
 	// ============================================================
+
+	private String intSetToJson(Set<Integer> ids) {
+		StringBuilder sb = new StringBuilder("[");
+		boolean first = true;
+		for (Integer id : ids) {
+			if (!first) sb.append(",");
+			sb.append(id);
+			first = false;
+		}
+		sb.append("]");
+		return sb.toString();
+	}
 
 	private String listToJson(List<Recommendation> list) {
 		StringBuilder sb = new StringBuilder("[");
