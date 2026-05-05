@@ -201,17 +201,18 @@ body::after {
 }
 
 .menu-bar nav span {
-	padding: 9px 20px;
-	font-size: 12px;
+	padding: 9px 16px;
+	font-size: 11.5px;
 	font-weight: 600;
 	color: var(--text-muted);
 	cursor: pointer;
 	border-radius: var(--radius-xl);
 	transition: var(--transition);
-	letter-spacing: 1px;
+	letter-spacing: 0.6px;
 	text-transform: uppercase;
 	position: relative;
 	overflow: hidden;
+	white-space: nowrap;
 }
 
 .menu-bar nav span::before {
@@ -243,21 +244,59 @@ body::after {
 
 .user-info {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
-	gap: 12px;
-	font-size: 13px;
+	justify-content: flex-end;
+	gap: 4px 14px;
+	font-size: 12.5px;
+	white-space: nowrap;
 }
 
-.user-info span {
+.user-info > span,
+.user-info > a {
 	cursor: pointer;
 	color: var(--text-muted);
 	transition: var(--transition-fast);
+	line-height: 1.3;
 }
 
-.user-info span:hover { color: var(--primary); }
+/* Le prenom est l'info principale : plus sombre + plus marque */
+.user-info > #userName {
+	color: var(--text-dark);
+	font-weight: 600;
+	font-size: 13px;
+}
+/* "Deconnexion" reste discret, action secondaire */
+.user-info > span[onclick*="logout"] {
+	font-size: 12px;
+	color: var(--text-muted);
+}
+.user-info > span:hover,
+.user-info > a:hover { color: var(--primary); }
+
+/* "Username" et "Déconnexion" restent inline ; le badge plan
+   (PRO/PREMIUM/FREE) wraps sur sa propre ligne en-dessous, aligne a droite.
+   Le pseudo ::before force le retour a la ligne SANS etirer le badge. */
+.user-info::before {
+	content: '';
+	flex-basis: 100%;
+	height: 0;
+	order: 98;
+}
+.user-info .badge-free,
+.user-info .badge-pro,
+.user-info .badge-premium {
+	order: 99;
+	margin: 2px 0 0 auto;
+	font-size: 9.5px;
+	padding: 2px 10px;
+	letter-spacing: 1.5px;
+	max-width: max-content;
+	align-self: flex-end;
+}
 
 /* === BADGES === */
-.badge-free, .badge-premium {
+.badge-free, .badge-pro, .badge-premium {
 	display: inline-flex;
 	align-items: center;
 	padding: 4px 14px;
@@ -272,6 +311,12 @@ body::after {
 	background: var(--cream-dark);
 	color: var(--text-muted);
 	border: 1px solid var(--border);
+}
+
+.badge-pro {
+	background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+	color: var(--white);
+	box-shadow: 0 4px 12px rgba(139,26,43,0.25);
 }
 
 .badge-premium {
