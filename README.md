@@ -6,11 +6,17 @@ contextualisées, 50+ prestataires vérifiés (Fès, Rabat-Salé-Témara-Kénitr
 digitales pré-remplies dynamiquement (noms du couple, date, heure, lieu), abonnements
 Free / Pro (149 DHS) / Premium (299 DHS).
 
-> **v2.1 (mai 2026)** — Refonte complète du moteur de recommandation, fusion des catégories
-> redondantes (Coiffure→Maquillage, Fleuriste→Décoration, Vidéaste→Photographe), suppression
-> Transport et Wedding Planner, 3 nouveaux modèles d'invitations wow (Or Liquide animé, Caftan
-> Ivoire, Impérial Bordeaux). Voir [CHANGELOG.md](./CHANGELOG.md) et
-> [RECOMMENDATIONS.md](./RECOMMENDATIONS.md) pour le détail.
+> **v2.3 (mai 2026)** — IA Ayora : moteur de recommandation k-NN pondéré local
+> (`src/com/ayora/service/AyoraRecommendationEngine.java`) avec 6 critères pondérés
+> (budget 30%, style 25%, ville 15%, invités 15%, luxe 10%, qualité 5%). 16 vrais
+> prestataires fassi/casaouis ajoutés depuis leurs comptes Instagram, prix recalibrés
+> sur le marché réel Fès 2026. Auto-PREMIUM pour les emails @ayora.ma. Section 6
+> du questionnaire enrichie (tolérance hors-ville, mariage mixte/séparé, halal,
+> langue, événements). 3 nouveaux templates wow (Holographic Velvet, Aurora Borealis,
+> Mihrab d'Or) et 4 templates animés (Royal Black, Emerald, Sunset, Constellation).
+> Suppression complète des emojis (SVG lineart partout). **Documentation IA détaillée
+> dans [IA_AYORA.md](./IA_AYORA.md)**, voir aussi [CHANGELOG.md](./CHANGELOG.md) et
+> [RECOMMENDATIONS.md](./RECOMMENDATIONS.md).
 
 ## Stack
 
