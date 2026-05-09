@@ -114,3 +114,49 @@ SELECT 11, 'Salle Billionaire Fes', 'Fes',
   'salle,moderne,grand,spacieux,piscine,polyvalent,complet,fes,exterieur,photos',
   4.5, 100, 1
 WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Salle Billionaire Fes');
+
+-- ----- B.2 MYADI / TYAFER (cat=13) — 5 nouveaux ----------
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 13, 'La Dragee d''Or Fes', 'Fes',
+  'Chocolaterie artisanale de reference a Fes — depuis 1997. Specialisee dragees, chocolats, mariages, fiancailles, baptemes. Ouvert tous les jours (09h30-19h30). Plus de 8K abonnes IG, 500+ publications. Site officiel : ladrageedor.com',
+  1500, 5000, 'MOYEN', '0661437950', '@la_dragee_dor_fes',
+  '8 Avenue Roi Hussein, Route d''Immouzer, Fes',
+  'chocolat,dragee,traditionnel,fassi,artisanal,mariage,fiancailles,fes,authentique,reference',
+  4.7, 500, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='La Dragee d''Or Fes');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 13, 'Le Cacaochi', 'Fes',
+  'Chocolaterie + Myadi Buffets a Fes. Triple specialite : chocolat fin, dattes garnies premium et myadi/buffets pour mariages, baptemes, anniversaires. Hammam-mariage, buffet mariage, presentation tres soignee. Route Ain Chkef.',
+  2000, 7000, 'MOYEN', '0535000000', '@le_cacaochi_chocolatier',
+  'Route Ain Chkef, Fes',
+  'chocolat,myadi,buffet,dattes,artisanal,fes,mariage,traditionnel,hammam,bapteme',
+  4.6, 224, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Le Cacaochi');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 13, 'Jeff de Bruges Fes', 'Fes',
+  'Boutique Jeff de Bruges Fes — chocolatier francais reference (32K abonnes IG, +1300 publications). Chocolats, fiancailles, mariages, baptemes, cadeaux entreprises. Marque internationale belge avec adaptation aux ceremonies marocaines (myadi modernes).',
+  2500, 8000, 'PREMIUM', '0535606646', '@jeffdebrugesfes',
+  'Fes',
+  'chocolat,premium,international,marque,fiancailles,mariage,moderne,fes,marque-renommee,europeen',
+  4.8, 1313, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Jeff de Bruges Fes');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 13, 'Filali Tyafer', 'Fes',
+  'Maison de createur Filali — Tyafer d''exception, "L''art d''elegance". Reference luxe pour les tyafer fassia : cofreittes (cassettes precieuses), l''mida, vert-emeraude, blanc et or, vert royal. 15.5K abonnes IG, 2.6K publications. Travail artisanal sur mesure. Tres demande pour mariages haut-de-gamme.',
+  8000, 25000, 'PREMIUM', '0600185698', '@filali_tyafer',
+  'Fes, Maroc',
+  'tyafer,createur,luxe,premium,fassi,heritage,prestige,exclusif,artisanal,fes,sur-mesure,or',
+  4.9, 2681, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Filali Tyafer');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 13, 'Aziz Iyachi Tyafer', 'Casablanca',
+  'Boutique de mariage Aziz Iyachi — Tyafer signature : "un dfou3 digne des mille et une nuits". 165K abonnes IG, reference luxe a l''echelle nationale. Boulevard Al Qods, Casablanca. Disponible partout au Maroc avec deplacement (Fes, Rabat, Marrakech).',
+  10000, 30000, 'PREMIUM', '0661979016', '@tyafer_aziz_iyachi',
+  'Bd Al Qods, Casablanca',
+  'tyafer,luxe,prestige,fassi,heritage,exclusif,sur-mesure,mille-et-une-nuits,casa,deplacement,national,reference',
+  4.8, 323, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Aziz Iyachi Tyafer');
