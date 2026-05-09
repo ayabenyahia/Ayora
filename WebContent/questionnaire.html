@@ -909,6 +909,19 @@
 				document.getElementById('motCle3').value
 			].filter(function(m){return m && m.trim()});
 
+			// Si la ceremonie est a la maison, on retire automatiquement la
+			// categorie SALLE des services demandes (logique metier : pas de
+			// salle louee quand on recoit chez soi). L'utilisateur peut quand
+			// meme la cocher manuellement dans la section 4 si besoin.
+			var lieu = document.getElementById('lieuCeremonie').value;
+			if (lieu === 'DOMICILE') {
+				services = services.filter(function(s){ return s !== 'SALLE'; });
+			}
+
+			// Section 6 — Preferences IA (nouvelles questions)
+			var evenements = getMultiChips('evenements');
+			if (evenements.length === 0) evenements = ['MARIAGE'];
+
 			// Pack new fields into notesSpeciales as JSON, plus keep core fields mapped to existing schema
 			var extras = {
 				nomMariee: document.getElementById('nomMariee').value,
