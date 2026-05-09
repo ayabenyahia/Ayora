@@ -160,3 +160,60 @@ SELECT 13, 'Aziz Iyachi Tyafer', 'Casablanca',
   'tyafer,luxe,prestige,fassi,heritage,exclusif,sur-mesure,mille-et-une-nuits,casa,deplacement,national,reference',
   4.8, 323, 1
 WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Aziz Iyachi Tyafer');
+
+-- ----- B.3 NEGGAFA (cat=1) — 1 nouvelle ----------
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 1, 'Maison Mariee Soltana', 'Casablanca',
+  'Maison Mariee Soltana — styliste neggafa de reference (237K abonnes IG, +700 publications). Specialiste tenues mariage : caftan, lebssa fassia, takchita, scenographie complete pour mariages traditionnels marocains. Casablanca-Maarif, ouvert lundi-samedi 10h-21h.',
+  18000, 50000, 'PREMIUM', '0661088151', '@negafa.soltana',
+  'Casablanca, Maarif, Maroc',
+  'neggafa,styliste,fassi,traditionnel,royal,premium,heritage,authentique,casa,exclusif,collection,scenographie',
+  4.8, 735, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Maison Mariee Soltana');
+
+-- ----- B.4 MAQUILLAGE & COIFFURE (cat=2) — 4 nouveaux ----------
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 2, 'Glamsmakeup by Ghita', 'Fes',
+  'Certified Makeup Artist (62K abonnes IG). Make-up artist + Hair pour la mariee, basee a Fes avec deplacement partout au Maroc (Casa, Rabat, Marrakech, Tanger). Specialiste maquillage caftan, mariee fassia traditionnelle, mises en beaute glow et tendance.',
+  2000, 5000, 'PREMIUM', '0606440302', '@glam_smakeup_by_ghita',
+  'Fes (deplacement partout au Maroc)',
+  'maquillage,coiffure,bridal,certifie,deplacement,oriental,fassi,traditionnel,glow,premium,fes,national,tendance',
+  4.8, 341, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Glamsmakeup by Ghita');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 2, 'Makeup by Ghita (GhB)', 'Fes',
+  'Make-up artiste Ghita — coiffure, maquillage, esthetique (22.9K abonnes IG). Studio a Fes. Tarifs abordables, qualite professionnelle, deplacement local possible. Specialisee maquillage naturel et tendance pour mariees jeunes.',
+  1500, 4000, 'MOYEN', '0668570987', '@ghita_beauty.1',
+  'Fes',
+  'maquillage,coiffure,esthetique,abordable,moyen,bridal,fes,naturel,tendance,jeune',
+  4.5, 104, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Makeup by Ghita (GhB)');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 2, 'Beauty by Saoussane', 'Fes',
+  'Beauty by Saoussane — Professional Makeup Artist & Hair (18.6K abonnes IG, +400 publications). Champs de Cours, Fes. Deplacement partout au Maroc. Specialiste mariees fassia traditionnelles : maquillage couleurs profondes, coiffure caftan + lebssa.',
+  2000, 5000, 'PREMIUM', '0664193381', '@makeup_by_saoussane',
+  'Champs de Cours, Fes',
+  'maquillage,coiffure,bridal,fassi,traditionnel,oriental,heritage,mariee,fes,deplacement,couleurs-profondes',
+  4.7, 432, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Beauty by Saoussane');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 2, 'Souma Makeup', 'Casablanca',
+  'TEAM SOUMA MAKEUP — Specialised team on bridal (475K abonnes IG, +1500 publications). Casablanca. Equipe complete dediee a la mariee uniquement (pas d''invitees). Reference luxe nationale, contact uniquement WhatsApp.',
+  3000, 7000, 'PREMIUM', '0644931869', '@souma__makeup',
+  'Casablanca',
+  'maquillage,coiffure,bridal,specialise,team,luxe,premium,glow,tendance,casa,reference,nationale',
+  4.9, 1571, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Souma Makeup');
+
+-- ============================================================
+-- C. VERIFICATION
+-- ============================================================
+SELECT vc.name_fr AS categorie, COUNT(*) AS nb,
+       MIN(v.prix_min) AS prix_min_cat, MAX(v.prix_max) AS prix_max_cat
+FROM vendors v JOIN vendor_categories vc ON v.category_id = vc.id
+WHERE v.is_active = 1
+GROUP BY v.category_id
+ORDER BY v.category_id;
