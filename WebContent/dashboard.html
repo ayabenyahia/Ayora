@@ -560,29 +560,40 @@
 		var s = progress.steps;
 		var done = function(idx) { return s[idx].state === 'done'; };
 
+		// Bibliotheque d'icones SVG sobres (lineart). Pas d'emojis.
+		var ICO = {
+			doc:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13l2 2 4-4"/></svg>',
+			ring:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14"/></svg>',
+			people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3 2.7-5.2 6-5.2s6 2.2 6 5.2"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.7.4 4.5 2 4.5 4.5"/></svg>',
+			mail:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+			crown:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4 4 5-7 5 7 4-4-2 12H5z"/></svg>',
+			star:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .9-4.4 4.4 1 6-5.2-2.9-5.2 2.9 1-6L3.4 9.5l6-.9z"/></svg>',
+			check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
+		};
+
 		if (!done(1)) {
-			actions.push({ ico:'📝', title:'Compléter le questionnaire', desc:'Indispensable pour des recommandations personnalisées.', href:'questionnaire.html' });
+			actions.push({ ico:ICO.doc, title:'Compléter le questionnaire', desc:'Indispensable pour des recommandations personnalisées.', href:'questionnaire.html' });
 		}
 		if (done(1) && !done(3)) {
-			actions.push({ ico:'💍', title:'Choisir vos prestataires', desc:'3 propositions par catégorie sont prêtes pour vous.', href:'recommendations.html' });
+			actions.push({ ico:ICO.ring, title:'Choisir vos prestataires', desc:'3 propositions par catégorie sont prêtes pour vous.', href:'recommendations.html' });
 		}
 		if (done(1) && !done(4)) {
-			actions.push({ ico:'👥', title:'Ajouter vos invités', desc:'Préparez votre liste avant les envois.', href:'guests.html' });
+			actions.push({ ico:ICO.people, title:'Ajouter vos invités', desc:'Préparez votre liste avant les envois.', href:'guests.html' });
 		}
 		if (s[4].state !== 'todo' && !done(5)) {
-			actions.push({ ico:'✉', title:'Envoyer les invitations', desc:'Vos modèles sont prêts, plus qu\'à cliquer.', href:'invitations.html' });
+			actions.push({ ico:ICO.mail, title:'Envoyer les invitations', desc:'Vos modèles sont prêts, plus qu\'à cliquer.', href:'invitations.html' });
 		}
 		if (STATE.plan === 'FREE') {
-			actions.push({ ico:'⚜', title:'Passer à Pro ou Premium', desc:'Débloquez tous les modèles d\'invitations.', href:'premium.html' });
+			actions.push({ ico:ICO.crown, title:'Passer à Pro ou Premium', desc:'Débloquez tous les modèles d\'invitations.', href:'premium.html' });
 		}
 		if (done(3) && STATE.picks.length < 6) {
-			actions.push({ ico:'✨', title:'Compléter votre sélection', desc:'Vous avez retenu ' + STATE.picks.length + ' prestataire' + (STATE.picks.length>1?'s':'') + ' — explorez plus de catégories.', href:'recommendations.html' });
+			actions.push({ ico:ICO.star, title:'Compléter votre sélection', desc:'Vous avez retenu ' + STATE.picks.length + ' prestataire' + (STATE.picks.length>1?'s':'') + ' — explorez plus de catégories.', href:'recommendations.html' });
 		}
 		actions = actions.slice(0, 4);
 
 		var html = '';
 		if (actions.length === 0) {
-			html = '<div class="empty">Bravo, tout est en ordre ! 🎉</div>';
+			html = '<div class="empty"><span class="empty-ico" style="display:inline-block;color:var(--success);vertical-align:middle;margin-right:8px;">' + ICO.check + '</span>Bravo, tout est en ordre.</div>';
 		} else {
 			for (var i = 0; i < actions.length; i++) {
 				var a = actions[i];
