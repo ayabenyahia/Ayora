@@ -109,15 +109,39 @@ public class AuthServlet extends HttpServlet {
 		}
 		if (userDao.findByEmail(email) != null) { JsonUtil.sendError(response, 409, "Cet email est deja utilise"); return; }
 
+		// Regle metier : tout email se terminant par @ayora.ma est un compte
+		// interne (equipe Ayora) et passe directement en PREMIUM.
+		boolean isAyoraStaff = email.toLowerCase().endsWith("@ayora.ma");
+		String plan = isAyoraStaff ? "PREMIUM" : "FREE";
+
 		User user = new User();
 		user.setEmail(email); user.setPassword(password);
 		user.setFirstName(firstName); user.setLastName(lastName);
 		user.setPhone(phone); user.setCity("Fes");
+		user.setSubscriptionType(plan);
 		int userId = userDao.create(user);
 		if (userId == -1) { JsonUtil.sendError(response, 500, "Erreur creation"); return; }
 
-		Subscription sub = new Subscription(); sub.setUserId(userId); sub.setPlan("FREE");
+		Subscription sub = new Subscription(); sub.setUserId(userId); sub.setPlan(plan);
 		subscriptionDao.create(sub); user.setId(userId);
+
+		// Le DAO peut ne pas avoir tenu compte du subscription_type passe en
+		// objet User (selon implementation). On force ici la valeur en base
+		// pour garantir le PREMIUM des comptes internes Ayora.
+		if (isAyoraStaff) {
+			Connection conn = null;
+			try {
+				conn = DatabaseConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(
+						"UPDATE users SET subscription_type = 'PREMIUM' WHERE id = ?");
+				ps.setInt(1, userId);
+				ps.executeUpdate();
+			} catch (SQLException e) {
+				System.out.println("## Erreur upgrade auto Premium ayora.ma : " + e.getMessage());
+			} finally {
+				DatabaseConnection.closeConnection(conn);
+			}
+		}
 
 		HttpSession session = request.getSession();
 		session.setAttribute("userId", userId); session.setAttribute("user", user); session.setAttribute("role", "CLIENT");
@@ -126,7 +150,7 @@ public class AuthServlet extends HttpServlet {
 				+ "\"id\":" + userId + ",\"email\":\"" + JsonUtil.escapeJson(email) + "\""
 				+ ",\"firstName\":\"" + JsonUtil.escapeJson(firstName) + "\""
 				+ ",\"lastName\":\"" + JsonUtil.escapeJson(lastName) + "\""
-				+ ",\"subscriptionType\":\"FREE\",\"questionnaireCompleted\":false"
+				+ ",\"subscriptionType\":\"" + plan + "\",\"questionnaireCompleted\":false"
 				+ ",\"role\":\"CLIENT\",\"vendorId\":0}}";
 		JsonUtil.sendJson(response, json);
 	}
