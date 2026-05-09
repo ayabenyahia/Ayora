@@ -520,5 +520,254 @@ public class AyoraRecommendationEngine {
 	}
 
 	private double round1(double v) { return Math.round(v * 10.0) / 10.0; }
+
+	// ============================================================
+	// 2. SCORER UN PRESTATAIRE (combine les 6 sous-scores)
+	// ============================================================
+	public Recommendation scoreVendor(Vendor v, UserProfile p, int userId) {
+		Recommendation r = new Recommendation();
+		r.setUserId(userId);
+		r.setVendorId(v.getId());
+
+		double sBudget  = scoreBudget(v, p);
+		double sStyle   = scoreStyle(v, p);
+		double sCity    = scoreCity(v, p);
+		double sGuests  = scoreGuestCount(v, p);
+		double sLuxury  = scoreLuxury(v, p);
+		double sQuality = scoreQuality(v);
+
+		double scoreFinal =
+				  sBudget  * WEIGHT_BUDGET
+				+ sStyle   * WEIGHT_STYLE
+				+ sCity    * WEIGHT_CITY
+				+ sGuests  * WEIGHT_GUESTS
+				+ sLuxury  * WEIGHT_LUXURY
+				+ sQuality * WEIGHT_QUALITY;
+		scoreFinal = Math.round(scoreFinal * 1000.0) / 10.0;
+		if (scoreFinal > 100) scoreFinal = 100;
+		if (scoreFinal < 0) scoreFinal = 0;
+
+		r.setScore(scoreFinal);
+		r.setScoreBudget(round1(sBudget * 100));
+		r.setScoreStyle(round1(sStyle * 100));
+		r.setScoreCity(round1(sCity * 100));
+		r.setScoreGuestCount(round1(sGuests * 100));
+		r.setScoreLuxe(round1(sLuxury * 100));
+		r.setScoreQuality(round1(sQuality * 100));
+		r.setScorePopularite(round1(sQuality * 100));
+
+		// Donnees vendor (pour le rendu sur la card)
+		r.setVendorName(v.getName());
+		r.setVendorCategory(v.getCategoryName());
+		r.setVendorCategoryId(v.getCategoryId());
+		r.setVendorGamme(v.getGamme());
+		r.setVendorPrixMin(v.getPrixMin());
+		r.setVendorPrixMax(v.getPrixMax());
+		r.setVendorCity(v.getCity());
+		r.setVendorPhone(v.getPhone());
+		r.setVendorInstagram(v.getInstagram());
+		r.setVendorTags(v.getTags());
+		r.setVendorRating(v.getRating());
+		r.setVendorNbAvis(v.getNbAvis());
+
+		generateBadges(r, v, p);
+		r.setRaison(generateExplanation(r, v, p));
+		r.setRaisonShort(qualifier(scoreFinal));
+		return r;
+	}
+
+	// ============================================================
+	// 3. RECOMMANDER + filtrage par categories demandees
+	// ============================================================
+	public List<Recommendation> recommend(List<Vendor> vendors, UserProfile profile, int userId) {
+		List<Recommendation> out = new ArrayList<Recommendation>();
+		if (vendors == null) return out;
+		java.util.Set<Integer> wantedCats = wantedCategoryIds(profile);
+		for (int i = 0; i < vendors.size(); i++) {
+			Vendor v = vendors.get(i);
+			if (wantedCats != null && !wantedCats.isEmpty()
+					&& !wantedCats.contains(v.getCategoryId())) {
+				continue;
+			}
+			out.add(scoreVendor(v, profile, userId));
+		}
+		sortByScoreDesc(out);
+		return out;
+	}
+
+	/** Convertit la liste services -> Set de category_id ; null si rien coche. */
+	public java.util.Set<Integer> wantedCategoryIds(UserProfile p) {
+		if (p == null) return null;
+		List<String> codes = p.getRequestedServices();
+		if (codes == null || codes.isEmpty()) return null;
+		java.util.Set<Integer> out = new java.util.HashSet<Integer>();
+		for (int i = 0; i < codes.size(); i++) {
+			Integer cat = serviceCodeToCategoryId(codes.get(i));
+			if (cat != null) out.add(cat);
+		}
+		return out;
+	}
+
+	private Integer serviceCodeToCategoryId(String code) {
+		if (code == null) return null;
+		String c = code.toUpperCase();
+		if (c.equals("SALLE")) return CAT_SALLE;
+		if (c.equals("TRAITEUR")) return CAT_TRAITEUR;
+		if (c.equals("NEGGAFA")) return CAT_NEGGAFA;
+		if (c.equals("MAKEUP")) return CAT_MAKEUP;
+		if (c.equals("PHOTOGRAPHE")) return CAT_PHOTO;
+		if (c.equals("DECORATION")) return CAT_DECORATION;
+		if (c.equals("CAKE_DESIGNER") || c.equals("CAKE")) return CAT_CAKE;
+		if (c.equals("HENNAYA")) return CAT_HENNAYA;
+		if (c.equals("MYADI")) return CAT_MYADI;
+		if (c.equals("ORCHESTRE")) return CAT_ORCHESTRE;
+		if (c.equals("ISSAWA")) return CAT_ISSAWA;
+		if (c.equals("DJ")) return CAT_DJ;
+		return null;
+	}
+
+	// ============================================================
+	// 4. TOP-K PAR CATEGORIE (k = 3) + tri
+	// ============================================================
+	public Map<String, List<Recommendation>> topPerCategory(List<Recommendation> sorted, UserProfile p) {
+		Map<Integer, List<Recommendation>> byCat = new LinkedHashMap<Integer, List<Recommendation>>();
+		for (int i = 0; i < sorted.size(); i++) {
+			Recommendation r = sorted.get(i);
+			Integer cat = r.getVendorCategoryId();
+			List<Recommendation> bucket = byCat.get(cat);
+			if (bucket == null) {
+				bucket = new ArrayList<Recommendation>();
+				byCat.put(cat, bucket);
+			}
+			bucket.add(r);
+		}
+
+		LinkedHashMap<String, List<Recommendation>> out = new LinkedHashMap<String, List<Recommendation>>();
+		java.util.Set<Integer> used = new java.util.HashSet<Integer>();
+		if (p != null && p.getTopCategoryIds() != null) {
+			for (int i = 0; i < p.getTopCategoryIds().size(); i++) {
+				Integer cat = p.getTopCategoryIds().get(i);
+				List<Recommendation> bucket = byCat.get(cat);
+				if (bucket == null || bucket.isEmpty()) continue;
+				used.add(cat);
+				String name = bucket.get(0).getVendorCategory();
+				out.put(name, takeTop(bucket, TOP_K_PER_CATEGORY));
+			}
+		}
+		for (Map.Entry<Integer, List<Recommendation>> e : byCat.entrySet()) {
+			if (used.contains(e.getKey())) continue;
+			if (e.getValue().isEmpty()) continue;
+			String name = e.getValue().get(0).getVendorCategory();
+			out.put(name, takeTop(e.getValue(), TOP_K_PER_CATEGORY));
+		}
+		return out;
+	}
+
+	private List<Recommendation> takeTop(List<Recommendation> in, int n) {
+		List<Recommendation> out = new ArrayList<Recommendation>();
+		int max = Math.min(n, in.size());
+		for (int i = 0; i < max; i++) out.add(in.get(i));
+		return out;
+	}
+
+	/** Tri par selection (pattern simple du cours). */
+	private void sortByScoreDesc(List<Recommendation> list) {
+		for (int i = 0; i < list.size() - 1; i++) {
+			int max = i;
+			for (int j = i + 1; j < list.size(); j++) {
+				if (list.get(j).getScore() > list.get(max).getScore()) max = j;
+			}
+			if (max != i) {
+				Recommendation tmp = list.get(i);
+				list.set(i, list.get(max));
+				list.set(max, tmp);
+			}
+		}
+	}
+
+	// ============================================================
+	// 5. BADGES + PHRASE D'EXPLICATION (deterministe, pas de LLM)
+	// ============================================================
+	public void generateBadges(Recommendation r, Vendor v, UserProfile p) {
+		if (r.getScoreBudget() >= 80)         r.addTag("Budget adapte");
+		else if (r.getScoreBudget() < 40)     r.addTag("Hors budget");
+
+		if (r.getScoreStyle() >= 80)          r.addTag("Style compatible");
+		if (r.getScoreCity() >= 100)          r.addTag("Proche de vous");
+		if (r.getScoreGuestCount() >= 100)    r.addTag("Capacite parfaite");
+
+		if (r.getScoreLuxe() >= 95) {
+			if (eq(v.getGamme(), "PREMIUM"))      r.addTag("Premium");
+			else if (eq(v.getGamme(), "ECONOMIQUE")) r.addTag("Petit budget");
+		}
+
+		if (r.getScoreBudget() >= 85 && r.getScoreLuxe() >= 70 && r.getScoreStyle() >= 70) {
+			r.addTag("Bon rapport qualite/prix");
+		}
+		if (v.getRating() >= 4.5 && v.getNbAvis() >= 30) r.addTag("Tres bien note");
+		if (r.getScore() >= 90)                r.addTag("Coup de coeur");
+
+		List<Integer> top = p.getTopCategoryIds();
+		if (top != null && !top.isEmpty() && top.get(0) == v.getCategoryId()) {
+			r.addTag("Categorie prioritaire");
+		}
+		if (r.getTags().isEmpty()) r.addTag("A considerer");
+	}
+
+	public String generateExplanation(Recommendation r, Vendor v, UserProfile p) {
+		List<String> reasons = new ArrayList<String>();
+		if (r.getScoreBudget() >= 70)        reasons.add("a votre budget");
+		if (r.getScoreStyle() >= 70) {
+			String desc = humanStyle(p);
+			if (desc != null) reasons.add("a votre style " + desc);
+			else              reasons.add("a votre style");
+		}
+		if (r.getScoreCity() >= 80)          reasons.add("a votre ville");
+		if (r.getScoreGuestCount() >= 80 && (v.getCategoryId() == CAT_SALLE
+				|| v.getCategoryId() == CAT_TRAITEUR
+				|| v.getCategoryId() == CAT_DECORATION)) {
+			reasons.add("a votre nombre d'invites");
+		}
+		if (r.getScoreLuxe() >= 90 && p.getNiveauLuxe() != null) {
+			reasons.add("a votre niveau de luxe " + p.getNiveauLuxe().toLowerCase().replace("_"," "));
+		}
+		if (r.getScoreQuality() >= 80 && v.getRating() > 0) {
+			reasons.add("a une excellente reputation (" + v.getRating() + "/5 sur " + v.getNbAvis() + " avis)");
+		}
+
+		String qualif = qualifier(r.getScore());
+		if (reasons.isEmpty()) {
+			return qualif + " : alternative a considerer si vous etes flexible.";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(qualif).append(" : ce prestataire est recommande car il correspond ");
+		int n = Math.min(4, reasons.size());
+		for (int i = 0; i < n; i++) {
+			if (i > 0) sb.append(i == n - 1 ? " et " : ", ");
+			sb.append(reasons.get(i));
+		}
+		sb.append(".");
+		return sb.toString();
+	}
+
+	private String humanStyle(UserProfile p) {
+		String style = p.getStyle();
+		String amb = p.getAmbiance();
+		if (style == null && amb == null) return null;
+		StringBuilder sb = new StringBuilder();
+		if (amb != null) {
+			sb.append(amb.toLowerCase().replace("_"," "));
+			if (style != null) sb.append(" ");
+		}
+		if (style != null) sb.append(style.toLowerCase().replace("_"," "));
+		return sb.toString().trim();
+	}
+
+	private String qualifier(double score) {
+		if (score >= 85) return "Correspondance ideale";
+		if (score >= 70) return "Excellente correspondance";
+		if (score >= 55) return "Bonne correspondance";
+		return "Option envisageable";
+	}
 }
 
