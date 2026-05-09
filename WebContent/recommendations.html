@@ -548,7 +548,9 @@
 		// Prix : on n'affiche que "À partir de X DHS" (pas de fourchette haute)
 		var priceLine = 'À partir de ' + formatPrice(r.prixMin);
 
-		var rating = (r.rating && r.rating > 0) ? '⭐ ' + r.rating + ' (' + (r.nbAvis||0) + ' avis)' : '';
+		var ICO_STAR = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:var(--gold);vertical-align:-2px;"><path d="M12 2l2.6 6 6.4.6-4.8 4.4 1.4 6.4L12 16.6 6.4 19.4 7.8 13 3 8.6l6.4-.6z"/></svg>';
+		var ICO_PIN = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;"><path d="M12 22s7-7.6 7-13a7 7 0 1 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>';
+		var rating = (r.rating && r.rating > 0) ? ICO_STAR + ' ' + r.rating + ' (' + (r.nbAvis||0) + ' avis)' : '';
 
 		// Bouton "Choisir" — tient compte de l'état déjà choisi
 		var picked = STATE.pickedVendorIds && STATE.pickedVendorIds.indexOf(r.vendorId) >= 0;
@@ -563,7 +565,7 @@
 			'<h4>' + (r.vendorName || '') + '</h4>' +
 			'<div class="reco-meta">' +
 				'<span class="' + gammeClass + '">● ' + gammeLabel + '</span>' +
-				(r.city ? '<span>📍 ' + r.city + '</span>' : '') +
+				(r.city ? '<span>' + ICO_PIN + ' ' + r.city + '</span>' : '') +
 				(rating ? '<span>' + rating + '</span>' : '') +
 			'</div>' +
 			(tagsHtml ? '<div class="reco-tags">' + tagsHtml + '</div>' : '') +
