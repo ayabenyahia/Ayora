@@ -517,6 +517,40 @@
 		text-shadow: 0 1px 8px rgba(0,0,0,.55);
 	}
 
+	/* Mihrab d'Or (PREMIUM) — arche andalouse ogivale en SVG inline,
+	   bordures arabesques dorees sur bleu nuit profond. Manuscrit royal. */
+	.p-mihrab {
+		background:
+			radial-gradient(ellipse at 50% 5%, rgba(220,180,90,.15) 0%, transparent 55%),
+			radial-gradient(ellipse at 50% 100%, rgba(220,180,90,.10) 0%, transparent 50%),
+			linear-gradient(180deg, #0A1228 0%, #0D1840 50%, #050A1A 100%);
+		color:#E8C97A;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-mihrab::before {
+		/* Arche ogivale en SVG (encodee en data URL pour rester self-contained) */
+		content:""; position:absolute; inset:0;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280' preserveAspectRatio='xMidYMid meet'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23E8C97A' stop-opacity='0.85'/><stop offset='100%25' stop-color='%23B8851F' stop-opacity='0.55'/></linearGradient></defs><path d='M30 270 L30 90 Q30 30 100 30 Q170 30 170 90 L170 270 Z' fill='none' stroke='url(%23g)' stroke-width='1.6'/><path d='M40 270 L40 95 Q40 40 100 40 Q160 40 160 95 L160 270' fill='none' stroke='%23DCB46A' stroke-width='0.7' stroke-dasharray='2 3' opacity='0.65'/><path d='M50 270 L50 100 Q50 50 100 50 Q150 50 150 100 L150 270' fill='none' stroke='%23DCB46A' stroke-width='0.4' opacity='0.4'/><circle cx='100' cy='90' r='6' fill='none' stroke='%23E8C97A' stroke-width='0.8' opacity='0.7'/><circle cx='100' cy='90' r='2.5' fill='%23E8C97A' opacity='0.85'/></svg>");
+		background-repeat: no-repeat;
+		background-position: center 12px;
+		background-size: 86% 92%;
+		opacity:.85;
+		pointer-events:none;
+	}
+	.p-mihrab::after {
+		content:""; position:absolute; inset:12px;
+		border:1px solid rgba(220,180,90,.4);
+		border-radius:6px;
+		box-shadow: inset 0 0 0 4px rgba(10,18,40,.4), inset 0 0 22px rgba(232,201,122,.10);
+		pointer-events:none;
+	}
+	.p-mihrab .pv-acc, .p-mihrab .pv-mono, .p-mihrab .pv-title,
+	.p-mihrab .pv-name, .p-mihrab .pv-sub, .p-mihrab .pv-orn, .p-mihrab .pv-date {
+		position:relative; z-index:2;
+		text-shadow: 0 1px 8px rgba(0,0,0,.45);
+	}
+
 	/* Selected check */
 	.tpl.selected { border-color:var(--gold); box-shadow:0 12px 36px rgba(184,146,47,.18); }
 	.tpl-check { position:absolute; top:14px; left:14px; width:28px; height:28px; background:var(--gold); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:6; opacity:0; transform:scale(.6); transition:all .25s; font-size:14px; }
