@@ -52,3 +52,65 @@ UPDATE vendors SET prix_min=15000, prix_max=45000,
 UPDATE vendors SET prix_min=6000, prix_max=18000,
   description='Riad Decor Fes — atelier decoration mariage. Specialiste compositions florales, scenographies fassi traditionnelles (zellige, tapis, pouf), ambiances royales et orientales.'
   WHERE name='Riad Decor Fes';
+
+-- ============================================================
+-- B. AJOUT DES PRESTATAIRES REELS (sources : Instagram + Top Jour)
+-- ============================================================
+-- Idempotent : INSERT...SELECT WHERE NOT EXISTS evite les doublons en
+-- relancant la migration.
+-- ============================================================
+
+-- ----- B.1 SALLES DE FETE (cat=11) — 6 nouveaux ----------
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 11, 'Salle The Queen', 'Fes',
+  'Salle polyvalente moderne situee dans le complexe touristique La Perla, Km 10 Route de Meknes a Fes. Decoration contemporaine raffinee, capacite moyenne a grande (200-400 invites), scenographie premium incluse. Espace lumineux ideal pour mariages chics et modernes. Disponibilite traiteur partenaire et parking securise.',
+  12000, 25000, 'PREMIUM', '0535000000', '@salle_polyvalente_the.queen',
+  'Complexe La Perla, Km 10, Route de Meknes, Fes',
+  'salle,moderne,grand,polyvalent,complet,scenographie,tendance,premium,fes,parking,lumineux,chic',
+  4.6, 143, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Salle The Queen');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 11, 'Palais D''or Fes', 'Fes',
+  'Palais d''evenements luxe situe a Ain Chqef, Fes. "Luxury Weddings & Events" : scenographie tres riche, mises en lumiere premium, allee VIP, palanquin amariya integre. Parfait pour mariages royaux et grandes ceremonies (250-500 invites). Cafe palais disponible pour les invites.',
+  22000, 40000, 'PREMIUM', '0663572605', '@palaisdorfes',
+  'Palais d''or, Ain Chqef, Fes',
+  'palais,royal,luxe,premium,grand,prestige,or,scenographie,fes,haut-gamme,amariya,vip',
+  4.7, 68, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Palais D''or Fes');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 11, 'Riad Arabesque', 'Fes',
+  'Riad de charme situe au coeur de la medina ancienne de Fes. Architecture traditionnelle fassie authentique : zellige multicolore, plafonds en bois sculpte, patio central avec fontaine. Capacite intime (60-120 invites), ambiance heritage andalous incomparable. Possibilite restauration sur place.',
+  9000, 16000, 'PREMIUM', '0703191113', '@riadarabesque',
+  'Medina ancienne, Fes',
+  'riad,medina,fassi,authentique,intime,heritage,zellige,oriental,charme,traditionnel,andalous,patio',
+  4.8, 91, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Riad Arabesque');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 11, 'Riad Salam Fes', 'Fes',
+  'Complexe hotelier de tradition fassie. Espace evenementiel polyvalent : grande salle interieure + patio andalous + chambres pour les invites internationaux. Site officiel : riadsalamfes.com. Ideal pour mariages avec famille elargie et cousins venus de l''etranger (logement sur place possible).',
+  10000, 22000, 'PREMIUM', '0535000000', '@riad_salam_fes',
+  'Fes',
+  'riad,complexe,hotel,fassi,authentique,heritage,grand,polyvalent,traditionnel,fes,logement,internationaux',
+  4.5, 39, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Riad Salam Fes');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 11, 'Palais Laraki', 'Meknes',
+  'Palais Laraki — institution evenementielle a Meknes, region Fes-Meknes. Salle prestigieuse pour mariages traditionnels et ceremonies marocaines avec option traiteur integre. Equipe coordination experimentee (37K abonnes IG, +1200 publications mariage). Tres demande dans la region pour les mariages dits "royaux".',
+  22000, 45000, 'PREMIUM', '0661807893', '@palais_laraki',
+  'Meknes',
+  'palais,royal,prestige,grand,traiteur,traditionnel,fassi,heritage,meknes,coordination,renomme',
+  4.7, 200, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Palais Laraki');
+
+INSERT INTO vendors (category_id, name, city, description, prix_min, prix_max, gamme, phone, instagram, address, tags, rating, nb_avis, is_active)
+SELECT 11, 'Salle Billionaire Fes', 'Fes',
+  'Event & Conference — Salle des fetes Billionaire a Fes. Espace moderne et spacieux avec piscine exterieure (idee originale pour photos de couple), capacite tres grande (300-500 invites). Parfaite pour mariages nombreux et meetings/conferences. Route Immouzer avant Golf Royal.',
+  15000, 30000, 'MOYEN', '0661060039', '@salle_des_fete_billionaire',
+  'Route Immouzer avant Golf Royal, Medina, Fes',
+  'salle,moderne,grand,spacieux,piscine,polyvalent,complet,fes,exterieur,photos',
+  4.5, 100, 1
+WHERE NOT EXISTS (SELECT 1 FROM vendors WHERE name='Salle Billionaire Fes');
