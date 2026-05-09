@@ -754,8 +754,24 @@
 
 		if (user) {
 			document.getElementById('userName').textContent = user.firstName;
+			// 1) Affichage immediat depuis localStorage (fallback)
 			currentPlan = (user.subscriptionType || 'FREE').toUpperCase();
 			updatePlanUI();
+			// 2) Refresh serveur : si le plan a change cote DB
+			//    (ex: passage en PREMIUM via admin/back-office), on re-synchronise
+			//    le badge, le pill, le stat ET on re-render les templates car
+			//    canAccess() depend de currentPlan.
+			api.get('/api/auth/me').then(function(d) {
+				if (d && d.user && d.user.subscriptionType) {
+					var serverPlan = String(d.user.subscriptionType).toUpperCase();
+					if (serverPlan !== currentPlan) {
+						currentPlan = serverPlan;
+						updatePlanUI();
+						var f = document.querySelector('.filter.active');
+						renderTemplates(f ? f.getAttribute('data-f') : 'all');
+					}
+				}
+			}).catch(function(){});
 		}
 		loadCoupleNames();
 		loadInvitations();
