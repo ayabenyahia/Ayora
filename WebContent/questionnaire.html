@@ -16,7 +16,11 @@
 
 	/* Stepper */
 	.stepper { display:flex; align-items:center; justify-content:space-between; margin: 28px 0 30px; padding: 0 8px; gap:6px; }
-	.stp { flex:1; text-align:center; position:relative; }
+	.stp { flex:1; text-align:center; position:relative; cursor:pointer; transition: transform .2s; }
+	.stp:hover .dot { border-color:#8B1A2B; }
+	.stp:hover .lbl { color:#8B1A2B; }
+	.stp:focus { outline:none; }
+	.stp:focus-visible .dot { box-shadow:0 0 0 3px rgba(139,26,43,.25); }
 	.stp .dot { width:38px; height:38px; border-radius:50%; background:#fff; border:2px solid #E8D8DE; color:#7A6B74; font-weight:700; display:inline-flex; align-items:center; justify-content:center; transition:all .3s; font-size:14px; }
 	.stp .lbl { display:block; font-size:11px; color:#7A6B74; margin-top:6px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; line-height:1.2; }
 	.stp.active .dot { background:linear-gradient(135deg,#B83B5E,#8B1A2B); border-color:transparent; color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.3); transform:scale(1.1); }
