@@ -350,35 +350,115 @@
 		document.getElementById('blocksContainer').innerHTML = html;
 	}
 
+	/**
+	 * Vue principale "3 par catégorie" PAGINÉE.
+	 *
+	 * Pourquoi paginer : afficher toutes les catégories sur une seule page
+	 * fait scroller longuement et noie l'utilisateur. On affiche CAT_PER_PAGE
+	 * (= 3) catégories par page, avec une pagination claire en bas.
+	 *
+	 * Pour chaque catégorie : 3 meilleures recommandations + bouton "Voir plus"
+	 * qui deploie toutes les autres en place dans la grille.
+	 */
 	function renderByCategory3() {
 		var meta = BLOCK_META.byCategory;
 		var groups = STATE.topPerCategory || {};
-		var keys = Object.keys(groups);
+		var allCats = Object.keys(groups).filter(function(c){ return (groups[c]||[]).length > 0; });
+		var totalCats = allCats.length;
+		var pageCount = Math.max(1, Math.ceil(totalCats / CAT_PER_PAGE));
+		if (CAT_PAGE > pageCount) CAT_PAGE = 1;
+		if (CAT_PAGE < 1) CAT_PAGE = 1;
+
+		var startIdx = (CAT_PAGE - 1) * CAT_PER_PAGE;
+		var visibleCats = allCats.slice(startIdx, startIdx + CAT_PER_PAGE);
 
 		var html = '<section class="block">';
 		html += '<div class="block-header">';
 		html += '<div><div class="block-title">' + meta.title + ' <span class="badge">' + meta.badge + '</span></div>';
 		html += '<div class="block-subtitle">' + meta.subtitle + '</div></div>';
-		html += '<div class="text-muted" style="font-size:12px;">' + keys.length + ' catégorie' + (keys.length>1?'s':'') + '</div>';
+		html += '<div class="text-muted" style="font-size:12px;">' + totalCats + ' catégorie' + (totalCats>1?'s':'')
+			+ ' &middot; page ' + CAT_PAGE + ' / ' + pageCount + '</div>';
 		html += '</div>';
 
-		if (keys.length === 0) {
+		if (totalCats === 0) {
 			html += '<div class="empty-block">Pas de recommandations disponibles. Vérifiez votre questionnaire.</div>';
 		} else {
-			for (var k = 0; k < keys.length; k++) {
-				var cat = keys[k];
-				var recs = groups[cat] || [];
-				if (recs.length === 0) continue;
-				html += '<div class="cat-block">';
-				html += '<h3 class="cat-block-title">' + cat + ' <span class="cat-block-count">Choisissez 1 parmi ' + recs.length + '</span></h3>';
-				html += '<div class="cards-grid">';
-				for (var j = 0; j < recs.length; j++) html += cardHtml(recs[j]);
+			var ICO_PLUS = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>';
+			var ICO_MINUS = '<svg viewBox="0 0 24 24"><path d="M5 12h14" stroke-linecap="round"/></svg>';
+			for (var k = 0; k < visibleCats.length; k++) {
+				var cat = visibleCats[k];
+				var top3 = groups[cat] || [];
+				var allForCat = allRecsForCategory(cat);
+				var totalForCat = allForCat.length;
+				var isExpanded = !!EXPANDED_CATS[cat];
+				var visibleRecs = isExpanded ? allForCat : top3;
+				var hiddenCount = Math.max(0, totalForCat - top3.length);
+
+				html += '<div class="cat-block' + (isExpanded ? ' is-expanded' : '') + '">';
+				html += '<div class="cat-block-head">';
+				html += '<h3 class="cat-block-title">' + cat
+					+ ' <span class="cat-block-count">' + (isExpanded
+						? totalForCat + ' prestataire' + (totalForCat>1?'s':'') + ' triés par score IA'
+						: 'Choisissez 1 parmi ' + top3.length) + '</span></h3>';
 				html += '</div>';
+				html += '<div class="cards-grid">';
+				for (var j = 0; j < visibleRecs.length; j++) html += cardHtml(visibleRecs[j]);
+				if (hiddenCount > 0) {
+					if (isExpanded) {
+						html += '<button type="button" class="see-more-card" onclick="toggleCategory(\''
+							+ catAttr(cat) + '\')" aria-label="Replier ' + cat + '">'
+							+ '<div class="icon-circle">' + ICO_MINUS + '</div>'
+							+ '<div class="label">Voir moins</div>'
+							+ '<div class="sub">Replier la liste</div>'
+							+ '</button>';
+					} else {
+						html += '<button type="button" class="see-more-card" onclick="toggleCategory(\''
+							+ catAttr(cat) + '\')" aria-label="Voir plus de ' + cat + '">'
+							+ '<div class="icon-circle">' + ICO_PLUS + '</div>'
+							+ '<div class="label">Voir ' + hiddenCount + ' de plus</div>'
+							+ '<div class="sub">Plus de prestataires</div>'
+							+ '</button>';
+					}
+				}
+				html += '</div>';
+				html += '</div>';
+			}
+
+			// Pagination
+			if (pageCount > 1) {
+				html += '<div class="cat-pager">';
+				html += '<button onclick="setCatPage(' + (CAT_PAGE - 1) + ')"' + (CAT_PAGE === 1 ? ' disabled' : '') + ' aria-label="Page précédente">&lsaquo;</button>';
+				for (var p = 1; p <= pageCount; p++) {
+					html += '<button class="' + (p === CAT_PAGE ? 'active' : '') + '" onclick="setCatPage(' + p + ')">' + p + '</button>';
+				}
+				html += '<button onclick="setCatPage(' + (CAT_PAGE + 1) + ')"' + (CAT_PAGE === pageCount ? ' disabled' : '') + ' aria-label="Page suivante">&rsaquo;</button>';
+				html += '<span class="pager-info">' + visibleCats.length + ' catégorie' + (visibleCats.length>1?'s':'') + ' affichée' + (visibleCats.length>1?'s':'') + '</span>';
 				html += '</div>';
 			}
 		}
 		html += '</section>';
 		document.getElementById('blocksContainer').innerHTML = html;
+	}
+
+	function setCatPage(n) {
+		CAT_PAGE = n;
+		renderByCategory3();
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
+	function catAttr(cat) {
+		return (cat || '').replace(/'/g, "\\'");
+	}
+
+	function allRecsForCategory(cat) {
+		var out = (STATE.all || []).filter(function(r){ return r.category === cat; });
+		out.sort(function(a, b){ return (b.score || 0) - (a.score || 0); });
+		return out;
+	}
+
+	function toggleCategory(cat) {
+		EXPANDED_CATS[cat] = !EXPANDED_CATS[cat];
+		renderByCategory3();
 	}
 
 	function renderByCategory() {
