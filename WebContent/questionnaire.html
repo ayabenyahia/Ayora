@@ -499,12 +499,30 @@
 		var total = 6;
 
 		function goStep(delta) {
-			var next = current + delta;
-			if (next < 1 || next > total) return;
-			if (delta > 0 && !validateSection(current)) return;
+			goToStep(current + delta);
+		}
+
+		/**
+		 * Navigation directe vers une etape (utilise par les cercles cliquables et
+		 * par les boutons Suivant/Precedent). Validation : on n'autorise un saut
+		 * EN AVANT (target > current) que si toutes les sections intermediaires
+		 * sont valides. Le retour en arriere est toujours libre.
+		 */
+		function goToStep(target) {
+			target = parseInt(target, 10);
+			if (isNaN(target) || target < 1 || target > total) return;
+			if (target === current) return;
+			if (target > current) {
+				for (var s = current; s < target; s++) {
+					if (!validateSection(s)) {
+						if (s !== current) goToStep(s);
+						return;
+					}
+				}
+			}
 			document.querySelector('.section[data-section="'+current+'"]').classList.remove('active');
-			document.querySelector('.section[data-section="'+next+'"]').classList.add('active');
-			current = next;
+			document.querySelector('.section[data-section="'+target+'"]').classList.add('active');
+			current = target;
 			updateStepper();
 			window.scrollTo({top:0, behavior:'smooth'});
 		}
@@ -515,11 +533,28 @@
 				s.classList.remove('active','done');
 				if (n < current) s.classList.add('done');
 				else if (n === current) s.classList.add('active');
+				if (n === current) s.setAttribute('aria-current','step');
+				else s.removeAttribute('aria-current');
 			});
 			document.getElementById('btnPrev').disabled = (current === 1);
 			document.getElementById('btnNext').style.display = (current === total) ? 'none' : 'inline-block';
 			document.getElementById('btnSubmit').style.display = (current === total) ? 'inline-block' : 'none';
 		}
+
+		// === Cercles du stepper cliquables (navigation directe) ===
+		document.querySelectorAll('.stp').forEach(function(s) {
+			var n = parseInt(s.getAttribute('data-step'), 10);
+			s.setAttribute('role', 'button');
+			s.setAttribute('tabindex', '0');
+			s.setAttribute('aria-label', 'Aller a l\'etape ' + n);
+			s.addEventListener('click', function() { goToStep(n); });
+			s.addEventListener('keydown', function(ev) {
+				if (ev.key === 'Enter' || ev.key === ' ') {
+					ev.preventDefault();
+					goToStep(n);
+				}
+			});
+		});
 
 		function validateSection(n) {
 			var card = document.querySelector('.section[data-section="'+n+'"]');
