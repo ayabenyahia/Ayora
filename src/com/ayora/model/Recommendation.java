@@ -44,6 +44,8 @@ public class Recommendation {
 	private double scoreCulturel;
 	// Sous-score IA Ayora : proximite geographique (15% du score final)
 	private double scoreCity;
+	// Sous-score IA Ayora : adequation capacite vs nb invites (15%)
+	private double scoreGuestCount;
 
 	public Recommendation() {
 		this.tags = new ArrayList<String>();
@@ -138,6 +140,9 @@ public class Recommendation {
 
 	public double getScoreCity() { return scoreCity; }
 	public void setScoreCity(double s) { this.scoreCity = s; }
+
+	public double getScoreGuestCount() { return scoreGuestCount; }
+	public void setScoreGuestCount(double s) { this.scoreGuestCount = s; }
 
 	@Override
 	public String toString() {
