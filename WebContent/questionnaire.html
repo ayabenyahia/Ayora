@@ -947,7 +947,14 @@
 				accessibilite: document.getElementById('accessibilite').value,
 				allergies: document.getElementById('allergies').value,
 				whatsapp: document.getElementById('whatsapp').value,
-				stressLevel: document.getElementById('stressLevel').value
+				stressLevel: document.getElementById('stressLevel').value,
+				// Section 6 — Preferences IA
+				cityTolerance: parseInt(document.getElementById('cityTolerance').value,10) || 2,
+				mixiteMariage: document.getElementById('mixiteMariage').value,
+				languePrestataires: document.getElementById('languePrestataires').value,
+				evenements: evenements,
+				halalStrict: document.getElementById('halalStrict').value,
+				prioriteFassia: document.getElementById('prioriteFassia').value
 			};
 
 			var payload = {
