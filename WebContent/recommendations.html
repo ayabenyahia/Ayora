@@ -399,12 +399,19 @@
 			}
 		}
 
-		// Sub-scores
+		// Sub-scores : les 6 critères de compatibilité de l'IA Ayora
 		var subs = '';
-		var keys = [['scoreBudget','Budget'],['scoreLuxe','Luxe'],['scoreStyle','Style'],['scorePopularite','Popularité']];
+		var keys = [
+			['scoreBudget','Budget','30%'],
+			['scoreStyle','Style','25%'],
+			['scoreCity','Ville','15%'],
+			['scoreGuestCount','Invités','15%'],
+			['scoreLuxe','Luxe','10%'],
+			['scoreQuality','Qualité','5%']
+		];
 		for (var k = 0; k < keys.length; k++) {
 			var v = Math.round(r[keys[k][0]] || 0);
-			subs += '<div class="subscore"><span style="min-width:60px;">' + keys[k][1] + '</span><div class="bar"><div style="width:' + v + '%;"></div></div><span class="sval">' + v + '</span></div>';
+			subs += '<div class="subscore"><span style="min-width:64px;" title="Poids ' + keys[k][2] + '">' + keys[k][1] + '</span><div class="bar"><div style="width:' + v + '%;"></div></div><span class="sval">' + v + '</span></div>';
 		}
 
 		// Contact bar : icones unifiees (phone, WhatsApp, Instagram, mail)
