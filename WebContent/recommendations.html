@@ -82,8 +82,12 @@
 		/* Bloc par catégorie (3 par service) */
 		.cat-block { margin: 24px 0 30px; padding-bottom: 18px; border-bottom: 1px dashed var(--border-light); }
 		.cat-block:last-child { border-bottom: none; padding-bottom: 0; }
-		.cat-block-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--primary-dark); margin: 0 0 16px; display:flex; align-items:center; gap:14px; }
+		.cat-block-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin: 0 0 16px; }
+		.cat-block-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--primary-dark); margin: 0; display:flex; align-items:center; gap:14px; }
 		.cat-block-count { font-family:'Montserrat',sans-serif; background:var(--gold-soft); color:var(--gold-dark); font-size:11px; padding:4px 12px; border-radius:50px; font-weight:600; letter-spacing:.5px; }
+		.cat-see-more { background:var(--white); border:1.5px solid var(--gold); color:var(--gold-dark); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; letter-spacing:.5px; padding:8px 16px; border-radius:50px; cursor:pointer; transition:var(--transition-fast); display:inline-flex; align-items:center; gap:6px; }
+		.cat-see-more:hover { background:var(--gold); color:#fff; transform:translateY(-1px); box-shadow:0 6px 16px rgba(184,146,47,.25); }
+		.cat-see-more svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; }
 
 		/* Bouton Choisir */
 		.pick-btn { width:100%; margin-top:12px; padding:12px 14px; border:none; border-radius:var(--radius-sm); font-size:13px; font-weight:700; letter-spacing:.5px; cursor:pointer; transition:var(--transition-fast); background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.25); }
