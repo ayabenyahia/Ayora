@@ -471,8 +471,25 @@
 					</div>
 				</div>
 
+				<!-- ============================================
+				     Preferences IA — questions ciblees pour aider
+				     le moteur Ayora a mieux scorer les prestataires
+				     ============================================ -->
+				<div style="margin-top:24px;padding:20px 22px;background:#FDF2F8;border-radius:14px;border:1px solid #FECDD3;">
+					<h3 style="margin:0 0 4px;font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#8B1A2B;">Préférences pour la sélection IA</h3>
+					<p style="margin:0 0 16px;color:#7A6B74;font-size:13px;">Ces réponses aident l'IA Ayora à mieux pondérer les recommandations.</p>
+
+					<!-- Tolerance hors-ville -->
+					<div class="slider-row" style="margin-bottom:8px;">
+						<label>Ouverture hors-ville</label>
+						<input type="range" id="cityTolerance" min="1" max="5" value="2">
+						<span class="val" id="cityToleranceV">2</span>
+					</div>
+					<p class="hint" style="margin: -2px 0 14px;">1 = strictement Fès &middot; 3 = région Fès-Meknès &middot; 5 = partout au Maroc (Casa, Rabat, Marrakech…)</p>
+				</div>
+
 				<!-- Notes libres compactes -->
-				<div class="fg">
+				<div class="fg" style="margin-top:18px;">
 					<label>Note pour Ayora (optionnel)</label>
 					<textarea id="notesSpeciales" rows="2" placeholder="Un détail important, une attente particulière…"></textarea>
 				</div>
