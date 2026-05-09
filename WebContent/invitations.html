@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora — Invitations</title>
+	<link rel="stylesheet" href="css/styles.css?v=30">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Italiana&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+	<style>
+	:root{
+		--ivory:#FAF7F2; --cream:#F4EFE6; --pearl:#EDE6DB; --gold:#B8922F; --gold-light:#D4B370;
+		--noir:#1A0F08; --noir-2:#0d0904; --emerald:#0E3B2E; --emerald-2:#1B5E3F;
+		--rose-d:#9B5A6B; --rose-l:#E8D0D4; --sand:#D4C4A8; --olive:#3F3F2E;
+		--ink:#1A0A10; --ink-soft:#3D2232; --muted:#7A6B74; --border:#EAE0D5;
+	}
+	body { background:#F8F4ED; color:var(--ink); }
+
+	.inv-wrap { max-width:1320px; margin:0 auto; padding:24px 28px 80px; font-family:'Inter',-apple-system,sans-serif; }
+
+	/* ===== Hero ===== */
+	.inv-hero { background:#fff; border:1px solid var(--border); border-radius:28px; padding:36px 42px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; box-shadow:0 8px 32px rgba(184,146,47,.06); position:relative; overflow:hidden; }
+	.inv-hero::before { content:""; position:absolute; top:-100px; right:-100px; width:340px; height:340px; border-radius:50%; background:radial-gradient(circle, rgba(184,146,47,.10), transparent 70%); pointer-events:none; }
+	.inv-hero h1 { margin:0 0 8px; font-family:'Italiana','Cormorant Garamond',serif; font-size:2.6rem; color:var(--ink); font-weight:400; letter-spacing:1px; }
+	.inv-hero p { margin:0; color:var(--muted); font-size:14.5px; max-width:560px; line-height:1.6; }
+	.inv-hero .acc { display:block; font-size:11px; letter-spacing:5px; color:var(--gold); margin-bottom:10px; text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; }
+	.plan-pill { display:inline-flex; align-items:center; gap:8px; padding:10px 22px; border-radius:50px; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; font-family:'Cinzel',serif; }
+	.plan-FREE { background:var(--ivory); color:var(--ink-soft); border:1.5px solid var(--border); }
+	.plan-PRO { background:linear-gradient(135deg, #2C1810, #4A2818); color:#fff; box-shadow:0 6px 18px rgba(44,24,16,.25); }
+	.plan-PREMIUM { background:linear-gradient(135deg, var(--gold), var(--gold-light)); color:#fff; box-shadow:0 6px 18px rgba(184,146,47,.3); }
+
+	/* ===== Stats ===== */
+	.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:36px; }
+	.stat-card { background:#fff; border:1px solid var(--border); border-radius:18px; padding:22px 20px; text-align:center; transition:all .3s; }
+	.stat-card:hover { border-color:var(--gold); box-shadow:0 8px 22px rgba(184,146,47,.1); }
+	.stat-card .v { font-family:'Italiana',serif; font-size:2.4rem; color:var(--gold); line-height:1; }
+	.stat-card .l { font-size:11px; color:var(--muted); margin-top:8px; text-transform:uppercase; letter-spacing:2px; }
+
+	/* ===== Venue bar (lieu de la ceremonie) ===== */
+	.venue-bar { display:flex; gap:22px; align-items:flex-start; background:linear-gradient(135deg,#FFF8EE 0%, #F4EFE6 100%); border:1.5px solid var(--gold-light); border-radius:24px; padding:26px 30px; margin-bottom:36px; box-shadow:0 6px 22px rgba(184,146,47,.08); position:relative; overflow:hidden; }
+	.venue-bar::before { content:""; position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(184,146,47,.18), transparent 70%); pointer-events:none; }
+	.venue-icon { display:flex; align-items:center; justify-content:center; width:54px; height:54px; flex-shrink:0; color:var(--ink); border-radius:14px; background:var(--gold-soft); }
+	.venue-icon svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+	.venue-body { flex:1; position:relative; z-index:1; }
+	.venue-acc { font-size:11px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; margin-bottom:6px; }
+	.venue-body h3 { font-family:'Italiana',serif; font-size:1.4rem; color:var(--ink); margin:0 0 6px; font-weight:400; }
+	.venue-body p { color:var(--muted); font-size:13px; margin:0 0 14px; line-height:1.5; }
+	.venue-input-row { display:flex; gap:10px; flex-wrap:wrap; }
+	.venue-input-row input { flex:1; min-width:240px; padding:12px 16px; border:1px solid var(--border); border-radius:10px; font-size:14px; font-family:inherit; color:var(--ink); background:#fff; }
+	.venue-input-row input:focus { outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,146,47,.12); }
+	.venue-save { padding:12px 26px; border:none; background:var(--ink); color:var(--gold); border-radius:10px; font-weight:600; cursor:pointer; font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; transition:all .2s; }
+	.venue-save:hover { background:var(--noir-2); transform:translateY(-1px); }
+	.venue-save:disabled { opacity:.55; cursor:wait; }
+	.venue-status { margin-top:10px; font-size:12.5px; }
+	.venue-status.ok { color:var(--emerald); }
+	.venue-status.err { color:#B83B5E; }
+
+	/* ===== Section title ===== */
+	.section-head { text-align:center; margin:48px 0 28px; }
+	.section-head .acc { display:block; font-size:11px; letter-spacing:6px; color:var(--gold); margin-bottom:12px; text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; }
+	.section-head h2 { font-family:'Italiana','Cormorant Garamond',serif; font-size:2.4rem; color:var(--ink); margin:0 0 8px; font-weight:400; }
+	.section-head .ornament { display:flex; align-items:center; justify-content:center; gap:14px; color:var(--gold); margin:14px 0 8px; }
+	.section-head .ornament::before, .section-head .ornament::after { content:""; width:50px; height:1px; background:var(--gold); opacity:.5; }
+	.section-head p { color:var(--muted); font-size:14.5px; max-width:600px; margin:0 auto; line-height:1.6; }
+
+	/* ===== Filter pills ===== */
+	.filters { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:36px; }
+	.filter { padding:10px 24px; border-radius:50px; background:#fff; border:1.5px solid var(--border); color:var(--ink-soft); font-size:12px; font-weight:600; cursor:pointer; transition:all .25s; letter-spacing:1.5px; text-transform:uppercase; font-family:'Cinzel',serif; }
+	.filter:hover { border-color:var(--gold); color:var(--gold); }
+	.filter.active { background:var(--ink); border-color:var(--ink); color:var(--gold); }
+
+	/* ===== Template grid ===== */
+	.tpl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:26px; }
+
+	.tpl { position:relative; background:#fff; border:1px solid var(--border); border-radius:18px; overflow:hidden; transition:all .4s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; cursor:pointer; }
+	.tpl:hover { transform:translateY(-6px); box-shadow:0 18px 44px rgba(0,0,0,.10); border-color:transparent; }
+	.tpl.locked:hover { transform:none; box-shadow:none; border-color:var(--border); }
+
+	/* Tier badge */
+	.tier { position:absolute; top:14px; right:14px; padding:5px 14px; border-radius:50px; font-size:9px; font-weight:600; letter-spacing:2px; text-transform:uppercase; z-index:5; font-family:'Cinzel',serif; backdrop-filter:blur(8px); }
+	.tier-FREE { background:rgba(255,255,255,.92); color:var(--emerald); border:1px solid rgba(14,59,46,.3); }
+	.tier-PRO { background:rgba(26,15,8,.92); color:#D4B370; border:1px solid rgba(212,179,112,.4); }
+	.tier-PREMIUM { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:#fff; }
+
+	/* ===== Preview canvas ===== */
+	.preview { height:340px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px 24px; text-align:center; }
+
+	/* Common preview elements */
+	.pv-acc { font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:5px; text-transform:uppercase; opacity:.7; margin-bottom:16px; }
+	.pv-line { width:60px; height:1px; background:currentColor; opacity:.45; margin:14px auto; }
+	.pv-line-fancy { width:70px; height:1px; background:linear-gradient(90deg,transparent,currentColor,transparent); opacity:.65; margin:14px auto; }
+	.pv-title { font-family:'Italiana','Cormorant Garamond',serif; font-size:32px; line-height:1.15; font-weight:400; }
+	.pv-name { font-family:'Great Vibes',cursive; font-size:34px; line-height:1; margin:8px 0; }
+	.pv-sub { font-family:'Cinzel',serif; font-size:10px; letter-spacing:4px; text-transform:uppercase; opacity:.7; }
+	.pv-date { font-family:'Italiana',serif; font-size:14px; letter-spacing:2px; margin-top:14px; }
+	.pv-ornament { font-size:14px; letter-spacing:6px; margin:8px 0; opacity:.55; }
+	.pv-monogram { width:54px; height:54px; border:1.5px solid currentColor; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-family:'Italiana',serif; font-size:22px; margin-bottom:10px; opacity:.75; }
+	.pv-frame { position:absolute; pointer-events:none; }
+
+	/* === Palettes === */
+	/* 1. Ivory Gold */
+	.p-ivory { background:linear-gradient(180deg,#FAF7F2 0%, #F4EFE6 100%); color:#8B6F2A; }
+	.p-ivory::before { content:""; position:absolute; inset:14px; border:1px solid rgba(184,146,47,.35); border-radius:8px; pointer-events:none; }
+	.p-ivory::after { content:""; position:absolute; inset:18px; border:1px solid rgba(184,146,47,.18); border-radius:6px; pointer-events:none; }
+	/* 2. Royal Black */
+	/* Royal Black (PREMIUM) — anime : sweep dore qui balaye la surface
+	   en continu, comme une feuille d'or qui capte la lumiere. */
+	.p-royal {
+		background:linear-gradient(160deg,#0d0904 0%, #1A0F08 50%, #0d0904 100%);
+		color:#D4B370;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-royal::before {
+		content:""; position:absolute; inset:0;
+		background:linear-gradient(110deg,
+			transparent 0%,
+			transparent 35%,
+			rgba(212,179,112,.0) 42%,
+			rgba(212,179,112,.30) 50%,
+			rgba(255,228,158,.55) 52%,
+			rgba(212,179,112,.30) 54%,
+			rgba(212,179,112,.0) 62%,
+			transparent 70%,
+			transparent 100%);
+		animation: royalSweep 6s ease-in-out infinite;
+		mix-blend-mode: screen;
+		pointer-events:none;
+	}
+	@keyframes royalSweep {
+		0%   { transform: translateX(-110%); }
+		60%  { transform: translateX(110%); }
+		100% { transform: translateX(110%); }
+	}
+	.p-royal::after {
+		content:""; position:absolute; inset:16px;
+		border:1px solid rgba(212,179,112,.45); border-radius:6px;
+		pointer-events:none;
+	}
+	/* 3. Moroccan Pearl */
+	.p-pearl { background:linear-gradient(180deg,#F0E8DC 0%, #E5D9C3 100%); color:#7C5E2F; }
+	.p-pearl::before { content:""; position:absolute; top:0; left:50%; transform:translateX(-50%); width:140px; height:140px; background:radial-gradient(circle, rgba(184,146,47,.18), transparent 70%); }
+	/* 4. Garden Elegance */
+	.p-garden { background:linear-gradient(170deg,#EAEFE3 0%, #C8D5BA 100%); color:#3F5C2D; }
+	/* 5. Minimal Luxury */
+	.p-minimal { background:#FFFFFF; color:#1A0A10; border-bottom:1px solid var(--border); }
+	/* 6. Desert Rose */
+	.p-desert { background:linear-gradient(180deg,#F8E6E0 0%, #E8C5C0 100%); color:#9B5A6B; }
+	/* 7. Emerald Night */
+	/* Emerald Night (PREMIUM) — anime : pulsation lumineuse emeraude qui
+	   respire au centre, comme une pierre precieuse qui scintille. */
+	.p-emerald {
+		background:linear-gradient(170deg,#0a2418 0%, #0E3B2E 50%, #0a2418 100%);
+		color:#D4B370;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-emerald::before {
+		content:""; position:absolute; inset:0;
+		background:
+			radial-gradient(ellipse 60% 70% at 50% 50%, rgba(80,220,165,.40) 0%, transparent 55%),
+			radial-gradient(ellipse 90% 60% at 50% 50%, rgba(212,179,112,.20) 0%, transparent 60%);
+		animation: emeraldPulse 5s ease-in-out infinite;
+		pointer-events:none;
+	}
+	@keyframes emeraldPulse {
+		0%, 100% { opacity:.55; transform: scale(1); }
+		50%      { opacity:1;   transform: scale(1.08); }
+	}
+	.p-emerald::after {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(212,179,112,.45); border-radius:6px;
+		box-shadow: inset 0 0 26px rgba(80,220,165,.18);
+		pointer-events:none;
+	}
+	.p-emerald .pv-acc, .p-emerald .pv-mono, .p-emerald .pv-title,
+	.p-emerald .pv-name, .p-emerald .pv-sub, .p-emerald .pv-orn, .p-emerald .pv-date {
+		position:relative; z-index:2;
+	}
+	/* 8. Palace Cream */
+	.p-palace { background:linear-gradient(180deg,#FFF9EE 0%, #F5E6C8 100%); color:#7C5E2F; }
+	.p-palace::before { content:""; position:absolute; inset:14px; border-top:2px solid rgba(184,146,47,.45); border-bottom:2px solid rgba(184,146,47,.45); border-radius:0; pointer-events:none; }
+	/* 9. Andalusian Touch */
+	.p-andalou { background:linear-gradient(180deg,#1A0F0F 0%, #5C1A2B 50%, #1A0F0F 100%); color:#F0D8B8; }
+	.p-andalou::before { content:""; position:absolute; inset:18px; border:1px solid rgba(240,216,184,.3); border-radius:8px; }
+	/* 10. Soft Calligraphy */
+	.p-cal { background:linear-gradient(180deg,#F8F4ED 0%, #F0E8D8 100%); color:#3D2232; }
+
+	/* === ZELLIGE styles marocains === */
+	/* Zellige Pearl — fond crème avec motif zellige beige doré */
+	.p-zellige-pearl {
+		background:
+			radial-gradient(circle at 0% 0%, rgba(184,146,47,.15) 0%, transparent 30%),
+			radial-gradient(circle at 100% 100%, rgba(184,146,47,.15) 0%, transparent 30%),
+			linear-gradient(180deg,#F8F1E4,#EFE3CB);
+		color:#7C5E2F;
+		position:relative;
+	}
+	.p-zellige-pearl::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			repeating-linear-gradient(45deg, rgba(184,146,47,.10) 0 2px, transparent 2px 18px),
+			repeating-linear-gradient(-45deg, rgba(184,146,47,.10) 0 2px, transparent 2px 18px);
+		opacity:.6;
+		pointer-events:none;
+	}
+	.p-zellige-pearl::after {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(184,146,47,.45); border-radius:6px;
+		pointer-events:none;
+	}
+
+	/* Zellige Royal — noir + or, motifs zellige étoilés */
+	.p-zellige-royal {
+		background:
+			radial-gradient(circle at 50% 0%, rgba(212,179,112,.18) 0%, transparent 50%),
+			radial-gradient(circle at 50% 100%, rgba(212,179,112,.15) 0%, transparent 50%),
+			linear-gradient(160deg,#0d0904 0%, #1A0F08 50%, #0d0904 100%);
+		color:#D4B370;
+		position:relative;
+	}
+	.p-zellige-royal::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			repeating-linear-gradient(60deg, rgba(212,179,112,.12) 0 1.5px, transparent 1.5px 14px),
+			repeating-linear-gradient(-60deg, rgba(212,179,112,.12) 0 1.5px, transparent 1.5px 14px);
+		opacity:.55;
+		pointer-events:none;
+	}
+	.p-zellige-royal::after {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(212,179,112,.45); border-radius:8px;
+		pointer-events:none;
+	}
+
+	/* === NOUVEAUX TEMPLATES WOW (remplacent les videos) === */
+
+	/* Or Liquide — degrade dore anime, signature absolue */
+	.p-or-liquide {
+		background:
+			radial-gradient(circle at 30% 20%, #FFF4D6 0%, transparent 40%),
+			radial-gradient(circle at 70% 80%, #C99A2C 0%, transparent 50%),
+			linear-gradient(135deg, #B8821C 0%, #F0D58A 30%, #B8821C 60%, #FFE9A8 100%);
+		background-size: 200% 200%;
+		animation: orShine 8s ease-in-out infinite;
+		color:#3A2410;
+		position:relative;
+	}
+	@keyframes orShine {
+		0%, 100% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
+	}
+	.p-or-liquide::before {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(58,36,16,.4); border-radius:6px;
+		box-shadow:inset 0 0 30px rgba(255,235,180,.4);
+		pointer-events:none;
+	}
+	.p-or-liquide::after {
+		content:""; position:absolute; inset:22px;
+		border:1px dashed rgba(58,36,16,.25); border-radius:4px;
+		pointer-events:none;
+	}
+
+	/* Caftan Ivoire — broderies dorees, ivoire luxueux */
+	.p-caftan {
+		background:
+			radial-gradient(ellipse at top, #FFF8EE 0%, #F0DEC5 60%, #E2C99C 100%);
+		color:#5C3A1A;
+		position:relative;
+	}
+	.p-caftan::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			repeating-linear-gradient(0deg, transparent 0 22px, rgba(180,138,52,.08) 22px 23px),
+			repeating-linear-gradient(90deg, transparent 0 22px, rgba(180,138,52,.08) 22px 23px);
+		pointer-events:none;
+	}
+	.p-caftan::after {
+		content:""; position:absolute; inset:18px;
+		border:2px solid rgba(180,138,52,.6); border-radius:8px;
+		box-shadow:inset 0 0 0 4px rgba(255,255,255,.5), inset 0 0 0 6px rgba(180,138,52,.4);
+		pointer-events:none;
+	}
+
+	/* Imperial Bordeaux — sceau royal, bordeaux profond + or */
+	.p-imperial {
+		background:
+			radial-gradient(circle at 50% 30%, #5C1A2B 0%, #2A0A14 100%);
+		color:#F0D8B8;
+		position:relative;
+	}
+	.p-imperial::before {
+		content:""; position:absolute; inset:0;
+		background:
+			radial-gradient(circle at 50% 50%, rgba(212,168,83,.18), transparent 55%);
+		pointer-events:none;
+	}
+	.p-imperial::after {
+		content:""; position:absolute; top:24px; left:50%; transform:translateX(-50%);
+		width:46px; height:46px; border-radius:50%;
+		background:linear-gradient(145deg, #E5C68A, #B8821C);
+		box-shadow:0 4px 18px rgba(0,0,0,.4), inset 0 1px 2px rgba(255,255,255,.4);
+		opacity:.9;
+		pointer-events:none;
+	}
+
+	/* ============================================================
+	   5 NOUVELLES PALETTES (lot ajoute)
+	   ============================================================ */
+
+	/* 1. SUNSET MARRAKECH - degrade radial soleil couchant orange/corail */
+	/* Sunset Marrakech (PRO) — anime : rayons solaires en eventail qui
+	   tournent lentement depuis le bas, comme un soleil couchant qui rayonne. */
+	.p-sunset-marrakech {
+		background:
+			radial-gradient(circle at 50% 90%, #FFD89A 0%, #FF9966 28%, #E55A4A 60%, #B83B5E 100%);
+		color:#FFF8EC;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-sunset-marrakech::before {
+		content:""; position:absolute;
+		left:50%; bottom:-40%;
+		width:220%; height:220%;
+		margin-left:-110%;
+		background:
+			conic-gradient(from 270deg at 50% 50%,
+				rgba(255,236,200,.0) 0deg,
+				rgba(255,236,200,.32) 8deg,
+				rgba(255,236,200,.0) 16deg,
+				rgba(255,236,200,.0) 30deg,
+				rgba(255,236,200,.28) 38deg,
+				rgba(255,236,200,.0) 46deg,
+				rgba(255,236,200,.0) 60deg,
+				rgba(255,236,200,.32) 68deg,
+				rgba(255,236,200,.0) 76deg,
+				rgba(255,236,200,.0) 90deg);
+		animation: sunsetRays 24s linear infinite;
+		mix-blend-mode: screen;
+		pointer-events:none;
+	}
+	@keyframes sunsetRays {
+		from { transform: rotate(0deg);   }
+		to   { transform: rotate(360deg); }
+	}
+	.p-sunset-marrakech::after {
+		content:""; position:absolute; bottom:0; left:0; right:0; height:55%;
+		background:linear-gradient(to top, rgba(184,59,94,.55), transparent);
+		pointer-events:none;
+	}
+	.p-sunset-marrakech .pv-acc, .p-sunset-marrakech .pv-mono, .p-sunset-marrakech .pv-title,
+	.p-sunset-marrakech .pv-name, .p-sunset-marrakech .pv-sub, .p-sunset-marrakech .pv-orn,
+	.p-sunset-marrakech .pv-date {
+		position:relative; z-index:2;
+		text-shadow: 0 1px 8px rgba(80,30,60,.45);
+	}
+	.p-sunset-marrakech::after {
+		content:""; position:absolute; top:30px; left:50%; transform:translateX(-50%);
+		width:80px; height:80px; border-radius:50%;
+		background:radial-gradient(circle, #FFE9B0 0%, #FFB870 50%, transparent 70%);
+		box-shadow:0 0 60px rgba(255,184,112,.6);
+		opacity:.85;
+		pointer-events:none;
+	}
+
+	/* 2. ART DECO ONYX - geometrique 20s noir mat + eventails or */
+	.p-art-deco {
+		background:linear-gradient(135deg, #0F0F1A 0%, #1A1626 50%, #0F0F1A 100%);
+		color:#E8C77A;
+		position:relative;
+	}
+	.p-art-deco::before {
+		content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+		width:0; height:0;
+		border-left:140px solid transparent;
+		border-right:140px solid transparent;
+		border-top:90px solid rgba(232,199,122,.18);
+		pointer-events:none;
+	}
+	.p-art-deco::after {
+		content:""; position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+		width:0; height:0;
+		border-left:140px solid transparent;
+		border-right:140px solid transparent;
+		border-bottom:90px solid rgba(232,199,122,.12);
+		pointer-events:none;
+	}
+
+	/* 3. OCEAN BLUSH - turquoise pastel + rose poudre, esprit cote */
+	.p-ocean-blush {
+		background:
+			radial-gradient(ellipse at 20% 0%, #E5F4F0 0%, transparent 50%),
+			radial-gradient(ellipse at 80% 100%, #FCD9D9 0%, transparent 55%),
+			linear-gradient(135deg, #BFE0DA 0%, #F4D9D9 100%);
+		color:#3D5A6C;
+		position:relative;
+	}
+	.p-ocean-blush::before {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(61,90,108,.25); border-radius:6px;
+		pointer-events:none;
+	}
+	.p-ocean-blush::after {
+		content:"~ ~ ~"; position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+		font-size:18px; color:rgba(61,90,108,.4); letter-spacing:6px;
+	}
+
+	/* 4. VINTAGE POSTCARD - papier kraft + timbre + cachet rond */
+	.p-vintage-postcard {
+		background:
+			repeating-linear-gradient(0deg, transparent 0 30px, rgba(120,80,40,.03) 30px 31px),
+			linear-gradient(180deg, #F4E8D2 0%, #E8D5B0 100%);
+		color:#5C3A1A;
+		position:relative;
+	}
+	.p-vintage-postcard::before {
+		content:""; position:absolute; top:14px; right:14px;
+		width:50px; height:60px;
+		background:linear-gradient(135deg, #B83B5E, #8B1A2B);
+		border:3px dashed #F4E8D2;
+		box-shadow:0 0 0 2px #B83B5E, 0 4px 12px rgba(0,0,0,.2);
+	}
+	.p-vintage-postcard::after {
+		content:""; position:absolute; top:90px; right:18px;
+		width:70px; height:70px; border-radius:50%;
+		border:2px solid rgba(92,58,26,.35);
+		background:radial-gradient(circle, transparent 50%, rgba(92,58,26,.08) 50%, rgba(92,58,26,.08) 56%, transparent 56%);
+		opacity:.7;
+	}
+
+	/* 5. CONSTELLATION - etoiles or sur fond indigo profond */
+	.p-constellation {
+		background:
+			radial-gradient(circle at 18% 22%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 78% 35%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 35% 65%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 62% 80%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 88% 18%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 12% 75%, #FFE9B0 0.5px, transparent 1px),
+			radial-gradient(circle at 50% 50%, rgba(212,175,55,.15), transparent 60%),
+			linear-gradient(180deg, #0A0E2E 0%, #1A1F4F 60%, #0A0E2E 100%);
+		background-size: 100% 100%;
+		color:#E5C77A;
+		position:relative;
+	}
+	/* Constellation (PREMIUM) — anime : etoiles qui scintillent en cascade,
+	   chaque petite etoile clignote a son propre rythme (twinkling). */
+	.p-constellation::before {
+		content:""; position:absolute; inset:0;
+		background:
+			radial-gradient(circle at 18% 22%, #FFE9B0 0.7px, transparent 1.3px),
+			radial-gradient(circle at 78% 35%, #FFE9B0 0.7px, transparent 1.3px),
+			radial-gradient(circle at 35% 65%, #FFE9B0 0.7px, transparent 1.3px),
+			radial-gradient(circle at 62% 80%, #FFE9B0 0.7px, transparent 1.3px),
+			radial-gradient(circle at 88% 18%, #FFE9B0 0.7px, transparent 1.3px),
+			radial-gradient(circle at 12% 75%, #FFE9B0 0.7px, transparent 1.3px),
+			radial-gradient(circle at 45% 12%, #FFE9B0 0.7px, transparent 1.3px),
+			radial-gradient(circle at 92% 60%, #FFE9B0 0.7px, transparent 1.3px);
+		animation: starsTwinkle 4s ease-in-out infinite;
+		filter: drop-shadow(0 0 4px rgba(255,233,176,.6));
+		pointer-events:none;
+	}
+	@keyframes starsTwinkle {
+		0%, 100% { opacity:.55; transform: scale(1); }
+		25%      { opacity:1;   transform: scale(1.04); }
+		50%      { opacity:.7;  transform: scale(0.98); }
+		75%      { opacity:.95; transform: scale(1.02); }
+	}
+	.p-constellation .pv-orn {
+		display:inline-block;
+		animation: starsTwinkle 3s ease-in-out infinite;
+	}
+	.p-constellation::after {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(229,199,122,.4); border-radius:8px;
+		box-shadow: inset 0 0 30px rgba(255,233,176,.10);
+		pointer-events:none;
+	}
+
+	/* ============================================================
+	   3 PALETTES SUPPLEMENTAIRES (lot final)
+	   ============================================================ */
+
+	/* 6. LAVENDER DREAM (FREE) - lavande champetre + violet doux */
+	.p-lavender {
+		background:
+			radial-gradient(circle at 20% 20%, #E8D5F0 0%, transparent 45%),
+			radial-gradient(circle at 80% 80%, #D4B8E8 0%, transparent 45%),
+			linear-gradient(160deg, #F4E8F8 0%, #DCC5EC 100%);
+		color:#5C3A6B;
+		position:relative;
+	}
+	.p-lavender::before {
+		content:""; position:absolute; inset:14px;
+		border:1px solid rgba(92,58,107,.25); border-radius:8px;
+		pointer-events:none;
+	}
+	.p-lavender::after {
+		content:"❀ ❀ ❀"; position:absolute; bottom:22px; left:50%;
+		transform:translateX(-50%);
+		font-size:14px; color:rgba(92,58,107,.5); letter-spacing:8px;
+	}
+
+	/* 7. HENNA GARDEN (PRO) - motifs henne orange/terra cotta sur ivoire */
+	.p-henna {
+		background:
+			radial-gradient(circle at 0% 0%, rgba(204,86,42,.08) 0%, transparent 35%),
+			radial-gradient(circle at 100% 100%, rgba(204,86,42,.08) 0%, transparent 35%),
+			linear-gradient(180deg, #FBF4E5 0%, #F1E0C0 100%);
+		color:#8B3A1A;
+		position:relative;
+	}
+	.p-henna::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			radial-gradient(circle at 12% 18%, rgba(204,86,42,.18) 1px, transparent 2px),
+			radial-gradient(circle at 88% 22%, rgba(204,86,42,.15) 1px, transparent 2px),
+			radial-gradient(circle at 18% 82%, rgba(204,86,42,.15) 1px, transparent 2px),
+			radial-gradient(circle at 82% 78%, rgba(204,86,42,.18) 1px, transparent 2px),
+			repeating-linear-gradient(45deg, rgba(204,86,42,.05) 0 1px, transparent 1px 14px),
+			repeating-linear-gradient(-45deg, rgba(204,86,42,.05) 0 1px, transparent 1px 14px);
+		background-size: 50px 50px, 50px 50px, 50px 50px, 50px 50px, auto, auto;
+		pointer-events:none;
+	}
+	.p-henna::after {
+		content:"❋"; position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+		font-size:22px; color:#CC562A; opacity:.7;
+	}
+
+	/* 8. MARBLE ROSE GOLD (PREMIUM) - marbre blanc veine + rose gold */
+	.p-marble-rose {
+		background:
+			linear-gradient(135deg, #FFFFFF 0%, #F8F0EE 40%, #FFFFFF 70%, #F2E5E0 100%);
+		color:#7A4A55;
+		position:relative;
+	}
+	.p-marble-rose::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			linear-gradient(115deg, transparent 0%, transparent 35%, rgba(212,159,142,.18) 36%, rgba(212,159,142,.18) 38%, transparent 39%, transparent 62%, rgba(212,159,142,.12) 63%, rgba(212,159,142,.12) 65%, transparent 66%),
+			linear-gradient(40deg, transparent 0%, transparent 45%, rgba(212,159,142,.10) 46%, rgba(212,159,142,.10) 47%, transparent 48%);
+		pointer-events:none;
+	}
+	.p-marble-rose::after {
+		content:""; position:absolute; inset:14px;
+		border:2px solid rgba(212,159,142,.55); border-radius:6px;
+		box-shadow:inset 0 0 0 5px #fff, inset 0 0 0 6px rgba(212,159,142,.3);
+		pointer-events:none;
+	}
+
+	/* ============================================================
+	   3 NOUVEAUX TEMPLATES "WOW" (mai 2026)
+	   ============================================================ */
+
+	/* Holographic Velvet (PRO) — velours bordeaux profond + filet hologramme
+	   metallise anime. Effet sticker holographique luxe 2026. */
+	.p-holo-velvet {
+		background:
+			radial-gradient(ellipse at 30% 20%, rgba(255,170,210,.15) 0%, transparent 50%),
+			radial-gradient(ellipse at 80% 80%, rgba(170,210,255,.18) 0%, transparent 50%),
+			linear-gradient(135deg, #2A0A18 0%, #4A1028 35%, #6B1838 65%, #2A0A18 100%);
+		color:#F5E0CC;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-holo-velvet::before {
+		content:""; position:absolute; inset:0;
+		background:
+			conic-gradient(from 0deg at 50% 50%,
+				rgba(255,200,255,.0) 0deg,
+				rgba(180,255,255,.22) 60deg,
+				rgba(255,255,180,.0) 120deg,
+				rgba(255,180,220,.22) 180deg,
+				rgba(180,220,255,.0) 240deg,
+				rgba(255,255,200,.22) 300deg,
+				rgba(255,200,255,.0) 360deg);
+		mix-blend-mode: screen;
+		animation: holoSpin 12s linear infinite;
+		opacity:.55;
+		pointer-events:none;
+	}
+	@keyframes holoSpin {
+		from { transform: rotate(0deg) scale(1.4); }
+		to   { transform: rotate(360deg) scale(1.4); }
+	}
+	.p-holo-velvet::after {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(255,210,180,.55);
+		border-radius:6px;
+		box-shadow:
+			inset 0 0 0 4px rgba(0,0,0,.25),
+			inset 0 0 22px rgba(255,200,210,.18),
+			0 0 1px rgba(255,255,255,.3);
+		pointer-events:none;
+	}
+
+	/* Aurora Borealis (PRO) — auroras vertes/violettes/cyan qui ondulent
+	   en continu sur ciel nuit. Effet Northern Lights ultra spectaculaire. */
+	.p-aurora {
+		background:
+			radial-gradient(ellipse at 30% 100%, rgba(86,230,194,.0) 0%, transparent 60%),
+			linear-gradient(180deg, #0A0F2E 0%, #14163C 45%, #1B0F3A 100%);
+		color:#E8F4FF;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-aurora::before {
+		content:""; position:absolute; inset:-30%;
+		background:
+			radial-gradient(ellipse 50% 80% at 25% 60%, rgba(86,230,194,.55) 0%, transparent 60%),
+			radial-gradient(ellipse 60% 90% at 70% 40%, rgba(168,116,255,.50) 0%, transparent 60%),
+			radial-gradient(ellipse 45% 70% at 55% 80%, rgba(94,180,255,.45) 0%, transparent 60%);
+		filter: blur(28px);
+		animation: auroraDrift 14s ease-in-out infinite;
+		mix-blend-mode: screen;
+		pointer-events:none;
+	}
+	@keyframes auroraDrift {
+		0%, 100% { transform: translate(-4%, -2%) rotate(-3deg); opacity:.85; }
+		33%      { transform: translate( 2%,  3%) rotate( 2deg); opacity:1; }
+		66%      { transform: translate(-2%,  1%) rotate(-1deg); opacity:.9; }
+	}
+	.p-aurora::after {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(232,244,255,.45);
+		border-radius:6px;
+		box-shadow: inset 0 0 22px rgba(168,116,255,.20);
+		pointer-events:none;
+	}
+	.p-aurora .pv-acc, .p-aurora .pv-mono, .p-aurora .pv-title,
+	.p-aurora .pv-name, .p-aurora .pv-sub, .p-aurora .pv-orn, .p-aurora .pv-date {
+		position:relative; z-index:2;
+		text-shadow: 0 1px 8px rgba(0,0,0,.55);
+	}
+
+	/* Mihrab d'Or (PREMIUM) — arche andalouse ogivale en SVG inline,
+	   bordures arabesques dorees sur bleu nuit profond. Manuscrit royal. */
+	.p-mihrab {
+		background:
+			radial-gradient(ellipse at 50% 5%, rgba(220,180,90,.15) 0%, transparent 55%),
+			radial-gradient(ellipse at 50% 100%, rgba(220,180,90,.10) 0%, transparent 50%),
+			linear-gradient(180deg, #0A1228 0%, #0D1840 50%, #050A1A 100%);
+		color:#E8C97A;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-mihrab::before {
+		/* Arche ogivale en SVG (encodee en data URL pour rester self-contained) */
+		content:""; position:absolute; inset:0;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280' preserveAspectRatio='xMidYMid meet'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23E8C97A' stop-opacity='0.85'/><stop offset='100%25' stop-color='%23B8851F' stop-opacity='0.55'/></linearGradient></defs><path d='M30 270 L30 90 Q30 30 100 30 Q170 30 170 90 L170 270 Z' fill='none' stroke='url(%23g)' stroke-width='1.6'/><path d='M40 270 L40 95 Q40 40 100 40 Q160 40 160 95 L160 270' fill='none' stroke='%23DCB46A' stroke-width='0.7' stroke-dasharray='2 3' opacity='0.65'/><path d='M50 270 L50 100 Q50 50 100 50 Q150 50 150 100 L150 270' fill='none' stroke='%23DCB46A' stroke-width='0.4' opacity='0.4'/><circle cx='100' cy='90' r='6' fill='none' stroke='%23E8C97A' stroke-width='0.8' opacity='0.7'/><circle cx='100' cy='90' r='2.5' fill='%23E8C97A' opacity='0.85'/></svg>");
+		background-repeat: no-repeat;
+		background-position: center 12px;
+		background-size: 86% 92%;
+		opacity:.85;
+		pointer-events:none;
+	}
+	.p-mihrab::after {
+		content:""; position:absolute; inset:12px;
+		border:1px solid rgba(220,180,90,.4);
+		border-radius:6px;
+		box-shadow: inset 0 0 0 4px rgba(10,18,40,.4), inset 0 0 22px rgba(232,201,122,.10);
+		pointer-events:none;
+	}
+	.p-mihrab .pv-acc, .p-mihrab .pv-mono, .p-mihrab .pv-title,
+	.p-mihrab .pv-name, .p-mihrab .pv-sub, .p-mihrab .pv-orn, .p-mihrab .pv-date {
+		position:relative; z-index:2;
+		text-shadow: 0 1px 8px rgba(0,0,0,.45);
+	}
+
+	/* Selected check */
+	.tpl.selected { border-color:var(--gold); box-shadow:0 12px 36px rgba(184,146,47,.18); }
+	.tpl-check { position:absolute; top:14px; left:14px; width:28px; height:28px; background:var(--gold); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:6; opacity:0; transform:scale(.6); transition:all .25s; font-size:14px; }
+	.tpl.selected .tpl-check { opacity:1; transform:scale(1); }
+
+	/* Lock overlay */
+	.tpl.locked { opacity:.92; }
+	.lock { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(26,10,16,.42); backdrop-filter:blur(2.5px); z-index:4; opacity:0; transition:opacity .3s; }
+	.tpl.locked:hover .lock, .tpl.locked.show-lock .lock { opacity:1; }
+	.tpl.locked .lock { opacity:.85; }
+	.lock svg { width:34px; height:34px; color:#fff; margin-bottom:10px; }
+	.lock span { display:inline-block; padding:8px 18px; background:#fff; color:var(--ink); border-radius:50px; font-family:'Cinzel',serif; font-size:10px; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; }
+	.lock-tier-PRO span { background:linear-gradient(135deg,#2C1810,#4A2818); color:#D4B370; }
+	.lock-tier-PREMIUM span { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:#fff; }
+
+	/* Card info */
+	.tpl-info { padding:18px 22px 22px; flex:1; display:flex; flex-direction:column; background:#fff; border-top:1px solid var(--border); }
+	.tpl-info h4 { margin:0 0 4px; font-family:'Italiana','Cormorant Garamond',serif; font-size:1.3rem; color:var(--ink); font-weight:400; letter-spacing:.5px; }
+	.tpl-info .d { margin:0 0 14px; font-size:12.5px; color:var(--muted); line-height:1.5; flex:1; font-style:italic; }
+	.tpl-info button { margin-top:auto; padding:10px; border-radius:8px; border:1px solid var(--ink); background:transparent; color:var(--ink); font-size:11px; font-weight:600; cursor:pointer; transition:all .25s; letter-spacing:2px; text-transform:uppercase; font-family:'Cinzel',serif; }
+	.tpl-info button:hover { background:var(--ink); color:var(--gold); }
+	.tpl-info button.btn-locked { border-color:var(--gold); color:var(--gold); background:rgba(184,146,47,.06); }
+	.tpl-info button.btn-locked:hover { background:var(--gold); color:#fff; }
+
+	/* ===== Modal ===== */
+	.modal-overlay { position:fixed; inset:0; background:rgba(13,9,4,.65); backdrop-filter:blur(6px); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; }
+	.modal-overlay.show { display:flex; }
+	.modal { background:#fff; border-radius:24px; max-width:680px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 30px 80px rgba(0,0,0,.3); }
+	.modal-head { padding:26px 32px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+	.modal-head h2 { margin:0; font-family:'Italiana',serif; font-size:1.7rem; color:var(--ink); font-weight:400; }
+	.modal-close { background:none; border:none; font-size:30px; cursor:pointer; color:var(--muted); line-height:1; }
+	.modal-body { padding:26px 32px; }
+	.modal-body label { display:block; font-size:10.5px; font-weight:600; color:var(--ink-soft); margin:18px 0 8px; text-transform:uppercase; letter-spacing:2.5px; font-family:'Cinzel',serif; }
+	.modal-body select, .modal-body textarea, .modal-body input { width:100%; padding:12px 16px; border:1px solid var(--border); border-radius:10px; font-size:14px; font-family:inherit; color:var(--ink); background:#fff; }
+	.modal-body select:focus, .modal-body textarea:focus, .modal-body input:focus { outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,146,47,.1); }
+	.modal-body textarea { min-height:90px; resize:vertical; }
+	.confirm-summary { background:linear-gradient(180deg,#FAF7F2,#F4EFE6); border-radius:14px; padding:18px 22px; margin:22px 0 8px; border:1px solid rgba(184,146,47,.2); }
+	.confirm-summary div { display:flex; justify-content:space-between; padding:7px 0; font-size:13.5px; }
+	.confirm-summary div:not(:last-child) { border-bottom:1px solid rgba(184,146,47,.12); }
+	.confirm-summary span:first-child { color:var(--muted); font-weight:500; font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:2px; text-transform:uppercase; }
+	.confirm-summary span:last-child { color:var(--ink); font-weight:600; }
+	.modal-foot { padding:20px 32px 26px; display:flex; gap:12px; justify-content:flex-end; border-top:1px solid var(--border); }
+	.btn-cancel { padding:12px 24px; border:1px solid var(--border); background:#fff; color:var(--ink-soft); border-radius:10px; font-weight:600; cursor:pointer; font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+	.btn-confirm { padding:12px 28px; border:none; background:var(--ink); color:var(--gold); border-radius:10px; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.18); font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+	.btn-confirm:hover { transform:translateY(-1px); background:var(--noir-2); }
+	.btn-confirm:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+	/* Notice */
+	.notice { padding:14px 20px; border-radius:12px; margin-bottom:14px; font-size:13.5px; }
+	.notice-info { background:#F4EFE6; color:#7C5E2F; border-left:3px solid var(--gold); }
+	.notice-warn { background:#FEF3E0; color:#8B5C0B; border-left:3px solid #D4A853; }
+	.notice-success { background:#E8F0E5; color:#1F6B3A; border-left:3px solid #3D8B5E; }
+	.notice-error { background:#FCEAEC; color:#8B1A2B; border-left:3px solid #B83B5E; }
+
+	/* Sent invitations list */
+	.inv-list { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+	.inv-item { background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; gap:14px; transition:border-color .2s; }
+	.inv-item:hover { border-color:var(--gold); }
+	.inv-item h5 { margin:0 0 4px; font-size:15px; color:var(--ink); font-family:'Italiana',serif; font-weight:400; letter-spacing:.5px; }
+	.inv-item small { color:var(--muted); font-size:12px; font-style:italic; }
+	.statut-badge { padding:4px 12px; border-radius:50px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; font-family:'Cinzel',serif; }
+	.s-EN_ATTENTE { background:#FEF3C7; color:#92400E; }
+	.s-ENVOYEE { background:#E0EAF8; color:#1E40AF; }
+	.s-CONFIRMEE { background:#DCFCE7; color:#166534; }
+	.s-DECLINEE { background:#FEE2E2; color:#991B1B; }
+	.inv-item button { padding:8px 16px; border-radius:8px; border:1px solid var(--ink); background:transparent; color:var(--ink); font-size:11px; font-weight:600; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:1.5px; text-transform:uppercase; transition:all .2s; }
+	.inv-item button:hover { background:var(--ink); color:var(--gold); }
+	.inv-item button:disabled { border-color:var(--border); color:var(--muted); cursor:not-allowed; background:transparent; }
+
+	@media(max-width:900px){.tpl-grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.inv-list{grid-template-columns:1fr}}
+	@media(max-width:520px){.tpl-grid{grid-template-columns:1fr}.inv-hero{flex-direction:column;align-items:flex-start}.inv-hero h1{font-size:2rem}}
+	</style>
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span class="active" onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userBadge" class="badge-free">FREE</span>
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+		</div>
+	</div>
+
+	<div class="inv-wrap">
+
+		<!-- HERO -->
+		<div class="inv-hero">
+			<div>
+				<span class="acc">Collection 2026</span>
+				<h1>Invitations digitales</h1>
+				<p>Une collection raffinée de modèles signés Ayora — du minimaliste élégant au luxe absolu, pour des invitations qui marquent les esprits.</p>
+			</div>
+			<span class="plan-pill plan-FREE" id="planPill">Plan Free</span>
+		</div>
+
+		<!-- STATS -->
+		<div class="stats">
+			<div class="stat-card"><div class="v" id="statTotal">0</div><div class="l">Créées</div></div>
+			<div class="stat-card"><div class="v" id="statSent">0</div><div class="l">Envoyées</div></div>
+			<div class="stat-card"><div class="v" id="statRemaining">10</div><div class="l">Restantes</div></div>
+			<div class="stat-card"><div class="v" id="statPlan">FREE</div><div class="l">Plan</div></div>
+		</div>
+
+		<div id="globalNotice"></div>
+
+		<!-- LIEU DE LA CÉRÉMONIE — saisie ici (après avoir vu les recommandations) -->
+		<div class="venue-bar" id="venueBar">
+			<div class="venue-icon"><svg viewBox="0 0 24 24"><path d="M12 22s7-7.6 7-13a7 7 0 1 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+			<div class="venue-body">
+				<div class="venue-acc">— Lieu de la cérémonie —</div>
+				<h3>Indiquez le palais ou la salle choisis parmi vos recommandations</h3>
+				<p>Cette information apparaîtra automatiquement sur tous vos modèles d'invitations et dans les emails envoyés à vos invités.</p>
+				<div class="venue-input-row">
+					<input id="venueInput" type="text" placeholder="Ex : Palais Mokri, Riad Maison Bleue, Salle Al Andalous…" maxlength="100">
+					<button class="venue-save" id="venueSave" onclick="saveVenue()">Enregistrer</button>
+				</div>
+				<div class="venue-status" id="venueStatus"></div>
+			</div>
+		</div>
+
+		<!-- COLLECTION -->
+		<div class="section-head">
+			<span class="acc">— La collection —</span>
+			<h2>Choisissez votre modèle</h2>
+			<div class="ornament">◆</div>
+			<p>24 designs exclusifs (5 FREE • 8 PRO • 11 PREMIUM), signés par notre studio. Pré-remplis automatiquement avec vos noms, date, heure et lieu de cérémonie.</p>
+		</div>
+
+		<div class="filters">
+			<div class="filter active" data-f="all">Tous</div>
+			<div class="filter" data-f="FREE">Free</div>
+			<div class="filter" data-f="PRO">Pro</div>
+			<div class="filter" data-f="PREMIUM">Premium</div>
+		</div>
+
+		<div class="tpl-grid" id="tplGrid"></div>
+
+		<!-- SENT LIST -->
+		<div class="section-head">
+			<span class="acc">— Vos envois —</span>
+			<h2>Vos invitations</h2>
+			<div class="ornament">◆</div>
+			<p>Suivez vos invitations créées et envoyez-les aux invités d'un simple clic.</p>
+		</div>
+		<div id="invitationsList" class="inv-list">
+			<div class="loading"><div class="spinner"></div></div>
+		</div>
+
+	</div>
+
+	<!-- MODAL -->
+	<div class="modal-overlay" id="modalCreate">
+		<div class="modal">
+			<div class="modal-head">
+				<h2>Confirmer & envoyer</h2>
+				<button class="modal-close" onclick="closeModal()">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div id="modalNotice"></div>
+				<label>Invité destinataire</label>
+				<select id="selectGuest"><option value="">— Choisir un invité —</option></select>
+				<label>Modèle choisi</label>
+				<input id="selTplName" readonly>
+				<label>Message personnalisé (optionnel)</label>
+				<textarea id="messagePerso" placeholder="Une attention pour cet invité…"></textarea>
+				<div class="confirm-summary" id="confirmSummary" style="display:none;">
+					<div><span>Invité</span><span id="sumGuest">—</span></div>
+					<div><span>Email</span><span id="sumEmail">—</span></div>
+					<div><span>Modèle</span><span id="sumTpl">—</span></div>
+					<div><span>Date</span><span id="sumDate">—</span></div>
+					<div><span>Lieu</span><span id="sumLieu">—</span></div>
+				</div>
+			</div>
+			<div class="modal-foot">
+				<button class="btn-cancel" onclick="closeModal()">Annuler</button>
+				<button class="btn-confirm" id="btnConfirm" onclick="confirmAndSend()">Confirmer & envoyer</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/api.js"></script>
+	<script>
+		var user = checkAuth(); if (user) applyAccountHeader(user);
+		var currentPlan = 'FREE';
+		var planRank = { FREE:0, PRO:1, PREMIUM:2 };
+		var selectedTemplate = null;
+		var subscription = null;
+		var guests = [];
+
+		// === Donnees du mariage (recuperees depuis le questionnaire) ===
+		// Pre-remplies a partir des reponses de la mariee : noms, date, heure, ville, lieu.
+		var weddingInfo = {
+			coupleNames: "Ayla & Youssef",   // par defaut
+			coupleInitials: "A&Y",
+			dateLong: "12 Juin 2026",        // ex : "12 Juin 2026"
+			dateShort: "12 . 06 . 2026",
+			heure: "19:00",
+			ville: "Fès",
+			lieu: ""                         // nom du palais / salle si renseigne
+		};
+
+		function getInitials(s) {
+			var parts = s.replace(/\s*&\s*/g, ' & ').split('&');
+			if (parts.length >= 2) return (parts[0].trim()[0] || 'A') + '&' + (parts[1].trim()[0] || 'Y');
+			return s.substring(0, 3);
+		}
+
+		var FRENCH_MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+		function formatDateLong(iso) {
+			if (!iso) return '';
+			var d = new Date(iso);
+			if (isNaN(d.getTime())) return iso;
+			return d.getDate() + ' ' + FRENCH_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+		}
+		function formatDateShort(iso) {
+			if (!iso) return '';
+			var d = new Date(iso);
+			if (isNaN(d.getTime())) return iso;
+			var pad = function(n){return (n<10?'0':'')+n;};
+			return pad(d.getDate()) + ' . ' + pad(d.getMonth()+1) + ' . ' + d.getFullYear();
+		}
+		function formatHeure(h) {
+			if (!h) return '';
+			return h.replace(':', 'h');   // 19:00 -> 19h00
+		}
+
+		// Lieu complet : "Palais Mokri · Fes" ou juste "Fes" si pas de salle
+		function lieuComplet() {
+			if (weddingInfo.lieu && weddingInfo.ville) return weddingInfo.lieu + ' · ' + weddingInfo.ville;
+			return weddingInfo.lieu || weddingInfo.ville || 'Maroc';
+		}
+		function dateHeureLine() {
+			var d = weddingInfo.dateLong;
+			var h = weddingInfo.heure ? ' · ' + formatHeure(weddingInfo.heure) : '';
+			return d + h;
+		}
+
+		// === 15 templates premium (3 FREE, 5 PRO, 7 PREMIUM) — pre-remplis avec weddingInfo ===
+		function buildTemplates() {
+			var n = weddingInfo.coupleNames;
+			var m = weddingInfo.coupleInitials;
+			var dLong = weddingInfo.dateLong;
+			var dShort = weddingInfo.dateShort;
+			var dh = dateHeureLine();
+			var lieu = lieuComplet();
+			var year = (weddingInfo.dateLong.match(/\d{4}/) || ['2026'])[0];
+
+			return [
+			// ==============================
+			// === FREE (6 modèles) ===
+			// ==============================
+			{ slug:'ivory-gold',     name:'Ivory Gold',         desc:'Ivoire & or fin, double cadre raffiné',     level:'FREE',    palette:'p-ivory',
+			  pv:{acc:'Save the Date', mono:m, title:'Vous êtes invités', name:n, sub:'Cérémonie · ' + dh, orn:'◆ ◆ ◆', date:lieu} },
+			{ slug:'minimal-luxury', name:'Minimal Luxury',     desc:'Minimalisme épuré, typographie italienne',  level:'FREE',    palette:'p-minimal',
+			  pv:{acc:'Wedding ' + year, title:'Save the Date', name:m.replace('&',' · '), sub:dShort, orn:'—', date:lieu} },
+			{ slug:'soft-cal',       name:'Soft Calligraphy',   desc:'Calligraphie élégante, doux et raffiné',    level:'FREE',    palette:'p-cal',
+			  pv:{acc:'L\'invitation', mono:m, title:'Notre mariage', name:n, sub:'Avec amour · ' + formatHeure(weddingInfo.heure), orn:'◊', date:dLong + ' · ' + weddingInfo.ville} },
+			{ slug:'ocean-blush',    name:'Ocean Blush',        desc:'Turquoise pastel & rose poudré, esprit côte', level:'FREE',  palette:'p-ocean-blush',
+			  pv:{acc:'Save the Date', mono:m, title:'Notre union', name:n, sub:dh, orn:'~ ~ ~', date:lieu} },
+			{ slug:'lavender-dream', name:'Lavender Dream',     desc:'Lavande champêtre & violet doux, romantique', level:'FREE',  palette:'p-lavender',
+			  pv:{acc:'Lavender Wedding', mono:m, title:'Sous la lavande', name:n, sub:dh, orn:'❀ ❀ ❀', date:lieu} },
+
+			// ==============================
+			// === PRO (8 modèles) ===
+			// ==============================
+			{ slug:'desert-rose',     name:'Desert Rose',       desc:'Rose poudré, féminin, contemporain',        level:'PRO',     palette:'p-desert',
+			  pv:{acc:'Save the Date', mono:m, title:'Notre mariage', name:n, sub:dh, orn:'❀ ❀ ❀', date:lieu} },
+			{ slug:'garden-elegance', name:'Garden Elegance',   desc:'Vert botanique sage, fraîcheur naturelle',  level:'PRO',     palette:'p-garden',
+			  pv:{acc:'Garden Wedding', title:'You are invited', name:n, sub:dShort, orn:'❦', date:lieu + (weddingInfo.heure ? ' · ' + formatHeure(weddingInfo.heure) : '')} },
+			{ slug:'pearl',           name:'Moroccan Pearl',    desc:'Perle nacrée, touche fassi élégante',       level:'PRO',     palette:'p-pearl',
+			  pv:{acc:'Wedding Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:'Tradition fassi · ' + formatHeure(weddingInfo.heure), orn:'❋', date:dLong + ' · ' + weddingInfo.ville} },
+			{ slug:'zellige-pearl',   name:'Zellige Pearl',     desc:'Mosaïque de zellige, art fassi raffiné',    level:'PRO',     palette:'p-zellige-pearl',
+			  pv:{acc:'Mariage marocain', mono:m, title:'Vous êtes convié(e)', name:n, sub:'Tradition & élégance', orn:'❋ ◆ ❋', date:dh + ' · ' + weddingInfo.ville} },
+			{ slug:'palace-cream',    name:'Palace Cream',      desc:'Crème impérial, lignes dorées royales',     level:'PRO',     palette:'p-palace',
+			  pv:{acc:'Royal Invitation', mono:m, title:'Cérémonie de mariage', name:n, sub:lieu, orn:'◇ ◆ ◇', date:dh} },
+			{ slug:'sunset-marrakech',name:'Sunset Marrakech',  desc:'Coucher de soleil corail & or, oriental moderne', level:'PRO', palette:'p-sunset-marrakech',
+			  pv:{acc:'Sunset Wedding', mono:m, title:'Vous êtes invité(e)', name:n, sub:dh, orn:'☀', date:lieu} },
+			{ slug:'vintage-postcard',name:'Vintage Postcard',  desc:'Carte postale kraft, timbre & cachet rétro', level:'PRO',    palette:'p-vintage-postcard',
+			  pv:{acc:'Carte d\'invitation', mono:m, title:'À nos noces', name:n, sub:'le ' + dLong, orn:'· · ·', date:lieu} },
+			{ slug:'henna-garden',    name:'Henna Garden',      desc:'Motifs henné orange & terra cotta sur ivoire', level:'PRO', palette:'p-henna',
+			  pv:{acc:'Mariage oriental', mono:m, title:'Sous le henné', name:n, sub:dh, orn:'❋ ❋ ❋', date:lieu} },
+			{ slug:'holo-velvet',     name:'Holographic Velvet', desc:'Velours bordeaux profond + filet hologramme métallisé animé, finition luxe 2026', level:'PRO', palette:'p-holo-velvet',
+			  pv:{acc:'A Modern Wedding', mono:m, title:'Notre union', name:n, sub:'Le ' + dLong, orn:'◆ ◆ ◆', date:lieu + (weddingInfo.heure ? ' · ' + formatHeure(weddingInfo.heure) : '')} },
+			{ slug:'aurora-borealis', name:'Aurora Borealis',    desc:'Aurores boréales vertes, violettes et cyan qui ondulent en continu sur ciel nuit profond', level:'PRO', palette:'p-aurora',
+			  pv:{acc:'A Night to Remember', mono:m, title:'Notre union', name:n, sub:'Sous les aurores · ' + formatHeure(weddingInfo.heure), orn:'✦ ✧ ✦', date:dLong + ' · ' + weddingInfo.ville} },
+
+			// ==============================
+			// === PREMIUM (11 modèles) ===
+			// ==============================
+			{ slug:'royal-black',     name:'Royal Black',       desc:'Noir profond & or, prestige absolu',        level:'PREMIUM', palette:'p-royal',
+			  pv:{acc:'Invitation Prestige', mono:m, title:'Cérémonie privée', name:n, sub:'Le ' + dLong + ' · ' + formatHeure(weddingInfo.heure), orn:'◆ ◆ ◆', date:lieu} },
+			{ slug:'emerald-night',   name:'Emerald Night',     desc:'Émeraude profond, cadre en or fin',         level:'PREMIUM', palette:'p-emerald',
+			  pv:{acc:'A Night to Remember', mono:m, title:'Notre union', name:n, sub:dh, orn:'❋ ❋ ❋', date:lieu} },
+			{ slug:'andalusian',      name:'Andalusian Touch',  desc:'Bordeaux & ivoire, héritage andalou',       level:'PREMIUM', palette:'p-andalou',
+			  pv:{acc:'Cérémonie de mariage', mono:m, title:'Vous êtes invité(e)', name:n, sub:'Avec honneur · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + weddingInfo.ville} },
+			{ slug:'zellige-royal',   name:'Zellige Royal',     desc:'Zellige royal noir & or, signature marocaine', level:'PREMIUM', palette:'p-zellige-royal',
+			  pv:{acc:'Invitation marocaine', mono:m, title:'Mariage royal', name:n, sub:'Héritage fassi · ' + dLong, orn:'◆ ❋ ◆', date:lieu} },
+			{ slug:'or-liquide',      name:'Or Liquide',        desc:'Or fluide animé, signature absolue Ayora',  level:'PREMIUM', palette:'p-or-liquide',
+			  pv:{acc:'L\'union dorée', mono:m, title:'Cérémonie de mariage', name:n, sub:dh, orn:'✦ ✦ ✦', date:lieu} },
+			{ slug:'caftan-ivoire',   name:'Caftan Ivoire',     desc:'Broderies ivoire & or, esprit caftan royal', level:'PREMIUM', palette:'p-caftan',
+			  pv:{acc:'Invitation royale', mono:m, title:'Vous êtes convié(e)', name:n, sub:'À nos noces · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + lieu} },
+			{ slug:'imperial',        name:'Impérial Bordeaux', desc:'Sceau royal bordeaux & or, prestige fassi',  level:'PREMIUM', palette:'p-imperial',
+			  pv:{acc:'Sceau d\'honneur', mono:m, title:'Notre cérémonie', name:n, sub:dh, orn:'◆ ❋ ◆', date:lieu} },
+			{ slug:'art-deco-onyx',   name:'Art Déco Onyx',     desc:'Géométrie années 20, noir mat & or fin',     level:'PREMIUM', palette:'p-art-deco',
+			  pv:{acc:'Gatsby Wedding', mono:m, title:'Cérémonie privée', name:n, sub:dh, orn:'◊ ◇ ◊', date:lieu} },
+			{ slug:'constellation',   name:'Constellation',     desc:'Étoiles dorées sur indigo profond, célestial', level:'PREMIUM', palette:'p-constellation',
+			  pv:{acc:'Sous les étoiles', mono:m, title:'Notre nuit étoilée', name:n, sub:dh, orn:'✦ ✧ ✦', date:lieu} },
+			{ slug:'marble-rose-gold',name:'Marble Rose Gold',  desc:'Marbre blanc veiné rose gold, ultra moderne', level:'PREMIUM', palette:'p-marble-rose',
+			  pv:{acc:'Modern Luxe', mono:m, title:'Notre union', name:n, sub:dh, orn:'◇ ◆ ◇', date:lieu} },
+			{ slug:'mihrab-or',       name:'Mihrab d\'Or',      desc:'Grande arche andalouse ogivale dorée sur bleu nuit profond, esprit manuscrit royal andalou', level:'PREMIUM', palette:'p-mihrab',
+			  pv:{acc:'Invitation andalouse', mono:m, title:'Cérémonie de mariage', name:n, sub:'Héritage andalou · ' + formatHeure(weddingInfo.heure), orn:'❋ ◆ ❋', date:dLong + ' · ' + weddingInfo.ville} }
+			];
+		}
+
+		var TEMPLATES = buildTemplates();
+
+		if (user) {
+			document.getElementById('userName').textContent = user.firstName;
+			// 1) Affichage immediat depuis localStorage (fallback)
+			currentPlan = (user.subscriptionType || 'FREE').toUpperCase();
+			updatePlanUI();
+			// 2) Refresh serveur : si le plan a change cote DB
+			//    (ex: passage en PREMIUM via admin/back-office), on re-synchronise
+			//    le badge, le pill, le stat ET on re-render les templates car
+			//    canAccess() depend de currentPlan.
+			api.get('/api/auth/me').then(function(d) {
+				if (d && d.user && d.user.subscriptionType) {
+					var serverPlan = String(d.user.subscriptionType).toUpperCase();
+					if (serverPlan !== currentPlan) {
+						currentPlan = serverPlan;
+						updatePlanUI();
+						var f = document.querySelector('.filter.active');
+						renderTemplates(f ? f.getAttribute('data-f') : 'all');
+					}
+				}
+			}).catch(function(){});
+		}
+		loadCoupleNames();
+		loadInvitations();
+		loadGuests();
+		renderTemplates('all');
+
+		// Charger les infos du mariage (noms, date, heure, ville, lieu) depuis le questionnaire
+		function loadCoupleNames() {
+			api.get('/api/questionnaire').then(function(qa) {
+				if (!qa) return;
+				try {
+					var extras = null;
+					if (qa.notesSpeciales) {
+						extras = (typeof qa.notesSpeciales === 'object')
+							? qa.notesSpeciales
+							: JSON.parse(qa.notesSpeciales);
+					}
+					var first = function(s){ return (s||'').trim().split(' ')[0] || ''; };
+
+					if (extras) {
+						if (extras.nomMariee && extras.nomMarie) {
+							weddingInfo.coupleNames = first(extras.nomMariee) + ' & ' + first(extras.nomMarie);
+							weddingInfo.coupleInitials = getInitials(weddingInfo.coupleNames);
+						}
+						if (extras.heureMariage) weddingInfo.heure = extras.heureMariage;
+						if (extras.villeMariage) weddingInfo.ville = extras.villeMariage;
+						if (extras.lieuMariageNom) weddingInfo.lieu = extras.lieuMariageNom;
+					}
+					if (qa.dateMariage) {
+						weddingInfo.dateLong = formatDateLong(qa.dateMariage);
+						weddingInfo.dateShort = formatDateShort(qa.dateMariage);
+					}
+					if (!weddingInfo.coupleNames || weddingInfo.coupleNames === 'Ayla & Youssef') {
+						if (user && user.firstName) {
+							weddingInfo.coupleNames = user.firstName + ' & ...';
+							weddingInfo.coupleInitials = (user.firstName[0] || 'A') + '&Y';
+						}
+					}
+				} catch(e){}
+				// Initialise le champ "Lieu de la ceremonie" du bandeau
+				var venueIn = document.getElementById('venueInput');
+				if (venueIn) venueIn.value = weddingInfo.lieu || '';
+				TEMPLATES = buildTemplates();
+				renderTemplates(document.querySelector('.filter.active').getAttribute('data-f'));
+			}).catch(function(){});
+		}
+
+		// === Save venue (lieu de ceremonie) - update partiel via POST /api/questionnaire/lieu ===
+		function saveVenue() {
+			var input = document.getElementById('venueInput');
+			var btn = document.getElementById('venueSave');
+			var status = document.getElementById('venueStatus');
+			var val = input.value.trim();
+			btn.disabled = true; btn.textContent = 'Enregistrement...';
+			status.className = 'venue-status'; status.textContent = '';
+			api.post('/api/questionnaire/lieu', { lieuMariageNom: val }).then(function(r) {
+				btn.disabled = false; btn.textContent = 'Enregistrer';
+				if (r && r.success) {
+					status.className = 'venue-status ok';
+					status.textContent = '✓ Lieu enregistré : "' + (val || '(aucun)') + '". Vos modèles d\'invitations sont mis à jour.';
+					weddingInfo.lieu = val;
+					TEMPLATES = buildTemplates();
+					renderTemplates(document.querySelector('.filter.active').getAttribute('data-f'));
+				} else {
+					status.className = 'venue-status err';
+					status.textContent = (r && r.error) || 'Erreur lors de la sauvegarde';
+				}
+			}).catch(function() {
+				btn.disabled = false; btn.textContent = 'Enregistrer';
+				status.className = 'venue-status err';
+				status.textContent = 'Erreur réseau, réessayez';
+			});
+		}
+
+		function updatePlanUI() {
+			var pill = document.getElementById('planPill');
+			pill.textContent = 'Plan ' + currentPlan.charAt(0) + currentPlan.slice(1).toLowerCase();
+			pill.className = 'plan-pill plan-' + currentPlan;
+			document.getElementById('userBadge').textContent = currentPlan;
+			document.getElementById('userBadge').className = 'badge-' + currentPlan.toLowerCase();
+			document.getElementById('statPlan').textContent = currentPlan;
+		}
+
+		function canAccess(level) { return planRank[currentPlan] >= planRank[level]; }
+
+		function renderTemplates(filter) {
+			var grid = document.getElementById('tplGrid');
+			grid.innerHTML = '';
+			TEMPLATES.filter(function(t){ return filter==='all' || t.level===filter; }).forEach(function(t) {
+				var locked = !canAccess(t.level);
+				var div = document.createElement('div');
+				div.className = 'tpl' + (locked ? ' locked' : '') + (selectedTemplate===t.slug ? ' selected' : '');
+
+				var pv = t.pv;
+				var monoHtml = pv.mono ? '<div class="pv-monogram">' + pv.mono + '</div>' : '';
+
+				div.innerHTML =
+					'<div class="tpl-check">✓</div>' +
+					'<span class="tier tier-' + t.level + '">' + t.level + '</span>' +
+					'<div class="preview ' + t.palette + '">' +
+						monoHtml +
+						'<div class="pv-acc">' + pv.acc + '</div>' +
+						'<div class="pv-title">' + pv.title + '</div>' +
+						'<div class="pv-line-fancy"></div>' +
+						'<div class="pv-name">' + pv.name + '</div>' +
+						'<div class="pv-line"></div>' +
+						'<div class="pv-sub">' + pv.sub + '</div>' +
+						'<div class="pv-ornament">' + pv.orn + '</div>' +
+						'<div class="pv-date">' + pv.date + '</div>' +
+					'</div>' +
+					(locked ? '<div class="lock lock-tier-' + t.level + '">' +
+						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="11" width="16" height="11" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>' +
+						'<span>Disponible avec ' + t.level + '</span>' +
+					'</div>' : '') +
+					'<div class="tpl-info">' +
+						'<h4>' + t.name + '</h4>' +
+						'<p class="d">' + t.desc + '</p>' +
+						(locked
+							? '<button class="btn-locked" data-slug="' + t.slug + '" data-locked="1">Passer en ' + t.level + '</button>'
+							: '<button data-slug="' + t.slug + '">Utiliser ce modèle</button>') +
+					'</div>';
+
+				div.querySelector('button').addEventListener('click', function(e) {
+					e.stopPropagation();
+					if (this.getAttribute('data-locked')) { location.href='premium.html'; return; }
+					openCreateModal(this.getAttribute('data-slug'));
+				});
+				div.addEventListener('click', function() {
+					if (locked) { location.href='premium.html'; return; }
+					openCreateModal(t.slug);
+				});
+				grid.appendChild(div);
+			});
+		}
+
+		Array.prototype.forEach.call(document.querySelectorAll('.filter'), function(p) {
+			p.addEventListener('click', function() {
+				document.querySelectorAll('.filter').forEach(function(x){x.classList.remove('active')});
+				p.classList.add('active');
+				renderTemplates(p.getAttribute('data-f'));
+			});
+		});
+
+		function openCreateModal(slug) {
+			var t = TEMPLATES.find(function(x){return x.slug===slug});
+			if (!t) return;
+			selectedTemplate = slug;
+			document.getElementById('selTplName').value = t.name;
+			document.getElementById('modalNotice').innerHTML = '';
+			document.getElementById('confirmSummary').style.display = 'none';
+			document.getElementById('messagePerso').value = '';
+			document.getElementById('selectGuest').value = '';
+			var btn = document.getElementById('btnConfirm');
+			btn.disabled = false;
+			btn.textContent = 'Confirmer & envoyer';
+			document.getElementById('modalCreate').classList.add('show');
+		}
+		function closeModal() { document.getElementById('modalCreate').classList.remove('show'); }
+
+		document.getElementById('selectGuest').addEventListener('change', function() {
+			var gid = this.value;
+			if (!gid) { document.getElementById('confirmSummary').style.display='none'; return; }
+			var g = guests.find(function(x){return ''+x.id===''+gid});
+			var t = TEMPLATES.find(function(x){return x.slug===selectedTemplate});
+			if (g && t) {
+				document.getElementById('sumGuest').textContent = g.firstName + ' ' + g.lastName;
+				document.getElementById('sumEmail').textContent = g.email || '— (pas d\'email)';
+				document.getElementById('sumTpl').textContent = t.name + ' · ' + t.level;
+				document.getElementById('sumDate').textContent = dateHeureLine();
+				document.getElementById('sumLieu').textContent = lieuComplet();
+				document.getElementById('confirmSummary').style.display = 'block';
+			}
+		});
+
+		function confirmAndSend() {
+			var gid = parseInt(document.getElementById('selectGuest').value, 10);
+			if (!gid) { showModalNotice('error', 'Veuillez choisir un invité.'); return; }
+			var msg = document.getElementById('messagePerso').value.trim();
+			var btn = document.getElementById('btnConfirm');
+			btn.disabled = true; btn.textContent = 'Création…';
+
+			api.post('/api/invitations', {
+				guestId: gid, templateName: selectedTemplate, messagePerso: msg
+			}).then(function(r){
+				if (!r || r.error || !r.id) {
+					showModalNotice('error', (r && r.error) || 'Erreur lors de la création.');
+					btn.disabled = false; btn.textContent = 'Confirmer & envoyer'; return;
+				}
+				btn.textContent = 'Envoi de l\'email…';
+				return api.post('/api/invitations/send/' + r.id, {}).then(function(s){
+					if (s && s.success) {
+						showModalNotice(s.emailSent ? 'success' : 'warn',
+							s.emailSent ? '✓ Email envoyé à l\'invité.' : '⚠ Invitation créée, email non envoyé : ' + (s.emailMessage || ''));
+						setTimeout(function(){ closeModal(); loadInvitations(); }, 1800);
+					} else if (s && s.limitReached) {
+						showModalNotice('warn', s.message);
+						btn.disabled = false; btn.textContent = 'Confirmer & envoyer';
+					} else {
+						showModalNotice('error', (s && s.error) || 'Erreur lors de l\'envoi.');
+						btn.disabled = false; btn.textContent = 'Confirmer & envoyer';
+					}
+				});
+			}).catch(function(){
+				showModalNotice('error', 'Erreur réseau.');
+				btn.disabled = false; btn.textContent = 'Confirmer & envoyer';
+			});
+		}
+
+		function showModalNotice(type, text) {
+			var cls = 'notice notice-' + (type==='success'?'success':type==='warn'?'warn':type==='info'?'info':'error');
+			document.getElementById('modalNotice').innerHTML = '<div class="' + cls + '">' + text + '</div>';
+		}
+
+		function loadGuests() {
+			api.get('/api/guests').then(function(list) {
+				guests = list || [];
+				var sel = document.getElementById('selectGuest');
+				sel.innerHTML = '<option value="">— Choisir un invité —</option>';
+				if (!guests.length) {
+					var o = document.createElement('option');
+					o.disabled = true; o.textContent = 'Aucun invité — ajoutez-en d\'abord';
+					sel.appendChild(o); return;
+				}
+				guests.forEach(function(g){
+					var o = document.createElement('option');
+					o.value = g.id;
+					o.textContent = g.firstName + ' ' + g.lastName + (g.email ? ' (' + g.email + ')' : '');
+					sel.appendChild(o);
+				});
+			});
+		}
+
+		function loadInvitations() {
+			api.get('/api/invitations').then(function(data) {
+				if (!data) return;
+				var inv = data.invitations || [];
+				subscription = data.subscription || {};
+				if (subscription.plan) { currentPlan = subscription.plan; updatePlanUI(); }
+				document.getElementById('statTotal').textContent = inv.length;
+				document.getElementById('statSent').textContent = inv.filter(function(i){return i.statut!=='EN_ATTENTE'}).length;
+				var rem = subscription.remaining;
+				document.getElementById('statRemaining').textContent = (rem===-1||rem===null||rem===undefined) ? '∞' : rem;
+
+				var notice = '';
+				if (currentPlan === 'FREE' && subscription.invitationsSent >= subscription.maxFree) {
+					notice = '<div class="notice notice-warn">Limite de ' + subscription.maxFree + ' invitations atteinte. <a href="premium.html">Passez en Pro ou Premium</a> pour continuer.</div>';
+				} else if (currentPlan === 'FREE') {
+					notice = '<div class="notice notice-info">Plan gratuit · 3 modèles élégants disponibles, ' + subscription.maxFree + ' invitations max. <a href="premium.html">Découvrir Pro & Premium</a></div>';
+				} else if (currentPlan === 'PRO') {
+					notice = '<div class="notice notice-info">Plan Pro · 7 modèles débloqués, ' + (subscription.maxFree||50) + ' invitations. <a href="premium.html">Passer Premium</a> pour les modèles exclusifs.</div>';
+				}
+				document.getElementById('globalNotice').innerHTML = notice;
+
+				renderInvList(inv);
+				renderTemplates(document.querySelector('.filter.active').getAttribute('data-f'));
+			});
+		}
+
+		function renderInvList(list) {
+			var box = document.getElementById('invitationsList');
+			if (!list.length) {
+				box.innerHTML = '<div class="notice notice-info" style="grid-column:1/-1;">Aucune invitation pour le moment. Choisissez un modèle ci-dessus.</div>';
+				return;
+			}
+			box.innerHTML = '';
+			list.forEach(function(i){
+				var canSend = i.statut === 'EN_ATTENTE';
+				var item = document.createElement('div');
+				item.className = 'inv-item';
+				item.innerHTML =
+					'<div>' +
+						'<h5>' + i.guestName + '</h5>' +
+						'<small>' + (i.templateName || '—') + ' · ' + (i.dateEnvoi || 'pas encore envoyée') + '</small>' +
+					'</div>' +
+					'<div style="display:flex;gap:10px;align-items:center;">' +
+						'<span class="statut-badge s-' + i.statut + '">' + i.statut.replace('_',' ') + '</span>' +
+						(canSend ? '<button data-id="' + i.id + '">Envoyer</button>' : '') +
+					'</div>';
+				if (canSend) {
+					item.querySelector('button').addEventListener('click', function() {
+						var btn = this; btn.disabled = true; btn.textContent = '…';
+						api.post('/api/invitations/send/' + this.getAttribute('data-id'), {}).then(function(r) {
+							if (r && r.success) loadInvitations();
+							else if (r && r.limitReached) { alert(r.message); loadInvitations(); }
+							else { btn.disabled=false; btn.textContent='Envoyer'; alert((r && r.error) || 'Erreur'); }
+						});
+					});
+				}
+				box.appendChild(item);
+			});
+		}
+	</script>
+</body>
+</html>

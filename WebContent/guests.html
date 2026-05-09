@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Invités</title>
+	<link rel="stylesheet" href="css/styles.css?v=26">
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span class="active" onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
+		</div>
+	</div>
+
+	<!-- ACTIONS -->
+	<div class="panel" style="margin:20px;">
+		<header>Liste des invités <span id="guestCount" class="text-muted" style="font-weight:normal;font-size:14px;"></span></header>
+		<div class="content">
+			<div class="button-panel">
+				<button class="btn btn-primary" onclick="openAddModal()">Ajouter un invité</button>
+			</div>
+
+			<!-- TABLE -->
+			<div id="guestTableContainer">
+				<div class="loading"><div class="spinner"></div></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ADD/EDIT MODAL -->
+	<div class="modal-overlay" id="guestModal">
+		<div class="modal">
+			<header>
+				<span id="modalTitle">Ajouter un invité</span>
+				<button class="close-btn" onclick="closeModal()">&times;</button>
+			</header>
+			<div class="modal-body">
+				<form id="guestForm" onsubmit="handleSaveGuest(event)">
+					<input type="hidden" id="guestId" value="">
+					<div class="form-row">
+						<div class="form-group">
+							<label for="guestFirstName">Prénom</label>
+							<input type="text" id="guestFirstName" required>
+						</div>
+						<div class="form-group">
+							<label for="guestLastName">Nom</label>
+							<input type="text" id="guestLastName" required>
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group">
+							<label for="guestPhone">Téléphone</label>
+							<input type="tel" id="guestPhone">
+						</div>
+						<div class="form-group">
+							<label for="guestEmail">E-mail</label>
+							<input type="email" id="guestEmail">
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="form-group">
+							<label for="guestGroupe">Groupe</label>
+							<select id="guestGroupe">
+								<option value="FAMILLE_MARIEE">Famille de la mariée</option>
+								<option value="FAMILLE_MARIE">Famille du marié</option>
+								<option value="AMIS_MARIEE">Amis de la mariée</option>
+								<option value="AMIS_MARIE">Amis du marié</option>
+								<option value="COLLEGUES">Collègues</option>
+								<option value="AUTRES">Autres</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="guestNbPersonnes">Nombre de personnes</label>
+							<input type="number" id="guestNbPersonnes" min="1" value="1">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="guestNote">Note</label>
+						<textarea id="guestNote" placeholder="Notes sur cet invité..."></textarea>
+					</div>
+					<div style="display:flex;gap:10px;justify-content:flex-end;">
+						<button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+						<button type="submit" class="btn btn-primary">Sauvegarder</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<footer>
+		<p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p>
+	</footer>
+
+	<script src="js/api.js"></script>
+	<script>
+		var user = checkAuth(); if (user) applyAccountHeader(user);
+		if (user) {
+			document.getElementById('userName').textContent = user.firstName;
+		}
+
+		loadGuests();
+
+		function loadGuests() {
+			api.get('/api/guests').then(function(guests) {
+				renderGuests(guests);
+			}).catch(function() {
+				document.getElementById('guestTableContainer').innerHTML = '<p class="text-muted">Erreur de chargement</p>';
+			});
+		}
+
+		function renderGuests(guests) {
+			var container = document.getElementById('guestTableContainer');
+			document.getElementById('guestCount').textContent = '(' + guests.length + ' invités)';
+
+			if (!guests || guests.length === 0) {
+				container.innerHTML = '<p class="text-muted text-center p-20">Aucun invité pour le moment. Cliquez sur "Ajouter un invité" pour commencer.</p>';
+				return;
+			}
+
+			var totalPersonnes = 0;
+			var html = '<table class="data-table">';
+			html += '<thead><tr><th>Nom</th><th>Groupe</th><th>Personnes</th><th>Téléphone</th><th>E-mail</th><th>Actions</th></tr></thead>';
+			html += '<tbody>';
+			for (var i = 0; i < guests.length; i++) {
+				var g = guests[i];
+				totalPersonnes += g.nbPersonnes;
+				html += '<tr>';
+				html += '<td><strong>' + g.firstName + ' ' + g.lastName + '</strong></td>';
+				html += '<td>' + getGroupeLabel(g.groupe) + '</td>';
+				html += '<td>' + g.nbPersonnes + '</td>';
+				html += '<td>' + (g.phone || '-') + '</td>';
+				html += '<td>' + (g.email || '-') + '</td>';
+				html += '<td class="actions">';
+				html += '<button class="btn btn-small btn-secondary" onclick="editGuest(' + g.id + ')">Modifier</button> ';
+				html += '<button class="btn btn-small btn-danger" onclick="deleteGuest(' + g.id + ')">Supprimer</button>';
+				html += '</td>';
+				html += '</tr>';
+			}
+			html += '</tbody></table>';
+			html += '<p class="text-muted mt-10">Total : ' + totalPersonnes + ' personnes</p>';
+			container.innerHTML = html;
+		}
+
+		function openAddModal() {
+			document.getElementById('modalTitle').textContent = 'Ajouter un invité';
+			document.getElementById('guestId').value = '';
+			document.getElementById('guestForm').reset();
+			document.getElementById('guestModal').classList.add('active');
+		}
+
+		function editGuest(id) {
+			api.get('/api/guests').then(function(guests) {
+				for (var i = 0; i < guests.length; i++) {
+					if (guests[i].id === id) {
+						var g = guests[i];
+						document.getElementById('modalTitle').textContent = 'Modifier l\'invité';
+						document.getElementById('guestId').value = g.id;
+						document.getElementById('guestFirstName').value = g.firstName;
+						document.getElementById('guestLastName').value = g.lastName;
+						document.getElementById('guestPhone').value = g.phone || '';
+						document.getElementById('guestEmail').value = g.email || '';
+						document.getElementById('guestGroupe').value = g.groupe;
+						document.getElementById('guestNbPersonnes').value = g.nbPersonnes;
+						document.getElementById('guestNote').value = g.note || '';
+						document.getElementById('guestModal').classList.add('active');
+						break;
+					}
+				}
+			});
+		}
+
+		function handleSaveGuest(event) {
+			event.preventDefault();
+			var id = document.getElementById('guestId').value;
+			var data = {
+				firstName: document.getElementById('guestFirstName').value,
+				lastName: document.getElementById('guestLastName').value,
+				phone: document.getElementById('guestPhone').value,
+				email: document.getElementById('guestEmail').value,
+				groupe: document.getElementById('guestGroupe').value,
+				nbPersonnes: parseInt(document.getElementById('guestNbPersonnes').value) || 1,
+				note: document.getElementById('guestNote').value
+			};
+
+			var promise;
+			if (id) {
+				promise = api.put('/api/guests/' + id, data);
+			} else {
+				promise = api.post('/api/guests', data);
+			}
+
+			promise.then(function(result) {
+				if (result.success || result.guest) {
+					closeModal();
+					loadGuests();
+				} else {
+					alert(result.error || 'Erreur');
+				}
+			}).catch(function(err) {
+				alert('Erreur : ' + err.message);
+			});
+		}
+
+		function deleteGuest(id) {
+			if (confirm('Supprimer cet invité ?')) {
+				api.del('/api/guests/' + id).then(function(result) {
+					if (result.success) {
+						loadGuests();
+					} else {
+						alert(result.error || 'Erreur');
+					}
+				});
+			}
+		}
+
+		function closeModal() {
+			document.getElementById('guestModal').classList.remove('active');
+		}
+	</script>
+</body>
+</html>

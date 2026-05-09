@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Prestataires</title>
+	<link rel="stylesheet" href="css/styles.css?v=26">
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span class="active" onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
+		</div>
+	</div>
+
+	<!-- FILTERS -->
+	<div class="filter-bar">
+		<label class="text-navy text-bold">Filtrer :</label>
+		<select id="filterCategory" onchange="loadVendors()">
+			<option value="">Toutes les catégories</option>
+		</select>
+		<select id="filterGamme" onchange="loadVendors()">
+			<option value="">Toutes les gammes</option>
+			<option value="ECONOMIQUE">Économique</option>
+			<option value="MOYEN">Moyen</option>
+			<option value="PREMIUM">Premium</option>
+		</select>
+		<input type="text" id="searchInput" placeholder="Rechercher un prestataire..." onkeyup="handleSearch(event)">
+		<button class="btn btn-small btn-secondary" onclick="resetFilters()">Réinitialiser</button>
+	</div>
+
+	<!-- VENDOR LIST -->
+	<div id="vendorList" class="card-list">
+		<div class="loading">
+			<div class="spinner"></div>
+			<p>Chargement des prestataires...</p>
+		</div>
+	</div>
+
+	<!-- VENDOR DETAIL MODAL -->
+	<div class="modal-overlay" id="vendorModal">
+		<div class="modal">
+			<header>
+				<span id="modalTitle">Détail du prestataire</span>
+				<button class="close-btn" onclick="closeModal()">&times;</button>
+			</header>
+			<div class="modal-body" id="modalBody"></div>
+			<div class="modal-footer" style="display:flex;gap:10px;flex-wrap:wrap">
+				<button class="btn btn-primary" onclick="openDevisModal()" style="flex:1">Demander un devis</button>
+				<button class="btn btn-secondary" onclick="openRdvModal()" style="flex:1;background:var(--gold);border-color:var(--gold);color:#fff">Prendre RDV</button>
+				<button class="btn btn-secondary" onclick="closeModal()" style="flex:0 0 auto">Fermer</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- DEVIS MODAL -->
+	<div class="modal-overlay" id="devisModal">
+		<div class="modal" style="max-width:520px">
+			<header>
+				<span>Demander un devis</span>
+				<button class="close-btn" onclick="closeDevisModal()">&times;</button>
+			</header>
+			<div class="modal-body">
+				<p id="devisVendorName" style="font-weight:600;margin-bottom:16px;color:var(--primary)"></p>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Budget minimum (DHS)</label>
+					<input type="number" id="devisBudgetMin" placeholder="Ex: 10000" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+				</div>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Budget maximum (DHS)</label>
+					<input type="number" id="devisBudgetMax" placeholder="Ex: 25000" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+				</div>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Date du mariage</label>
+					<input type="date" id="devisDate" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+				</div>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Nombre d'invites</label>
+					<input type="number" id="devisNbInvites" placeholder="Ex: 150" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+				</div>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Message</label>
+					<textarea id="devisMessage" rows="3" placeholder="Decrivez votre besoin..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical"></textarea>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="submitDevis()">Envoyer la demande</button>
+				<button class="btn btn-secondary" onclick="closeDevisModal()">Annuler</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- RDV MODAL -->
+	<div class="modal-overlay" id="rdvModal">
+		<div class="modal" style="max-width:480px">
+			<header>
+				<span>Prendre rendez-vous</span>
+				<button class="close-btn" onclick="closeRdvModal()">&times;</button>
+			</header>
+			<div class="modal-body">
+				<p id="rdvVendorName" style="font-weight:600;margin-bottom:16px;color:var(--gold-dark)"></p>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Date du RDV</label>
+					<input type="date" id="rdvDate" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+				</div>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Heure</label>
+					<input type="time" id="rdvHeure" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+				</div>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Lieu</label>
+					<input type="text" id="rdvLieu" placeholder="Showroom, en ligne..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit">
+				</div>
+				<div class="form-group" style="margin-bottom:14px">
+					<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Note</label>
+					<textarea id="rdvNote" rows="2" placeholder="Informations supplementaires..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical"></textarea>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" onclick="submitRdv()" style="background:var(--gold);border-color:var(--gold)">Confirmer le RDV</button>
+				<button class="btn btn-secondary" onclick="closeRdvModal()">Annuler</button>
+			</div>
+		</div>
+	</div>
+
+	<footer>
+		<p>Ayora.ma &copy; 2026 - Planification de mariage au Maroc</p>
+	</footer>
+
+	<script src="js/api.js"></script>
+	<script>
+		var user = checkAuth(); if (user) applyAccountHeader(user);
+		if (user) {
+			document.getElementById('userName').textContent = user.firstName;
+		}
+
+		// Charger les categories dans le filtre
+		api.get('/api/vendors/categories').then(function(categories) {
+			var select = document.getElementById('filterCategory');
+			for (var i = 0; i < categories.length; i++) {
+				var opt = document.createElement('option');
+				opt.value = categories[i].id;
+				opt.textContent = categories[i].nameFr;
+				select.appendChild(opt);
+			}
+		}).catch(function(e) {
+			console.error('Erreur chargement categories:', e);
+		});
+
+		// Charger les prestataires
+		loadVendors();
+
+		function loadVendors() {
+			var category = document.getElementById('filterCategory').value;
+			var gamme = document.getElementById('filterGamme').value;
+			var url = '/api/vendors';
+			var params = [];
+			if (category) params.push('category=' + category);
+			if (gamme) params.push('gamme=' + gamme);
+			if (params.length > 0) url += '?' + params.join('&');
+
+			document.getElementById('vendorList').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+			api.get(url).then(function(vendors) {
+				renderVendors(vendors);
+			}).catch(function(e) {
+				console.error('Erreur chargement prestataires:', e);
+				document.getElementById('vendorList').innerHTML = '<p class="text-center text-muted p-20">Erreur de chargement</p>';
+			});
+		}
+
+		function handleSearch(event) {
+			if (event.key === 'Enter') {
+				var keyword = document.getElementById('searchInput').value.trim();
+				if (keyword.length < 2) {
+					loadVendors();
+					return;
+				}
+				api.get('/api/vendors/search?q=' + encodeURIComponent(keyword)).then(function(vendors) {
+					renderVendors(vendors);
+				}).catch(function(e) {
+					console.error('Erreur recherche:', e);
+				});
+			}
+		}
+
+		function resetFilters() {
+			document.getElementById('filterCategory').value = '';
+			document.getElementById('filterGamme').value = '';
+			document.getElementById('searchInput').value = '';
+			loadVendors();
+		}
+
+		function renderVendors(vendors) {
+			var container = document.getElementById('vendorList');
+			if (!vendors || vendors.length === 0) {
+				container.innerHTML = '<p class="text-center text-muted p-20">Aucun prestataire trouvé</p>';
+				return;
+			}
+
+			var html = '';
+			for (var i = 0; i < vendors.length; i++) {
+				var v = vendors[i];
+				var tags = v.tags ? v.tags.split(',') : [];
+				html += '<article onclick="showVendor(' + v.id + ')" style="cursor:pointer">';
+				html += '<header>' + v.name + '</header>';
+				html += '<div class="card-body">';
+				html += '<p><span class="card-gamme ' + getGammeClass(v.gamme) + '">' + getGammeLabel(v.gamme) + '</span> ' + v.categoryName + '</p>';
+				if (v.rating > 0) {
+					html += '<p class="vendor-rating">';
+					var fullStars = Math.floor(v.rating);
+					var halfStar = (v.rating - fullStars) >= 0.5;
+					for (var s = 0; s < fullStars; s++) { html += '<span class="star-filled"></span>'; }
+					if (halfStar) { html += '<span class="star-half"></span>'; }
+					for (var s2 = fullStars + (halfStar ? 1 : 0); s2 < 5; s2++) { html += '<span class="star-empty"></span>'; }
+					html += ' <span class="text-muted" style="font-size:12px;">' + v.rating + '/5 (' + (v.nbAvis || 0) + ' avis)</span></p>';
+				}
+				html += '<p class="card-price">À partir de ' + formatPrice(v.prixMin) + '</p>';
+				html += '<p class="text-muted" style="font-size:13px;">' + (v.description || '').substring(0, 120) + '...</p>';
+				if (tags.length > 0) {
+					html += '<div class="card-tags">';
+					var tagLimit = Math.min(4, tags.length);
+					for (var j = 0; j < tagLimit; j++) {
+						html += '<span>' + tags[j].trim() + '</span>';
+					}
+					html += '</div>';
+				}
+				html += '</div>';
+				html += '<div class="card-footer">';
+				html += '<span class="text-muted">' + v.city + '</span>';
+				if (v.instagram) {
+					html += '<span class="text-muted" style="font-size:12px;">' + v.instagram + '</span>';
+				}
+				html += '</div>';
+				html += '</article>';
+			}
+			container.innerHTML = html;
+		}
+
+		function showVendor(id) {
+			api.get('/api/vendors/' + id).then(function(v) {
+				document.getElementById('modalTitle').textContent = v.name;
+				var html = '';
+				html += '<p><strong>Catégorie :</strong> ' + v.categoryName + '</p>';
+				html += '<p><strong>Gamme :</strong> <span class="card-gamme ' + getGammeClass(v.gamme) + '">' + getGammeLabel(v.gamme) + '</span></p>';
+				html += '<p><strong>Prix :</strong> <span class="card-price">À partir de ' + formatPrice(v.prixMin) + '</span></p>';
+				html += '<p><strong>Ville :</strong> ' + v.city + '</p>';
+				if (v.rating > 0) {
+					html += '<p><strong>Note :</strong> <span style="color:var(--gold-dark);">';
+					var stars = Math.round(v.rating);
+					for (var s = 0; s < 5; s++) { html += s < stars ? '<span class="star-filled"></span>' : '<span class="star-empty"></span>'; }
+					html += ' ' + v.rating + '/5 (' + (v.nbAvis || 0) + ' avis)</span></p>';
+				}
+				if (v.phone) {
+					html += '<p><strong>Téléphone :</strong> <a href="tel:' + v.phone + '">' + v.phone + '</a></p>';
+				}
+				if (v.instagram) {
+					html += '<p><strong>Instagram :</strong> <a href="https://instagram.com/' + v.instagram.replace('@', '') + '" target="_blank">' + v.instagram + '</a></p>';
+				}
+				if (v.address) {
+					html += '<p><strong>Adresse :</strong> ' + v.address + '</p>';
+				}
+				if (v.description) {
+					html += '<p><strong>Description :</strong> ' + v.description + '</p>';
+				}
+				if (v.tags) {
+					html += '<div class="card-tags" style="margin-top:10px;">';
+					var tags = v.tags.split(',');
+					for (var j = 0; j < tags.length; j++) {
+						html += '<span>' + tags[j].trim() + '</span>';
+					}
+					html += '</div>';
+				}
+				document.getElementById('modalBody').innerHTML = html;
+				document.getElementById('vendorModal').classList.add('active');
+			}).catch(function(e) {
+				console.error('Erreur chargement prestataire:', e);
+			});
+		}
+
+		function closeModal() {
+			document.getElementById('vendorModal').classList.remove('active');
+		}
+
+		var currentVendorId = 0;
+		var currentVendorName = '';
+
+		// Override showVendor to track current vendor
+		var origShowVendor = showVendor;
+		showVendor = function(id) {
+			currentVendorId = id;
+			origShowVendor(id);
+			api.get('/api/vendors/' + id).then(function(v) { currentVendorName = v.name; });
+		};
+
+		function openDevisModal() {
+			closeModal();
+			document.getElementById('devisVendorName').textContent = 'Devis pour: ' + currentVendorName;
+			document.getElementById('devisModal').classList.add('active');
+		}
+		function closeDevisModal() { document.getElementById('devisModal').classList.remove('active'); }
+
+		function openRdvModal() {
+			closeModal();
+			document.getElementById('rdvVendorName').textContent = 'RDV avec: ' + currentVendorName;
+			document.getElementById('rdvModal').classList.add('active');
+		}
+		function closeRdvModal() { document.getElementById('rdvModal').classList.remove('active'); }
+
+		function submitDevis() {
+			var data = {
+				vendorId: String(currentVendorId),
+				budgetMin: document.getElementById('devisBudgetMin').value || '0',
+				budgetMax: document.getElementById('devisBudgetMax').value || '0',
+				dateMariage: document.getElementById('devisDate').value || '',
+				nbInvites: document.getElementById('devisNbInvites').value || '0',
+				message: document.getElementById('devisMessage').value || ''
+			};
+			api.post('/api/auth/devis-create', data).then(function(res) {
+				if (res.success) {
+					alert('Demande de devis envoyee avec succes!');
+					closeDevisModal();
+				} else {
+					alert('Erreur: ' + (res.error || 'Echec'));
+				}
+			}).catch(function() { alert('Erreur de connexion'); });
+		}
+
+		function submitRdv() {
+			var data = {
+				vendorId: String(currentVendorId),
+				dateRdv: document.getElementById('rdvDate').value,
+				heureRdv: document.getElementById('rdvHeure').value || '',
+				lieu: document.getElementById('rdvLieu').value || 'A definir',
+				note: document.getElementById('rdvNote').value || ''
+			};
+			if (!data.dateRdv) { alert('Veuillez choisir une date'); return; }
+			api.post('/api/auth/rdv-create', data).then(function(res) {
+				if (res.success) {
+					alert('Rendez-vous enregistre avec succes!');
+					closeRdvModal();
+				} else {
+					alert('Erreur: ' + (res.error || 'Echec'));
+				}
+			}).catch(function() { alert('Erreur de connexion'); });
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Passer Premium</title>
+	<link rel="stylesheet" href="css/styles.css?v=26">
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userBadge" class="badge-free">FREE</span>
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+		</div>
+	</div>
+
+	<!-- HERO -->
+	<div class="premium-page-hero" id="heroSection">
+		<h1>Passez à Ayora Premium</h1>
+		<p>Offrez-vous l'expérience complète pour un mariage parfaitement planifié</p>
+	</div>
+
+	<!-- PLANS -->
+	<style>
+	.plans-container { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; max-width:1180px; margin:30px auto; padding:0 24px; align-items:stretch; }
+	.plan-card { background:#fff; border:1px solid #F3ECF0; border-radius:20px; display:flex; flex-direction:column; padding:32px 28px; min-height:580px; box-shadow:0 4px 20px rgba(0,0,0,.04); position:relative; transition:transform .3s,box-shadow .3s; }
+	.plan-card:hover { transform:translateY(-6px); box-shadow:0 16px 40px rgba(139,26,43,.1); }
+	.plan-card h3 { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:#7A6B74; margin:0 0 12px; text-align:center; letter-spacing:1px; }
+	.plan-price-display { font-family:'Cormorant Garamond',serif; font-size:2.6rem; color:#1A0A10; text-align:center; margin-bottom:18px; font-weight:700; }
+	.plan-price-display span { font-size:.9rem; color:#7A6B74; font-weight:400; }
+	.plan-features-list { list-style:none; padding:0; margin:0 0 20px; flex:1; }
+	.plan-features-list li { padding:10px 0 10px 28px; position:relative; font-size:13.5px; color:#3D2232; border-bottom:1px solid #F3ECF0; }
+	.plan-features-list li:last-child { border-bottom:none; }
+	.plan-feature-included::before { content:'✓'; position:absolute; left:0; top:10px; color:#3D8B5E; font-weight:bold; }
+	.plan-feature-excluded { color:#B8AAB3; }
+	.plan-feature-excluded::before { content:'×'; position:absolute; left:2px; top:9px; color:#AEA0A8; font-weight:bold; }
+	.plan-recommended-label { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#B83B5E,#8B1A2B); color:#fff; padding:6px 22px; border-radius:50px; font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; box-shadow:0 4px 14px rgba(139,26,43,.3); }
+	.plan-card-pro { border:2px solid #B83B5E; box-shadow:0 8px 28px rgba(184,59,94,.15); }
+	.plan-card-premium .plan-header-bg { background:linear-gradient(160deg,#1A0A10,#5C0E1B,#8B1A2B); border-radius:14px 14px 0 0; padding:12px; margin:-32px -28px 18px; color:#fff; text-align:center; }
+	.plan-card-premium .plan-header-bg h3 { color:#D4A853; margin:0; padding:8px 0; }
+	.plan-card-premium .plan-price-display { color:#1A0A10; }
+	.btn-plan { padding:12px 22px; border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; border:none; width:100%; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:transform .2s, box-shadow .2s; }
+	.btn-plan svg { width:14px; height:14px; }
+	.btn-plan-current { background:#fff; border:2px solid #E8D8DE; color:#7A6B74; cursor:not-allowed; }
+	.btn-plan-pro { background:linear-gradient(135deg,#B83B5E,#8B1A2B); color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.25); }
+	.btn-plan-pro:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(139,26,43,.35); }
+	.btn-plan-premium { background:linear-gradient(135deg,#D4A853,#B8922F); color:#fff; box-shadow:0 4px 14px rgba(212,168,83,.3); }
+	.btn-plan-premium:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(212,168,83,.4); }
+	@media (max-width:1000px) { .plans-container { grid-template-columns:1fr; max-width:420px; } .plan-card { min-height:auto; } }
+	</style>
+
+	<div class="plans-container" id="plansSection">
+		<!-- GRATUIT -->
+		<div class="plan-card">
+			<h3>Gratuit</h3>
+			<div class="plan-price-display">0 DHS <span>/ toujours</span></div>
+			<ul class="plan-features-list">
+				<li class="plan-feature-included">Questionnaire de base (6 questions)</li>
+				<li class="plan-feature-included">10 prestataires visibles</li>
+				<li class="plan-feature-included">10 invitations max / mois</li>
+				<li class="plan-feature-included">3 modeles d'invitations simples</li>
+				<li class="plan-feature-included">Liste d'invites basique</li>
+				<li class="plan-feature-excluded">Envoi par email</li>
+				<li class="plan-feature-excluded">Modeles Pro & Premium</li>
+				<li class="plan-feature-excluded">Modeles video exclusifs</li>
+				<li class="plan-feature-excluded">Personnalisation avancee</li>
+				<li class="plan-feature-excluded">Recommandations IA & VIP</li>
+			</ul>
+			<button class="btn-plan btn-plan-current" id="btnFree" disabled>Plan actuel</button>
+		</div>
+
+		<!-- PRO -->
+		<div class="plan-card plan-card-pro">
+			<div class="plan-recommended-label">Recommande</div>
+			<h3>Pro</h3>
+			<div class="plan-price-display">149 DHS <span>/ mois</span></div>
+			<ul class="plan-features-list">
+				<li class="plan-feature-included">Questionnaire detaille (6 sections)</li>
+				<li class="plan-feature-included">Tous les prestataires visibles</li>
+				<li class="plan-feature-included">50 invitations / mois</li>
+				<li class="plan-feature-included">9 modeles elegants debloques</li>
+				<li class="plan-feature-included">Envoi des invitations par email</li>
+				<li class="plan-feature-included">Personnalisation avancee</li>
+				<li class="plan-feature-included">Suggestions selon budget</li>
+				<li class="plan-feature-included">Suivi statut des invitations</li>
+				<li class="plan-feature-excluded">Modeles video exclusifs</li>
+				<li class="plan-feature-excluded">Invitations illimitees & VIP</li>
+			</ul>
+			<button class="btn-plan btn-plan-pro" id="btnPro" onclick="upgradeToPlan('PRO')">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+				Choisir Pro
+			</button>
+		</div>
+
+		<!-- PREMIUM -->
+		<div class="plan-card plan-card-premium">
+			<h3>Premium</h3>
+			<div class="plan-price-display">299 DHS <span>/ mois</span></div>
+			<ul class="plan-features-list">
+				<li class="plan-feature-included">Tout le plan Pro inclus</li>
+				<li class="plan-feature-included">Tous les modeles d'invitations</li>
+				<li class="plan-feature-included">3 modeles VIDEO exclusifs</li>
+				<li class="plan-feature-included">Invitations illimitees</li>
+				<li class="plan-feature-included">Personnalisation complete</li>
+				<li class="plan-feature-included">Suggestions IA les plus detaillees</li>
+				<li class="plan-feature-included">Acces complet aux prestataires</li>
+				<li class="plan-feature-included">Recommandations selon profil</li>
+				<li class="plan-feature-included">Support prioritaire VIP 24/7</li>
+				<li class="plan-feature-included">Badge Premium dore</li>
+			</ul>
+			<button class="btn-plan btn-plan-premium" id="btnPremium" onclick="upgradeToPlan('PREMIUM')">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+				Choisir Premium
+			</button>
+		</div>
+	</div>
+
+	<!-- PAYMENT FORM -->
+	<div class="payment-section" id="paymentSection">
+		<div class="payment-box">
+			<h3>Informations de paiement</h3>
+
+			<!-- Order Summary -->
+			<div class="order-summary">
+				<div class="order-line"><span>Ayora Premium - Abonnement mensuel</span><span>299 DHS</span></div>
+				<div class="order-line order-total"><span>Total à payer</span><span>299,00 DHS</span></div>
+			</div>
+
+			<!-- Card Preview -->
+			<div class="card-visual" id="cardPreview">
+				<div class="card-visual-chip"></div>
+				<div class="card-visual-number" id="cardNumberDisplay">---- ---- ---- ----</div>
+				<div class="card-visual-bottom">
+					<div><span class="card-visual-label">Titulaire</span><br><span id="cardNameDisplay">VOTRE NOM</span></div>
+					<div><span class="card-visual-label">Expire</span><br><span id="cardExpDisplay">MM/AA</span></div>
+				</div>
+			</div>
+
+			<!-- Form -->
+			<form onsubmit="handlePayment(event)">
+				<div class="form-group">
+					<label for="cardName">Nom sur la carte</label>
+					<input type="text" id="cardName" placeholder="Nom complet" required
+						oninput="document.getElementById('cardNameDisplay').textContent = this.value.toUpperCase() || 'VOTRE NOM'">
+				</div>
+
+				<div class="form-group">
+					<label for="cardNumber">Numéro de carte</label>
+					<input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19"
+						oninput="formatCardNumber(this)">
+				</div>
+
+				<div class="form-row">
+					<div class="form-group">
+						<label for="cardExp">Expiration</label>
+						<input type="text" id="cardExp" placeholder="MM/AA" required maxlength="5"
+							oninput="formatExpiry(this)">
+					</div>
+					<div class="form-group">
+						<label for="cardCvv">CVV</label>
+						<input type="text" id="cardCvv" placeholder="123" required maxlength="3"
+							oninput="this.value = this.value.replace(/\D/g,'')">
+					</div>
+				</div>
+
+				<button type="submit" class="btn btn-premium" id="payBtn" style="width:100%;padding:14px;">
+					Payer 299 DHS
+				</button>
+			</form>
+
+			<div class="secure-badge">
+				Paiement sécurisé - Vos données sont protégées
+			</div>
+		</div>
+	</div>
+
+	<!-- SUCCESS -->
+	<div class="payment-success-section" id="successSection">
+		<div class="payment-success-icon"></div>
+		<h2>Bienvenue dans Ayora Premium</h2>
+		<p class="text-muted mb-20">Votre compte a été mis à niveau avec succès. Profitez de toutes les fonctionnalités premium.</p>
+		<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+			<button class="btn btn-primary" onclick="location.href='dashboard.html'">Aller au tableau de bord</button>
+			<button class="btn btn-secondary" onclick="location.href='recommendations.html'">Voir mes recommandations</button>
+		</div>
+	</div>
+
+	<footer>
+		<p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p>
+	</footer>
+
+	<script src="js/api.js"></script>
+	<script>
+		var user = checkAuth(); if (user) applyAccountHeader(user);
+		var planTarget = 'PREMIUM';
+		if (user) {
+			document.getElementById('userName').textContent = user.firstName + ' ' + user.lastName;
+			var plan = (user.subscriptionType || 'FREE').toUpperCase();
+			document.getElementById('userBadge').textContent = plan;
+			document.getElementById('userBadge').className = 'badge-' + plan.toLowerCase();
+			updateButtonsForPlan(plan);
+		}
+
+		function updateButtonsForPlan(plan) {
+			var btnFree = document.getElementById('btnFree');
+			var btnPro  = document.getElementById('btnPro');
+			var btnPrem = document.getElementById('btnPremium');
+			// Reset
+			btnFree.disabled = true;
+			btnFree.textContent = 'Plan actuel';
+			if (plan === 'FREE') {
+				btnFree.textContent = 'Plan actuel';
+			} else if (plan === 'PRO') {
+				btnFree.textContent = 'Inferieur';
+				btnPro.disabled = true;
+				btnPro.innerHTML = 'Plan actuel';
+				btnPro.classList.add('btn-plan-current');
+				btnPro.classList.remove('btn-plan-pro');
+			} else if (plan === 'PREMIUM') {
+				btnFree.textContent = 'Inferieur';
+				btnPro.disabled = true;
+				btnPro.innerHTML = 'Inferieur';
+				btnPro.classList.add('btn-plan-current');
+				btnPro.classList.remove('btn-plan-pro');
+				btnPrem.disabled = true;
+				btnPrem.innerHTML = 'Plan actuel';
+				btnPrem.classList.add('btn-plan-current');
+				btnPrem.classList.remove('btn-plan-premium');
+			}
+		}
+
+		function upgradeToPlan(plan) {
+			planTarget = plan;
+			// Met a jour le recap paiement
+			var price = (plan === 'PRO') ? '149' : '299';
+			var label = (plan === 'PRO') ? 'Ayora Pro - Abonnement mensuel' : 'Ayora Premium - Abonnement mensuel';
+			var first = document.querySelector('.order-line span');
+			if (first) first.textContent = label;
+			var amounts = document.querySelectorAll('.order-line span:last-child');
+			if (amounts.length >= 1) amounts[0].textContent = price + ' DHS';
+			if (amounts.length >= 2) amounts[1].textContent = price + ',00 DHS';
+			var payBtn = document.getElementById('payBtn');
+			if (payBtn) payBtn.textContent = 'Payer ' + price + ' DHS';
+			showPayment();
+		}
+
+		function showPayment() {
+			document.getElementById('plansSection').style.display = 'none';
+			document.getElementById('heroSection').style.display = 'none';
+			document.getElementById('paymentSection').classList.add('active');
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+
+		function formatCardNumber(input) {
+			var value = input.value.replace(/\D/g, '');
+			var formatted = '';
+			for (var i = 0; i < value.length && i < 16; i++) {
+				if (i > 0 && i % 4 === 0) formatted += ' ';
+				formatted += value[i];
+			}
+			input.value = formatted;
+			document.getElementById('cardNumberDisplay').textContent = formatted || '---- ---- ---- ----';
+		}
+
+		function formatExpiry(input) {
+			var value = input.value.replace(/\D/g, '');
+			if (value.length >= 2) {
+				value = value.substring(0, 2) + '/' + value.substring(2, 4);
+			}
+			input.value = value;
+			document.getElementById('cardExpDisplay').textContent = value || 'MM/AA';
+		}
+
+		function handlePayment(event) {
+			event.preventDefault();
+			var btn = document.getElementById('payBtn');
+			var price = (planTarget === 'PRO') ? '149' : '299';
+			btn.textContent = 'Traitement en cours...';
+			btn.disabled = true;
+
+			api.post('/api/subscription/upgrade', { plan: planTarget }).then(function(data) {
+				if (data.success) {
+					var u = JSON.parse(localStorage.getItem('user'));
+					u.subscriptionType = planTarget;
+					localStorage.setItem('user', JSON.stringify(u));
+
+					document.getElementById('paymentSection').style.display = 'none';
+					document.getElementById('successSection').classList.add('active');
+					document.getElementById('userBadge').textContent = planTarget;
+					document.getElementById('userBadge').className = 'badge-' + planTarget.toLowerCase();
+				} else {
+					btn.textContent = 'Payer ' + price + ' DHS';
+					btn.disabled = false;
+					alert(data.error || 'Erreur lors du paiement');
+				}
+			}).catch(function() {
+				btn.textContent = 'Payer ' + price + ' DHS';
+				btn.disabled = false;
+				alert('Erreur de connexion au serveur');
+			});
+		}
+	</script>
+</body>
+</html>

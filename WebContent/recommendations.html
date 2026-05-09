@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Recommandations personnalisées</title>
+	<link rel="stylesheet" href="css/styles.css?v=26">
+	<style>
+		.reco-layout { display:grid; grid-template-columns:300px 1fr; gap:20px; padding:20px; align-items:flex-start; }
+		@media (max-width: 980px) { .reco-layout { grid-template-columns: 1fr; } }
+
+		.profile-card { background:var(--white); border-radius:var(--radius-lg); padding:22px; box-shadow:var(--shadow-md); position:sticky; top:80px; }
+		.profile-card h3 { font-size:1.25rem; margin-bottom:14px; color:var(--primary-dark); border-bottom:2px solid var(--gold); padding-bottom:8px; }
+		.profile-row { display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed var(--border-light); font-size:13px; }
+		.profile-row:last-child { border-bottom:none; }
+		.profile-row .label { color:var(--text-muted); font-weight:500; }
+		.profile-row .value { color:var(--text-dark); font-weight:600; text-align:right; max-width:60%; }
+
+		.filters { background:var(--white); border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow-md); margin-top:16px; }
+		.filters h4 { font-size:1.05rem; margin-bottom:12px; color:var(--primary-dark); }
+		.filters label { display:block; font-size:12px; color:var(--text-muted); margin:10px 0 4px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+		.filters select, .filters input { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13px; background:var(--cream); }
+		.filters .filter-actions { display:flex; gap:8px; margin-top:14px; }
+		.filters .filter-actions button { flex:1; }
+
+		.block { background:var(--white); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-md); margin-bottom:24px; }
+		.block-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:12px; border-bottom:2px solid var(--gold-light); }
+		.block-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--primary-dark); font-weight:600; display:flex; align-items:center; gap:10px; }
+		.block-title .badge { background:var(--gold); color:var(--white); font-family:'Montserrat',sans-serif; font-size:11px; padding:2px 10px; border-radius:var(--radius-xl); font-weight:600; letter-spacing:0.5px; }
+		.block-subtitle { font-size:13px; color:var(--text-muted); }
+
+		.cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:18px; }
+
+		.reco-card { background:linear-gradient(180deg,var(--white) 0%,var(--cream) 100%); border-radius:var(--radius-md); border:1px solid var(--border-light); padding:18px; transition:var(--transition); position:relative; overflow:hidden; display:flex; flex-direction:column; }
+		.reco-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); border-color:var(--gold); }
+		.reco-card .score-ribbon { position:absolute; top:0; right:0; background:var(--primary-dark); color:var(--white); padding:4px 14px; font-size:13px; font-weight:700; border-bottom-left-radius:var(--radius-md); }
+		.reco-card .score-ribbon.excellent { background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%); }
+		.reco-card .score-ribbon.good { background:var(--success); }
+		.reco-card .score-ribbon.ok { background:var(--warning); color:var(--text-dark); }
+		.reco-card .score-ribbon.low { background:var(--text-light); }
+
+		.reco-card h4 { font-size:1.25rem; margin:6px 0 4px; color:var(--text-dark); padding-right:60px; }
+		.reco-card .reco-cat { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--gold-dark); font-weight:700; }
+
+		.reco-meta { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; font-size:12px; color:var(--text-muted); }
+		.reco-meta span { display:inline-flex; align-items:center; gap:4px; }
+		.reco-meta .gamme-eco { color:var(--gamme-eco); font-weight:600; }
+		.reco-meta .gamme-moyen { color:var(--gamme-moyen); font-weight:600; }
+		.reco-meta .gamme-premium { color:var(--gamme-premium); font-weight:600; }
+
+		.reco-tags { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+		.tag { background:var(--gold-soft); color:var(--gold-dark); padding:3px 10px; border-radius:var(--radius-xl); font-size:11px; font-weight:600; border:1px solid var(--gold-light); }
+		.tag.coup { background:var(--primary-soft); color:var(--primary-dark); border-color:var(--rose-gold); }
+		.tag.luxe { background:var(--text-dark); color:var(--gold-light); border-color:var(--gold); }
+		.tag.eco { background:var(--success-light); color:var(--sage-dark); border-color:var(--success); }
+		.tag.alert { background:var(--danger-light); color:var(--danger); border-color:var(--danger); }
+		.tag.priority { background:var(--info-light); color:var(--info); border-color:var(--info); }
+
+		.reco-raison { font-size:13px; color:var(--text-body); line-height:1.5; margin:10px 0; padding:10px; background:var(--cream); border-left:3px solid var(--gold); border-radius:var(--radius-sm); }
+
+		.subscores { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin:10px 0; }
+		.subscore { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-muted); }
+		.subscore .bar { flex:1; height:5px; background:var(--border-light); border-radius:3px; overflow:hidden; }
+		.subscore .bar > div { height:100%; background:linear-gradient(90deg,var(--gold) 0%,var(--gold-dark) 100%); }
+		.subscore .sval { font-weight:700; color:var(--text-dark); min-width:30px; text-align:right; }
+
+		.reco-price { font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--primary-dark); font-weight:600; margin:8px 0; }
+		.reco-price small { font-size:11px; color:var(--text-muted); font-family:'Montserrat',sans-serif; font-weight:500; }
+
+		.contact-bar { display:flex; gap:0; margin-top:auto; padding-top:14px; border-top:1px solid var(--border-light); align-items:stretch; }
+		.contact-bar a { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 6px; font-size:12px; font-weight:600; color:var(--text-muted); text-decoration:none; border-right:1px solid var(--border-light); transition:var(--transition-fast); position:relative; }
+		.contact-bar a:last-child { border-right:none; }
+		.contact-bar a:hover { background:var(--gold-soft); color:var(--primary-dark); }
+		.contact-bar a.disabled { opacity:0.35; pointer-events:none; }
+		.contact-bar .ico { width:18px; height:18px; display:inline-block; vertical-align:middle; }
+		.contact-bar .ico svg { width:18px; height:18px; fill:currentColor; }
+		.contact-bar .lab { display:none; }
+		@media (min-width: 1200px) { .contact-bar .lab { display:inline; } }
+
+		.empty-block { padding:30px; text-align:center; color:var(--text-muted); font-style:italic; }
+
+		/* Bloc par catégorie (3 par service) */
+		.cat-block { margin: 24px 0 30px; padding-bottom: 18px; border-bottom: 1px dashed var(--border-light); }
+		.cat-block:last-child { border-bottom: none; padding-bottom: 0; }
+		.cat-block-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin: 0 0 16px; }
+		.cat-block-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--primary-dark); margin: 0; display:flex; align-items:center; gap:14px; }
+		.cat-block-count { font-family:'Montserrat',sans-serif; background:var(--gold-soft); color:var(--gold-dark); font-size:11px; padding:4px 12px; border-radius:50px; font-weight:600; letter-spacing:.5px; }
+		.cat-see-more { background:var(--white); border:1.5px solid var(--gold); color:var(--gold-dark); font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; letter-spacing:.5px; padding:8px 16px; border-radius:50px; cursor:pointer; transition:var(--transition-fast); display:inline-flex; align-items:center; gap:6px; }
+		.cat-see-more:hover { background:var(--gold); color:#fff; transform:translateY(-1px); box-shadow:0 6px 16px rgba(184,146,47,.25); }
+		.cat-see-more svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; }
+
+		/* Pagination par categories */
+		.cat-pager { display:flex; justify-content:center; align-items:center; gap:8px; margin: 22px 0 4px; flex-wrap:wrap; }
+		.cat-pager button { background:var(--white); border:1px solid var(--border); color:var(--text-muted); font-weight:600; font-size:13px; padding:8px 14px; border-radius:10px; cursor:pointer; transition:var(--transition-fast); min-width:38px; }
+		.cat-pager button:hover:not(:disabled) { border-color:var(--gold); color:var(--primary-dark); }
+		.cat-pager button.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+		.cat-pager button:disabled { opacity:.4; cursor:not-allowed; }
+		.cat-pager .pager-info { font-size:12.5px; color:var(--text-muted); margin: 0 6px; }
+
+		/* Carte "Voir plus" qui occupe une cellule de la grille (a la place ou
+		   serait la 4eme carte). Remplit naturellement l'espace vide a droite. */
+		.see-more-card { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:32px 22px; min-height:280px; background:linear-gradient(180deg, var(--gold-soft) 0%, var(--cream) 100%); border:2px dashed var(--gold); border-radius:var(--radius-md); cursor:pointer; transition:var(--transition); text-align:center; color:var(--gold-dark); font-family:inherit; }
+		.see-more-card:hover { background:linear-gradient(180deg, var(--gold-light) 0%, var(--cream-dark) 100%); transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--gold-dark); }
+		.see-more-card .icon-circle { width:54px; height:54px; border-radius:50%; background:var(--white); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); }
+		.see-more-card .icon-circle svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+		.see-more-card .label { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--primary-dark); font-weight:600; line-height:1.2; }
+		.see-more-card .sub { font-size:12px; color:var(--text-muted); letter-spacing:.5px; text-transform:uppercase; font-weight:600; }
+
+		/* Animation d'apparition des cartes ajoutees par "Voir plus" */
+		.cat-block.is-expanded > .cards-grid > .reco-card { animation: card-fade-in .35s ease both; }
+		@keyframes card-fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+		/* Bouton Choisir */
+		.pick-btn { width:100%; margin-top:12px; padding:12px 14px; border:none; border-radius:var(--radius-sm); font-size:13px; font-weight:700; letter-spacing:.5px; cursor:pointer; transition:var(--transition-fast); background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.25); }
+		.pick-btn:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(139,26,43,.35); }
+		.pick-btn.picked { background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#fff; cursor:default; opacity:.9; }
+		.pick-btn:disabled { cursor:default; }
+
+		/* Card en état "choisi" */
+		.reco-card.is-picked { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-light), 0 8px 28px rgba(184,146,47,.18); }
+		.picked-badge { position:absolute; top:12px; left:12px; background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#fff; padding:4px 12px; border-radius:50px; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; z-index:5; }
+
+		.summary-bar { background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 100%); color:var(--white); padding:18px 22px; border-radius:var(--radius-lg); margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:var(--shadow-md); }
+		.summary-bar h2 { color:var(--white); font-size:1.5rem; margin:0; }
+		.summary-bar .stat { text-align:center; }
+		.summary-bar .stat .num { font-size:1.6rem; font-weight:700; font-family:'Cormorant Garamond',serif; color:var(--gold-light); display:block; }
+		.summary-bar .stat .lab { font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.85; }
+
+		.tabs { display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap; }
+		.tabs button { background:var(--white); border:1px solid var(--border); padding:8px 16px; border-radius:var(--radius-xl); cursor:pointer; font-weight:600; font-size:13px; color:var(--text-muted); transition:var(--transition-fast); }
+		.tabs button:hover { border-color:var(--gold); color:var(--text-dark); }
+		.tabs button.active { background:var(--primary); color:var(--white); border-color:var(--primary); }
+	</style>
+</head>
+<body>
+
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span class="active" onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
+		</div>
+	</div>
+
+	<div class="reco-layout">
+
+		<!-- SIDEBAR : profil + filtres -->
+		<aside>
+			<div class="profile-card" id="profileCard">
+				<h3>Votre profil</h3>
+				<div id="profileBody" class="text-muted text-center" style="padding:20px 0;">Chargement…</div>
+				<div style="display:flex;flex-direction:column;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border-light);">
+					<button class="btn btn-small btn-primary" onclick="refreshRecommendations()">Recalculer mes recommandations</button>
+					<button class="btn btn-small btn-secondary" onclick="location.href='questionnaire.html'">Modifier le questionnaire</button>
+				</div>
+			</div>
+		</aside>
+
+		<!-- MAIN : blocs de recommandations -->
+		<main>
+			<div class="summary-bar">
+				<div>
+					<h2>Recommandations personnalisées par l'IA Ayora</h2>
+					<p style="opacity:0.85;font-size:13px;margin:4px 0 0;">Comparaison de votre profil avec chaque prestataire sur 6 critères, puis sélection des 3 meilleurs par catégorie.</p>
+				</div>
+				<div class="stat"><span class="num" id="statTotal">—</span><span class="lab">Prestataires</span></div>
+				<div class="stat"><span class="num" id="statTop">—</span><span class="lab">Top match</span></div>
+				<div class="stat"><span class="num" id="statValue">—</span><span class="lab">Bon plan</span></div>
+				<div class="stat"><span class="num" id="statChic">—</span><span class="lab">Premium</span></div>
+			</div>
+
+			<div id="aiExplainer" style="background:var(--white);border-radius:var(--radius-lg);padding:14px 18px;box-shadow:var(--shadow-md);margin-bottom:18px;border-left:4px solid var(--gold);font-size:13px;color:var(--text-body);">
+				<strong style="color:var(--primary-dark);">Comment l'IA Ayora calcule votre score</strong>
+				<span style="color:var(--text-muted);"> — moyenne pondérée sur 6 critères de compatibilité (calcul local, sans service externe) :</span>
+				<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px;">
+					<span class="tag eco">Budget · 30%</span>
+					<span class="tag">Style · 25%</span>
+					<span class="tag priority">Ville · 15%</span>
+					<span class="tag priority">Invités · 15%</span>
+					<span class="tag luxe">Luxe · 10%</span>
+					<span class="tag">Qualité · 5%</span>
+				</div>
+			</div>
+
+			<div class="tabs" id="blockTabs"></div>
+
+			<div id="blocksContainer" class="loading">
+				<div class="spinner"></div>
+				<p>Chargement de vos recommandations…</p>
+			</div>
+		</main>
+
+	</div>
+
+	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
+
+	<script src="js/api.js"></script>
+	<script>
+	var user = checkAuth(); if (user) applyAccountHeader(user);
+	if (user) document.getElementById('userName').textContent = user.firstName;
+
+	var STATE = { profile:null, blocks:{}, topPerCategory:{}, all:[], categories:[], counts:{}, pickedVendorIds:[] };
+	var ACTIVE_BLOCK = 'byCategory';   // vue principale : 3 par categorie avec bouton Choisir
+	var CAT_PAGE = 1;                   // page courante de la pagination par categories
+	var CAT_PER_PAGE = 3;               // 3 categories affichees par page
+	var EXPANDED_CATS = {};             // categories avec "Voir plus" actif (cle = nom categorie)
+
+	var BLOCK_META = {
+		byCategory:     { title:'Par catégorie (3 par service)', subtitle:'3 prestataires par catégorie — choisissez celui que vous retenez',   badge:'Choisir' },
+		topPicks:       { title:'Les meilleurs pour vous',         subtitle:'Score global le plus élevé selon votre profil',                   badge:'Top' },
+		prioritePicks:  { title:'Vos priorités',                   subtitle:'Catégories que vous avez classées en priorité dans le questionnaire', badge:'Prioritaire' },
+		bestValue:      { title:'Meilleur rapport qualité / prix', subtitle:'Bon score à un budget maîtrisé',                                badge:'Bon plan' },
+		mostChic:       { title:'Les plus chic',                    subtitle:'Gamme premium avec un excellent match',                          badge:'Chic' },
+		economic:       { title:'Petit budget',                     subtitle:'Gamme économique mais soignée',                                  badge:'Éco' },
+		premium:        { title:'Sélection premium',                subtitle:'Pour un mariage haut de gamme',                                   badge:'Premium' },
+		alternatives:   { title:'À considérer',                     subtitle:'Score correct, à comparer avec vos coups de cœur',               badge:'Alternative' }
+	};
+
+	// Si l'URL contient ?category=... on filtre directement sur cette categorie
+	(function applyUrlCategoryFilter() {
+		var qs = location.search;
+		if (qs.indexOf('category=') === -1) return;
+		// On laisse loadRecommendations utiliser ce qs tel quel
+	})();
+
+	// Initial load : on transmet la querystring (utile pour ?category=...)
+	loadRecommendations(location.search || '');
+
+	function loadRecommendations(qs) {
+		var url = '/api/recommendations' + (qs || '');
+		document.getElementById('blocksContainer').innerHTML =
+			'<div class="loading"><div class="spinner"></div><p>Chargement…</p></div>';
+		api.get(url).then(function(data) {
+			if (!data || data.completed === false) {
+				renderEmpty();
+				return;
+			}
+			STATE = data;
+			renderProfile(data.profile);
+			populateCategoryFilter(data.categories);
+			renderTabs(data.blocks);
+			renderActiveBlock();
+			updateStats();
+		}).catch(function(err) {
+			document.getElementById('blocksContainer').innerHTML =
+				'<div class="empty-block">Aucune recommandation disponible. <a href="questionnaire.html">Remplissez le questionnaire</a> pour en obtenir.</div>';
+		});
+	}
+
+	function renderEmpty() {
+		document.getElementById('profileBody').innerHTML = '<p>Aucun questionnaire trouvé.</p>';
+		document.getElementById('blocksContainer').innerHTML =
+			'<div class="empty-block">Pour obtenir des recommandations personnalisées, <a href="questionnaire.html">remplissez d\'abord le questionnaire</a>.</div>';
+	}
+
+	function renderProfile(p) {
+		if (!p) return;
+		var rows = [];
+		if (p.style)         rows.push(['Style mariage', humanize(p.style)]);
+		if (p.ambiance)      rows.push(['Ambiance', humanize(p.ambiance)]);
+		if (p.niveauLuxe)    rows.push(['Niveau de luxe', humanize(p.niveauLuxe)]);
+		if (p.themeCouleur)  rows.push(['Thème / couleur', humanize(p.themeCouleur)]);
+		if (p.saison)        rows.push(['Saison', humanize(p.saison)]);
+		if (p.budgetTotal)   rows.push(['Budget total', formatPrice(p.budgetTotal)]);
+		if (p.budgetTier)    rows.push(['Tier budget', humanize(p.budgetTier)]);
+		if (p.nbInvites)     rows.push(['Invités', p.nbInvites + ' (' + humanize(p.guestSize) + ')']);
+		if (p.budgetPerGuest) rows.push(['Budget / invité', formatPrice(p.budgetPerGuest)]);
+		if (p.typeMusique)   rows.push(['Musique', humanize(p.typeMusique)]);
+		if (p.typeCuisine)   rows.push(['Cuisine', humanize(p.typeCuisine)]);
+		if (p.prefDecoration)rows.push(['Décoration', humanize(p.prefDecoration)]);
+		if (p.styleNeggafa)  rows.push(['Neggafa', humanize(p.styleNeggafa) + ' / ' + p.nbTenuesNeggafa + ' tenues']);
+
+		var html = '';
+		for (var i = 0; i < rows.length; i++) {
+			html += '<div class="profile-row"><span class="label">' + rows[i][0] + '</span><span class="value">' + rows[i][1] + '</span></div>';
+		}
+		document.getElementById('profileBody').innerHTML = html || '<p class="text-muted text-center">Profil incomplet.</p>';
+	}
+
+	function humanize(s) {
+		if (!s) return '—';
+		return s.toString().toLowerCase().replace(/_/g,' ').replace(/^\w/, function(c){ return c.toUpperCase(); });
+	}
+
+	function populateCategoryFilter(_categories) {
+		// Filtres avances retires de l'UI ; on garde la fonction comme no-op pour
+		// la compatibilite, le filtrage par categorie se fait via les tabs.
+	}
+
+	function renderTabs(blocks) {
+		var keys = Object.keys(BLOCK_META);
+		var html = '';
+		for (var i = 0; i < keys.length; i++) {
+			var k = keys[i];
+			var list = blocks[k] || [];
+			if (list.length === 0 && k !== 'topPicks') continue;
+			var active = (k === ACTIVE_BLOCK) ? 'active' : '';
+			html += '<button class="' + active + '" onclick="setBlock(\'' + k + '\')">' +
+				BLOCK_META[k].title + ' <span style="opacity:0.7;">(' + list.length + ')</span></button>';
+		}
+		document.getElementById('blockTabs').innerHTML = html;
+	}
+
+	function setBlock(key) {
+		ACTIVE_BLOCK = key;
+		var btns = document.querySelectorAll('#blockTabs button');
+		for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+		var nodes = document.querySelectorAll('#blockTabs button');
+		for (var j = 0; j < nodes.length; j++) {
+			if (nodes[j].textContent.indexOf(BLOCK_META[key].title) === 0) nodes[j].classList.add('active');
+		}
+		renderActiveBlock();
+	}
+
+	function renderActiveBlock() {
+		// Vue "Par catégorie" (3 par service) — la vue par défaut maintenant
+		if (ACTIVE_BLOCK === 'byCategory') {
+			renderByCategory3();
+			return;
+		}
+
+		var meta = BLOCK_META[ACTIVE_BLOCK] || BLOCK_META.topPicks;
+		var list = (STATE.blocks && STATE.blocks[ACTIVE_BLOCK]) || [];
+
+		var html = '<section class="block">';
+		html += '<div class="block-header">';
+		html += '<div><div class="block-title">' + meta.title + ' <span class="badge">' + meta.badge + '</span></div>';
+		html += '<div class="block-subtitle">' + meta.subtitle + '</div></div>';
+		html += '<div class="text-muted" style="font-size:12px;">' + list.length + ' résultat' + (list.length>1?'s':'') + '</div>';
+		html += '</div>';
+
+		if (list.length === 0) {
+			html += '<div class="empty-block">Aucun prestataire dans ce bloc avec les filtres actuels.</div>';
+		} else {
+			html += '<div class="cards-grid">';
+			for (var i = 0; i < list.length; i++) html += cardHtml(list[i]);
+			html += '</div>';
+		}
+		html += '</section>';
+
+		document.getElementById('blocksContainer').innerHTML = html;
+	}
+
+	/**
+	 * Vue principale "3 par catégorie" PAGINÉE.
+	 *
+	 * Pourquoi paginer : afficher toutes les catégories sur une seule page
+	 * fait scroller longuement et noie l'utilisateur. On affiche CAT_PER_PAGE
+	 * (= 3) catégories par page, avec une pagination claire en bas.
+	 *
+	 * Pour chaque catégorie : 3 meilleures recommandations + bouton "Voir plus"
+	 * qui deploie toutes les autres en place dans la grille.
+	 */
+	function renderByCategory3() {
+		var meta = BLOCK_META.byCategory;
+		var groups = STATE.topPerCategory || {};
+		var allCats = Object.keys(groups).filter(function(c){ return (groups[c]||[]).length > 0; });
+		var totalCats = allCats.length;
+		var pageCount = Math.max(1, Math.ceil(totalCats / CAT_PER_PAGE));
+		if (CAT_PAGE > pageCount) CAT_PAGE = 1;
+		if (CAT_PAGE < 1) CAT_PAGE = 1;
+
+		var startIdx = (CAT_PAGE - 1) * CAT_PER_PAGE;
+		var visibleCats = allCats.slice(startIdx, startIdx + CAT_PER_PAGE);
+
+		var html = '<section class="block">';
+		html += '<div class="block-header">';
+		html += '<div><div class="block-title">' + meta.title + ' <span class="badge">' + meta.badge + '</span></div>';
+		html += '<div class="block-subtitle">' + meta.subtitle + '</div></div>';
+		html += '<div class="text-muted" style="font-size:12px;">' + totalCats + ' catégorie' + (totalCats>1?'s':'')
+			+ ' &middot; page ' + CAT_PAGE + ' / ' + pageCount + '</div>';
+		html += '</div>';
+
+		if (totalCats === 0) {
+			html += '<div class="empty-block">Pas de recommandations disponibles. Vérifiez votre questionnaire.</div>';
+		} else {
+			var ICO_PLUS = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>';
+			var ICO_MINUS = '<svg viewBox="0 0 24 24"><path d="M5 12h14" stroke-linecap="round"/></svg>';
+			for (var k = 0; k < visibleCats.length; k++) {
+				var cat = visibleCats[k];
+				var top3 = groups[cat] || [];
+				var allForCat = allRecsForCategory(cat);
+				var totalForCat = allForCat.length;
+				var isExpanded = !!EXPANDED_CATS[cat];
+				var visibleRecs = isExpanded ? allForCat : top3;
+				var hiddenCount = Math.max(0, totalForCat - top3.length);
+
+				html += '<div class="cat-block' + (isExpanded ? ' is-expanded' : '') + '">';
+				html += '<div class="cat-block-head">';
+				html += '<h3 class="cat-block-title">' + cat
+					+ ' <span class="cat-block-count">' + (isExpanded
+						? totalForCat + ' prestataire' + (totalForCat>1?'s':'') + ' triés par score IA'
+						: 'Choisissez 1 parmi ' + top3.length) + '</span></h3>';
+				html += '</div>';
+				html += '<div class="cards-grid">';
+				for (var j = 0; j < visibleRecs.length; j++) html += cardHtml(visibleRecs[j]);
+				if (hiddenCount > 0) {
+					if (isExpanded) {
+						html += '<button type="button" class="see-more-card" onclick="toggleCategory(\''
+							+ catAttr(cat) + '\')" aria-label="Replier ' + cat + '">'
+							+ '<div class="icon-circle">' + ICO_MINUS + '</div>'
+							+ '<div class="label">Voir moins</div>'
+							+ '<div class="sub">Replier la liste</div>'
+							+ '</button>';
+					} else {
+						html += '<button type="button" class="see-more-card" onclick="toggleCategory(\''
+							+ catAttr(cat) + '\')" aria-label="Voir plus de ' + cat + '">'
+							+ '<div class="icon-circle">' + ICO_PLUS + '</div>'
+							+ '<div class="label">Voir ' + hiddenCount + ' de plus</div>'
+							+ '<div class="sub">Plus de prestataires</div>'
+							+ '</button>';
+					}
+				}
+				html += '</div>';
+				html += '</div>';
+			}
+
+			// Pagination
+			if (pageCount > 1) {
+				html += '<div class="cat-pager">';
+				html += '<button onclick="setCatPage(' + (CAT_PAGE - 1) + ')"' + (CAT_PAGE === 1 ? ' disabled' : '') + ' aria-label="Page précédente">&lsaquo;</button>';
+				for (var p = 1; p <= pageCount; p++) {
+					html += '<button class="' + (p === CAT_PAGE ? 'active' : '') + '" onclick="setCatPage(' + p + ')">' + p + '</button>';
+				}
+				html += '<button onclick="setCatPage(' + (CAT_PAGE + 1) + ')"' + (CAT_PAGE === pageCount ? ' disabled' : '') + ' aria-label="Page suivante">&rsaquo;</button>';
+				html += '<span class="pager-info">' + visibleCats.length + ' catégorie' + (visibleCats.length>1?'s':'') + ' affichée' + (visibleCats.length>1?'s':'') + '</span>';
+				html += '</div>';
+			}
+		}
+		html += '</section>';
+		document.getElementById('blocksContainer').innerHTML = html;
+	}
+
+	function setCatPage(n) {
+		CAT_PAGE = n;
+		renderByCategory3();
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
+	function catAttr(cat) {
+		return (cat || '').replace(/'/g, "\\'");
+	}
+
+	function allRecsForCategory(cat) {
+		var out = (STATE.all || []).filter(function(r){ return r.category === cat; });
+		out.sort(function(a, b){ return (b.score || 0) - (a.score || 0); });
+		return out;
+	}
+
+	function toggleCategory(cat) {
+		EXPANDED_CATS[cat] = !EXPANDED_CATS[cat];
+		renderByCategory3();
+	}
+
+	function renderByCategory() {
+		var groups = {};
+		for (var i = 0; i < STATE.all.length; i++) {
+			var r = STATE.all[i];
+			if (!groups[r.category]) groups[r.category] = [];
+			groups[r.category].push(r);
+		}
+		var html = '<section class="block">';
+		html += '<div class="block-header"><div class="block-title">Par catégorie <span class="badge">Tout</span></div>';
+		html += '<div class="block-subtitle">Vos prestataires triés par score, regroupés par poste</div></div>';
+		var keys = Object.keys(groups);
+		for (var k = 0; k < keys.length; k++) {
+			var cat = keys[k];
+			var recs = groups[cat];
+			html += '<h3 style="margin:18px 0 12px;color:var(--primary-dark);font-size:1.2rem;">' + cat + ' <small style="font-size:13px;color:var(--text-muted);font-weight:400;">(' + recs.length + ')</small></h3>';
+			html += '<div class="cards-grid">';
+			var lim = Math.min(6, recs.length);
+			for (var j = 0; j < lim; j++) html += cardHtml(recs[j]);
+			html += '</div>';
+		}
+		html += '</section>';
+		return html;
+	}
+
+	function cardHtml(r) {
+		var sc = Math.round(r.score);
+		var ribbonClass = sc >= 85 ? 'excellent' : sc >= 70 ? 'good' : sc >= 55 ? 'ok' : 'low';
+		var gShort = r.gamme === 'ECONOMIQUE' ? 'eco' : r.gamme === 'MOYEN' ? 'moyen' : r.gamme === 'PREMIUM' ? 'premium' : '';
+		var gammeClass = gShort ? 'gamme-' + gShort : '';
+		var gammeLabel = r.gamme === 'ECONOMIQUE' ? 'Économique' : r.gamme === 'MOYEN' ? 'Moyenne' : r.gamme === 'PREMIUM' ? 'Premium' : (r.gamme || '');
+
+		// Tags
+		var tagsHtml = '';
+		if (r.tags && r.tags.length) {
+			for (var i = 0; i < r.tags.length; i++) {
+				var t = r.tags[i];
+				var cls = 'tag';
+				if (/coup de coeur/i.test(t)) cls += ' coup';
+				else if (/luxe|premium|chic/i.test(t)) cls += ' luxe';
+				else if (/budget|qualite|prix|petit/i.test(t)) cls += ' eco';
+				else if (/hors budget/i.test(t)) cls += ' alert';
+				else if (/priorit/i.test(t)) cls += ' priority';
+				tagsHtml += '<span class="' + cls + '">' + t + '</span>';
+			}
+		}
+
+		// Sub-scores : les 6 critères de compatibilité de l'IA Ayora
+		var subs = '';
+		var keys = [
+			['scoreBudget','Budget','30%'],
+			['scoreStyle','Style','25%'],
+			['scoreCity','Ville','15%'],
+			['scoreGuestCount','Invités','15%'],
+			['scoreLuxe','Luxe','10%'],
+			['scoreQuality','Qualité','5%']
+		];
+		for (var k = 0; k < keys.length; k++) {
+			var v = Math.round(r[keys[k][0]] || 0);
+			subs += '<div class="subscore"><span style="min-width:64px;" title="Poids ' + keys[k][2] + '">' + keys[k][1] + '</span><div class="bar"><div style="width:' + v + '%;"></div></div><span class="sval">' + v + '</span></div>';
+		}
+
+		// Contact bar : icones unifiees (phone, WhatsApp, Instagram, mail)
+		var ICO_PHONE = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2a11.7 11.7 0 0 0 3.7.6c.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.7.1.3 0 .7-.2 1L6.6 10.8z"/></svg></span>';
+		var ICO_WA = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.4-2 1.4-.5.1-1.2.1-2-.1a13 13 0 0 1-5.7-3.3 7 7 0 0 1-1.6-2.7c0-.7.4-1.3.7-1.6.2-.2.4-.3.6-.3l.5-.1c.2 0 .3.1.5.4l.7 1.7c.1.2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6.4.6 1 1.4 1.6 2 1 .9 1.8 1.2 2.1 1.4.2.1.4.1.5-.1l.7-.8c.2-.2.4-.2.6-.1l1.7.8c.2.1.4.2.4.4.1.2.1.5 0 .7z"/></svg></span>';
+		var ICO_IG = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1a6.6 6.6 0 0 1 2.2.4 4.5 4.5 0 0 1 2.3 2.3c.2.6.4 1.2.4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8a6.6 6.6 0 0 1-.4 2.2 4.5 4.5 0 0 1-2.3 2.3c-.6.2-1.2.4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1a6.6 6.6 0 0 1-2.2-.4 4.5 4.5 0 0 1-2.3-2.3c-.2-.6-.4-1.2-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c0-1 .2-1.6.4-2.2A4.5 4.5 0 0 1 5 2.7c.6-.2 1.2-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-.9 0-1.4.2-1.7.3-.4.2-.7.4-1 .7s-.5.6-.7 1c-.1.3-.3.8-.3 1.7-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c0 .9.2 1.4.3 1.7.2.4.4.7.7 1s.6.5 1 .7c.3.1.8.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c.9 0 1.4-.2 1.7-.3.4-.2.7-.4 1-.7s.5-.6.7-1c.1-.3.3-.8.3-1.7.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c0-.9-.2-1.4-.3-1.7a2.7 2.7 0 0 0-.7-1c-.3-.3-.6-.5-1-.7-.3-.1-.8-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 8a3.1 3.1 0 1 0 0-6.2 3.1 3.1 0 0 0 0 6.2zm6.2-8.2a1.1 1.1 0 1 1-2.3 0 1.1 1.1 0 0 1 2.3 0z"/></svg></span>';
+		var ICO_LINK = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M10.6 13.4a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.7 1.7 1.4 1.4 1.7-1.7a2 2 0 0 1 2.8 2.8l-3 3a2 2 0 0 1-2.8 0l-1.4 1.5zm2.8-2.8a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.7-1.7-1.4-1.4-1.7 1.7a2 2 0 0 1-2.8-2.8l3-3a2 2 0 0 1 2.8 0l1.4-1.5z"/></svg></span>';
+
+		var contacts = '<div class="contact-bar">';
+		if (r.phone) {
+			var clean = r.phone.replace(/[^\d+]/g,'');
+			var wa = clean.replace(/^0/,'212');
+			contacts += '<a href="tel:' + clean + '" title="Appeler ' + r.phone + '">' + ICO_PHONE + '<span class="lab">Appeler</span></a>';
+			contacts += '<a href="https://wa.me/' + wa + '" target="_blank" rel="noopener" title="WhatsApp">' + ICO_WA + '<span class="lab">WhatsApp</span></a>';
+		} else {
+			contacts += '<a class="disabled" title="Pas de numéro">' + ICO_PHONE + '<span class="lab">Téléphone</span></a>';
+		}
+		if (r.instagram) {
+			var ig = r.instagram.replace('@','').trim();
+			contacts += '<a href="https://instagram.com/' + ig + '" target="_blank" rel="noopener" title="@' + ig + ' sur Instagram">' + ICO_IG + '<span class="lab">Instagram</span></a>';
+		} else {
+			contacts += '<a class="disabled" title="Pas d\'Instagram">' + ICO_IG + '<span class="lab">Instagram</span></a>';
+		}
+		contacts += '</div>';
+
+		// Prix : on n'affiche que "À partir de X DHS" (pas de fourchette haute)
+		var priceLine = 'À partir de ' + formatPrice(r.prixMin);
+
+		var ICO_STAR = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:var(--gold);vertical-align:-2px;"><path d="M12 2l2.6 6 6.4.6-4.8 4.4 1.4 6.4L12 16.6 6.4 19.4 7.8 13 3 8.6l6.4-.6z"/></svg>';
+		var ICO_PIN = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;"><path d="M12 22s7-7.6 7-13a7 7 0 1 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>';
+		var rating = (r.rating && r.rating > 0) ? ICO_STAR + ' ' + r.rating + ' (' + (r.nbAvis||0) + ' avis)' : '';
+
+		// Bouton "Choisir" — tient compte de l'état déjà choisi
+		var picked = STATE.pickedVendorIds && STATE.pickedVendorIds.indexOf(r.vendorId) >= 0;
+		var pickBtn = picked
+			? '<button class="pick-btn picked" disabled>✓ Retenu</button>'
+			: '<button class="pick-btn" onclick="pickVendor(' + r.vendorId + ',\'' + (r.vendorName||'').replace(/\'/g,"\\'") + '\',\'' + (r.category||'').replace(/\'/g,"\\'") + '\')">Choisir ce prestataire</button>';
+
+		return '<article class="reco-card' + (picked ? ' is-picked' : '') + '">' +
+			'<div class="score-ribbon ' + ribbonClass + '">' + sc + '%</div>' +
+			(picked ? '<div class="picked-badge">✓ Choisi</div>' : '') +
+			'<div class="reco-cat">' + (r.category || '') + '</div>' +
+			'<h4>' + (r.vendorName || '') + '</h4>' +
+			'<div class="reco-meta">' +
+				'<span class="' + gammeClass + '">● ' + gammeLabel + '</span>' +
+				(r.city ? '<span>' + ICO_PIN + ' ' + r.city + '</span>' : '') +
+				(rating ? '<span>' + rating + '</span>' : '') +
+			'</div>' +
+			(tagsHtml ? '<div class="reco-tags">' + tagsHtml + '</div>' : '') +
+			'<div class="reco-price">' + priceLine + '</div>' +
+			'<div class="subscores">' + subs + '</div>' +
+			'<div class="reco-raison">' + (r.raison || '') + '</div>' +
+			contacts +
+			pickBtn +
+		'</article>';
+	}
+
+	// === Choisir un prestataire (POST /api/picks) ===
+	function pickVendor(vendorId, name, category) {
+		api.post('/api/picks', { vendorId: vendorId }).then(function(r) {
+			if (r && r.success) {
+				// Met à jour l'état local + re-rendu sans rechargement complet
+				if (!STATE.pickedVendorIds) STATE.pickedVendorIds = [];
+				// Pour respecter "1 par catégorie" : on retire l'ancien pick de cette catégorie côté UI
+				STATE.pickedVendorIds = STATE.pickedVendorIds.filter(function(id) {
+					var prev = (STATE.all || []).find(function(x){ return x.vendorId === id; });
+					return !(prev && prev.category === category);
+				});
+				STATE.pickedVendorIds.push(vendorId);
+				renderActiveBlock();
+				showToast('✓ ' + name + ' retenu pour ' + category + '. Voir vos choix →', 'mychoices.html');
+			} else {
+				showToast('✗ ' + ((r && r.error) || 'Erreur lors de la sauvegarde'), null);
+			}
+		}).catch(function() {
+			showToast('Erreur réseau, réessayez', null);
+		});
+	}
+
+	function showToast(msg, link) {
+		var t = document.getElementById('toast');
+		if (!t) {
+			t = document.createElement('div');
+			t.id = 'toast';
+			t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--primary-dark);color:#fff;padding:14px 22px;border-radius:50px;box-shadow:0 8px 28px rgba(0,0,0,.25);z-index:10000;font-size:14px;font-weight:500;cursor:pointer;';
+			document.body.appendChild(t);
+		}
+		t.textContent = msg;
+		t.onclick = link ? function(){ location.href = link; } : null;
+		t.style.cursor = link ? 'pointer' : 'default';
+		t.style.opacity = '1';
+		setTimeout(function(){ t.style.transition = 'opacity 0.6s'; t.style.opacity = '0'; }, 3500);
+	}
+
+	function refreshRecommendations() {
+		document.getElementById('blocksContainer').innerHTML =
+			'<div class="loading"><div class="spinner"></div><p>Recalcul à partir du questionnaire…</p></div>';
+		api.post('/api/recommendations/refresh', {}).then(function() {
+			loadRecommendations('');
+		}).catch(function() {
+			loadRecommendations('');
+		});
+	}
+
+	function updateStats() {
+		var total = (STATE.counts && STATE.counts.filtered) || (STATE.all || []).length;
+		document.getElementById('statTotal').textContent = total;
+		document.getElementById('statTop').textContent = ((STATE.blocks && STATE.blocks.topPicks) || []).length;
+		document.getElementById('statValue').textContent = ((STATE.blocks && STATE.blocks.bestValue) || []).length;
+		document.getElementById('statChic').textContent = ((STATE.blocks && STATE.blocks.mostChic) || []).length;
+	}
+	</script>
+</body>
+</html>

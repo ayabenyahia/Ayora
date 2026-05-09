@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora - Tableau de bord</title>
+	<link rel="stylesheet" href="css/styles.css?v=29">
+	<style>
+	/* ============================================================
+	   DASHBOARD v2 — Refonte premium
+	   ============================================================ */
+	.db-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 28px 80px; }
+
+	/* --- Welcome hero --- */
+	.db-hero { background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%); color: var(--white); border-radius: var(--radius-lg); padding: 30px 38px; margin-bottom: 22px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+	.db-hero::before { content: ""; position: absolute; top: -80px; right: -80px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(212,168,83,0.18), transparent 70%); pointer-events: none; }
+	.db-hero .acc { display: block; font-size: 11px; letter-spacing: 4px; color: var(--gold-light); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+	.db-hero h1 { color: var(--white); font-size: 2.2rem; margin: 0 0 6px; font-family: 'Cormorant Garamond', serif; font-weight: 600; }
+	.db-hero p { margin: 0; opacity: 0.92; font-size: 14.5px; max-width: 720px; line-height: 1.5; }
+	.db-hero .progress-mini { display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 50px; font-size: 13px; }
+	.db-hero .progress-mini strong { color: var(--gold-light); font-size: 18px; font-family: 'Cormorant Garamond', serif; }
+
+	/* --- Stats cards --- */
+	.db-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 28px; }
+	@media (max-width: 1100px) { .db-stats { grid-template-columns: repeat(3, 1fr); } }
+	@media (max-width: 600px)  { .db-stats { grid-template-columns: repeat(2, 1fr); } }
+	.db-stat { background: var(--white); border-radius: var(--radius-md); padding: 18px 16px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; overflow: hidden; }
+	.db-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold-light); }
+	.db-stat .ico { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+	.db-stat .ico svg, .shortcut .ico svg, .empty-ico svg, .action-item .ico svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+	.shortcut .ico svg { width: 22px; height: 22px; }
+	.action-item .ico { color: var(--primary); }
+	.db-stat.recos .ico { background: var(--primary-soft); color: var(--primary); }
+	.db-stat.picks .ico { background: var(--gold-soft); color: var(--gold-dark); }
+	.db-stat.guests .ico { background: var(--success-light); color: var(--sage-dark); }
+	.db-stat.invites .ico { background: var(--info-light); color: var(--info); }
+	.db-stat.remaining .ico { background: var(--warning-light); color: var(--warning); }
+	.db-stat.progress .ico { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #fff; }
+	.db-stat .v { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; color: var(--text-dark); font-weight: 600; line-height: 1; }
+	.db-stat .l { font-size: 11px; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+
+	/* --- Section grid (2 colonnes desktop) --- */
+	.db-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 22px; }
+	@media (max-width: 980px) { .db-grid { grid-template-columns: 1fr; } }
+
+	.db-card { background: var(--white); border-radius: var(--radius-lg); padding: 24px 26px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 20px; }
+	.db-card h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--primary-dark); margin: 0 0 4px; font-weight: 600; }
+	.db-card .subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 18px; }
+
+	/* --- Wedding progress --- */
+	.progress-bar-bg { background: var(--cream-dark); height: 12px; border-radius: 50px; overflow: hidden; margin: 12px 0 18px; }
+	.progress-bar-fill { background: linear-gradient(90deg, var(--gold) 0%, var(--gold-dark) 100%); height: 100%; border-radius: 50px; transition: width 0.6s ease; }
+
+	.steps-list { display: block; }
+
+	/* === STEP : layout flex robuste === */
+	.step {
+		display: flex !important;
+		align-items: center;
+		gap: 14px;
+		width: 100%;
+		box-sizing: border-box;
+		padding: 14px 16px;
+		margin-bottom: 10px;
+		background: var(--cream);
+		border-radius: var(--radius-md);
+		border: 1px solid var(--border-light);
+	}
+	.step:last-child { margin-bottom: 0; }
+	.step:hover { border-color: var(--gold-light); }
+
+	.step > .check {
+		flex: 0 0 30px;
+		width: 30px; height: 30px; border-radius: 50%;
+		display: flex !important; align-items: center; justify-content: center;
+		font-weight: 700; font-size: 14px;
+		background: var(--white); border: 2px solid var(--border);
+		color: var(--text-muted);
+	}
+
+	.step > .step-content {
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow: hidden;
+	}
+	.step .step-title { font-size: 14px; color: var(--text-body); font-weight: 600; line-height: 1.3; margin: 0; }
+	.step .step-meta  { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.2; }
+
+	.step > .step-tail {
+		flex: 0 0 auto;
+		display: flex !important;
+		gap: 6px;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+	.step .step-state {
+		font-size: 10px;
+		font-weight: 700;
+		padding: 3px 10px;
+		border-radius: 50px;
+		text-transform: uppercase;
+		letter-spacing: 0.4px;
+		white-space: nowrap;
+	}
+	.step .step-action {
+		font-size: 10.5px;
+		font-weight: 600;
+		cursor: pointer;
+		padding: 4px 10px;
+		border-radius: 50px;
+		background: var(--primary-soft);
+		color: var(--primary);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.step .step-action:hover { background: var(--primary); color: #fff; }
+
+	/* Etats */
+	.step.done            { background: var(--success-light); border-color: var(--success); }
+	.step.done > .check   { background: var(--success); color: #fff; border-color: var(--success); }
+	.step.done .step-title{ color: var(--sage-dark); }
+	.step.done .step-state{ background: var(--success); color: #fff; }
+
+	.step.in-progress           { background: #FFF7E0; border-color: var(--gold-light); }
+	.step.in-progress > .check  { background: var(--gold); color: #fff; border-color: var(--gold); }
+	.step.in-progress .step-title { color: var(--gold-dark); }
+	.step.in-progress .step-state { background: var(--gold); color: #fff; }
+
+	.step.todo .step-state { background: var(--border); color: var(--text-muted); }
+
+	/* Sur tres petit ecran : la queue passe sous le contenu */
+	@media (max-width: 540px) {
+		.step { flex-wrap: wrap; }
+		.step > .step-tail { width: 100%; padding-left: 44px; justify-content: flex-start; }
+	}
+
+	/* --- Next actions --- */
+	.action-list { display: flex; flex-direction: column; gap: 10px; }
+	.action-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, var(--gold-soft), #FEF3E0); border: 1px solid var(--gold-light); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition-fast); text-decoration: none; color: inherit; }
+	.action-item:hover { transform: translateX(4px); box-shadow: var(--shadow-sm); }
+	.action-item .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--white); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: var(--shadow-sm); }
+	.action-item .body { flex: 1; }
+	.action-item .body h5 { margin: 0; font-size: 14px; color: var(--text-dark); font-weight: 600; }
+	.action-item .body p { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
+	.action-item .arrow { color: var(--gold-dark); font-size: 18px; font-weight: 700; }
+
+	/* --- Recent picks --- */
+	.pick-mini { display: flex; gap: 12px; padding: 12px 14px; background: var(--cream); border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 8px; align-items: center; }
+	.pick-mini .cat-tag { background: var(--gold); color: #fff; padding: 2px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+	.pick-mini .name { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--text-dark); font-weight: 600; flex: 1; }
+	.pick-mini .price { font-size: 12px; color: var(--gold-dark); font-weight: 600; }
+
+	/* --- Top recos mini --- */
+	.reco-mini { display: flex; gap: 10px; padding: 12px; background: linear-gradient(180deg, #fff, var(--cream)); border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 8px; align-items: center; }
+	.reco-mini .score { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 12px; font-weight: 700; min-width: 50px; text-align: center; }
+	.reco-mini .body { flex: 1; }
+	.reco-mini .body strong { display: block; font-size: 13.5px; color: var(--text-dark); }
+	.reco-mini .body small { color: var(--text-muted); font-size: 11.5px; }
+
+	/* --- Budget --- */
+	.budget-card { background: linear-gradient(135deg, #FFF8EE, #F4EFE6); border: 1px solid var(--gold-light); }
+	.budget-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgba(184,146,47,0.3); font-size: 14px; }
+	.budget-row:last-child { border-bottom: none; padding-top: 12px; }
+	.budget-row .lab { color: var(--text-muted); }
+	.budget-row .val { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text-dark); font-weight: 600; }
+	.budget-row.total .val { color: var(--gold-dark); font-size: 1.5rem; }
+
+	/* --- Quick actions --- */
+	.shortcuts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+	@media (max-width: 600px) { .shortcuts { grid-template-columns: repeat(2, 1fr); } }
+	.shortcut { padding: 14px 10px; background: var(--white); border: 1px solid var(--border-light); border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: var(--transition); text-decoration: none; color: inherit; }
+	.shortcut:hover { transform: translateY(-2px); border-color: var(--gold); box-shadow: var(--shadow-sm); background: var(--gold-soft); }
+	.shortcut .ico { font-size: 22px; display: block; margin-bottom: 6px; }
+	.shortcut .label { font-size: 11.5px; color: var(--text-body); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+	/* --- Empty state for sections without data --- */
+	.empty { text-align: center; padding: 22px 16px; color: var(--text-muted); font-size: 13px; font-style: italic; }
+	.empty a { color: var(--primary); font-weight: 600; }
+	</style>
+</head>
+<body>
+
+	<!-- NAVIGATION -->
+	<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span class="active" onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
+		</div>
+	</div>
+
+	<div class="db-wrap">
+
+		<!-- HERO welcome -->
+		<div class="db-hero">
+			<span class="acc">— Tableau de bord —</span>
+			<h1 id="heroTitle">Bonjour…</h1>
+			<p id="heroMsg">Voici où vous en êtes dans l'organisation de votre mariage.</p>
+			<div class="progress-mini">
+				<span>Avancement global</span>
+				<strong id="heroPct">—</strong>
+			</div>
+		</div>
+
+		<!-- STATS 6 cartes -->
+		<div class="db-stats">
+			<div class="db-stat recos">
+				<div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></div>
+				<div class="v" id="statRecos">—</div>
+				<div class="l">Recommandations</div>
+			</div>
+			<div class="db-stat picks">
+				<div class="ico"><svg viewBox="0 0 24 24"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14M9 8l3 11M15 8l-3 11"/></svg></div>
+				<div class="v" id="statPicks">—</div>
+				<div class="l">Mes choix</div>
+			</div>
+			<div class="db-stat guests">
+				<div class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3 2.7-5.2 6-5.2s6 2.2 6 5.2"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.7.4 4.5 2 4.5 4.5"/></svg></div>
+				<div class="v" id="statGuests">—</div>
+				<div class="l">Invités</div>
+			</div>
+			<div class="db-stat invites">
+				<div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+				<div class="v" id="statInvSent">—</div>
+				<div class="l">Invitations envoyées</div>
+			</div>
+			<div class="db-stat remaining">
+				<div class="ico"><svg viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M6 2v4c0 3 3 4 3 6s-3 3-3 6v4M18 2v4c0 3-3 4-3 6s3 3 3 6v4"/></svg></div>
+				<div class="v" id="statRemaining">—</div>
+				<div class="l">Restantes</div>
+			</div>
+			<div class="db-stat progress">
+				<div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 13h2M3 10h18"/></svg></div>
+				<div class="v" id="statBudget">—</div>
+				<div class="l">Budget restant</div>
+			</div>
+		</div>
+
+		<!-- 2 cols : progression + actions -->
+		<div class="db-grid">
+			<div>
+				<!-- Progression du mariage -->
+				<div class="db-card">
+					<h2>Progression de votre mariage</h2>
+					<p class="subtitle">Suivez les grandes étapes de votre organisation.</p>
+					<div class="progress-bar-bg">
+						<div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+					</div>
+					<div class="steps-list" id="stepsList"></div>
+				</div>
+
+				<!-- Mes derniers choix -->
+				<div class="db-card">
+					<h2>Vos derniers choix de prestataires</h2>
+					<p class="subtitle">Les prestataires que vous avez retenus parmi vos recommandations.</p>
+					<div id="recentPicks">
+						<div class="empty">Chargement…</div>
+					</div>
+				</div>
+
+				<!-- Top recommandations -->
+				<div class="db-card">
+					<h2>Vos meilleures recommandations</h2>
+					<p class="subtitle">Aperçu des prestataires les plus compatibles avec votre profil.</p>
+					<div id="topRecos">
+						<div class="empty">Chargement…</div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<!-- Prochaines actions -->
+				<div class="db-card">
+					<h2>Vos prochains pas</h2>
+					<p class="subtitle">Continuez à avancer dans votre organisation.</p>
+					<div class="action-list" id="actionList"></div>
+				</div>
+
+				<!-- Budget -->
+				<div class="db-card budget-card">
+					<h2>Budget mariage</h2>
+					<p class="subtitle">Vos engagements financiers en un coup d'œil.</p>
+					<div class="budget-row">
+						<span class="lab">Budget total</span>
+						<span class="val" id="budgetTotal">—</span>
+					</div>
+					<div class="budget-row">
+						<span class="lab">Estimé engagé</span>
+						<span class="val" id="budgetSpent">—</span>
+					</div>
+					<div class="budget-row total">
+						<span class="lab">Budget restant</span>
+						<span class="val" id="budgetLeft">—</span>
+					</div>
+				</div>
+
+				<!-- Invités & invitations -->
+				<div class="db-card">
+					<h2>Invités &amp; invitations</h2>
+					<p class="subtitle">Suivi de votre liste d'invités.</p>
+					<div class="budget-row">
+						<span class="lab">Invités ajoutés</span>
+						<span class="val" id="gGuests">—</span>
+					</div>
+					<div class="budget-row">
+						<span class="lab">Envoyées</span>
+						<span class="val" id="gSent">—</span>
+					</div>
+					<div class="budget-row total">
+						<span class="lab">Restantes</span>
+						<span class="val" id="gRemaining">—</span>
+					</div>
+				</div>
+
+				<!-- Raccourcis rapides -->
+				<div class="db-card">
+					<h2>Raccourcis</h2>
+					<p class="subtitle">Accès rapide aux fonctionnalités.</p>
+					<div class="shortcuts">
+						<a class="shortcut" href="recommendations.html"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></span><span class="label">Recos</span></a>
+						<a class="shortcut" href="mychoices.html"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14"/></svg></span><span class="label">Mes choix</span></a>
+						<a class="shortcut" href="vendors.html"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v3H9zM9 10h6M9 14h6M9 18h4"/></svg></span><span class="label">Prestataires</span></a>
+						<a class="shortcut" href="guests.html"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3 2.7-5.2 6-5.2s6 2.2 6 5.2"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.7.4 4.5 2 4.5 4.5"/></svg></span><span class="label">Invités</span></a>
+						<a class="shortcut" href="invitations.html"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><span class="label">Invitations</span></a>
+						<a class="shortcut" href="questionnaire.html"><span class="ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13l2 2 4-4"/></svg></span><span class="label">Questionnaire</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
+
+	<script src="js/api.js"></script>
+	<script>
+	/* ============================================================
+	   Dashboard v2 — flux de donnees
+	   ------------------------------------------------------------
+	   1. checkAuth() lit le user du localStorage (firstName, plan)
+	   2. /api/auth/me     -> plan, invitationsSent, remaining
+	   3. /api/questionnaire -> completed + budgetTotal
+	   4. /api/recommendations -> nb total recos + top 3
+	   5. /api/picks       -> liste des picks (regroupes par categorie)
+	   6. /api/guests      -> liste des invites
+	   7. computeProgress  -> 6 etapes : compte / questionnaire /
+	                          recos vues / picks / invites / invitations
+	   8. computeBudget    -> total, somme des prixMin des picks, restant
+	   ============================================================ */
+	var user = checkAuth(); if (user) applyAccountHeader(user);
+	if (user) {
+		var firstName = user.firstName || 'Aya';
+		document.getElementById('userName').textContent = firstName;
+		document.getElementById('heroTitle').textContent = 'Bonjour ' + firstName;
+		applyPlanBadge(user.subscriptionType);
+	}
+
+	var STATE = {
+		plan: 'FREE',
+		invSent: 0,
+		invRemaining: 10,
+		qa: null,
+		recos: [],
+		picks: [],
+		guests: []
+	};
+
+	function applyPlanBadge(plan) {
+		var p = (plan || 'FREE').toUpperCase();
+		var badge = document.getElementById('userBadge');
+		if (badge) {
+			badge.textContent = p;
+			badge.className = 'badge-' + p.toLowerCase();
+		}
+	}
+
+	loadAll();
+
+	function loadAll() {
+		var p1 = api.get('/api/auth/me').then(function(d){
+			if (d && d.user) {
+				STATE.plan = d.user.subscriptionType || 'FREE';
+				applyPlanBadge(STATE.plan);
+				if (d.subscription) {
+					STATE.invSent = d.subscription.invitationsSent || 0;
+					STATE.invRemaining = (d.subscription.plan === 'PREMIUM') ? -1 : (d.subscription.remaining || 0);
+				}
+			}
+		}).catch(function(){});
+
+		var p2 = api.get('/api/questionnaire').then(function(d){
+			if (d && d.completed) STATE.qa = d;
+		}).catch(function(){});
+
+		var p3 = api.get('/api/recommendations').then(function(d){
+			if (Array.isArray(d)) STATE.recos = d;
+			else if (d && Array.isArray(d.all)) STATE.recos = d.all;
+			else if (d && d.blocks && Array.isArray(d.blocks.topPicks)) STATE.recos = d.blocks.topPicks;
+			else STATE.recos = [];
+		}).catch(function(){ STATE.recos = []; });
+
+		var p4 = api.get('/api/picks').then(function(d){
+			STATE.picks = (d && d.picks) ? d.picks : [];
+		}).catch(function(){ STATE.picks = []; });
+
+		var p5 = api.get('/api/guests').then(function(d){
+			STATE.guests = Array.isArray(d) ? d : [];
+		}).catch(function(){ STATE.guests = []; });
+
+		Promise.all([p1, p2, p3, p4, p5]).then(render);
+	}
+
+	function render() {
+		document.getElementById('statRecos').textContent = STATE.recos.length;
+		document.getElementById('statPicks').textContent = STATE.picks.length;
+		document.getElementById('statGuests').textContent = STATE.guests.length;
+		document.getElementById('statInvSent').textContent = STATE.invSent;
+		document.getElementById('statRemaining').textContent =
+			(STATE.invRemaining < 0) ? 'Illimité' : STATE.invRemaining;
+
+		var budget = computeBudget();
+		document.getElementById('statBudget').textContent =
+			(budget.total > 0) ? formatCompact(budget.left) : '—';
+		document.getElementById('budgetTotal').textContent = formatPrice(budget.total);
+		document.getElementById('budgetSpent').textContent = formatPrice(budget.spent);
+		document.getElementById('budgetLeft').textContent = formatPrice(budget.left);
+
+		document.getElementById('gGuests').textContent = STATE.guests.length;
+		document.getElementById('gSent').textContent = STATE.invSent;
+		document.getElementById('gRemaining').textContent =
+			(STATE.invRemaining < 0) ? 'Illimité' : STATE.invRemaining;
+
+		var progress = computeProgress();
+		document.getElementById('heroPct').textContent = progress.pct + '%';
+		document.getElementById('progressBar').style.width = progress.pct + '%';
+		renderSteps(progress.steps);
+		document.getElementById('heroMsg').textContent = progress.message;
+
+		renderActions(progress);
+		renderRecentPicks();
+		renderTopRecos();
+	}
+
+	function computeProgress() {
+		var nbInvitesTarget = (STATE.qa && STATE.qa.nbInvites) ? STATE.qa.nbInvites : 0;
+		var guestsCount = STATE.guests.length;
+		var picksCount = STATE.picks.length;
+		var recosCount = STATE.recos.length;
+
+		// === Calcul d'etat pour chaque etape : 'done' / 'in-progress' / 'todo' ===
+		// Une etape est 'done' seulement si elle est REELLEMENT terminee (pas juste commencee).
+		// 'in-progress' = il y a un debut mais incomplet.
+		// 'todo' = rien n'est commence.
+
+		// Compte cree : binaire (done si user)
+		var stAccount = user ? 'done' : 'todo';
+
+		// Questionnaire : binaire (completed=true)
+		var stQa = (STATE.qa && STATE.qa.completed) ? 'done' : 'todo';
+
+		// Recos consultees : done si on a au moins 1 recommandation
+		var stRecos = recosCount > 0 ? 'done' : 'todo';
+
+		// Picks : done si on a 6+ choix (1 par categorie principale), in-progress si 1-5, todo si 0
+		var stPicks = picksCount === 0 ? 'todo' : (picksCount >= 6 ? 'done' : 'in-progress');
+
+		// Tolerance ±20% autour du nombre d'invites prevu (questionnaire).
+		// Ex : 250 invites prevus -> intervalle acceptable [200 - 300]
+		// L'etape devient 'done' des que le compte atteint la borne basse.
+		var lowerBound = nbInvitesTarget > 0 ? Math.floor(nbInvitesTarget * 0.8) : 0;
+		var upperBound = nbInvitesTarget > 0 ? Math.ceil(nbInvitesTarget * 1.2)  : 0;
+		var rangeLabel = nbInvitesTarget > 0 ? '[' + lowerBound + '-' + upperBound + ']' : '';
+
+		// Invites :
+		//   todo  : 0 invite
+		//   done  : nbInvitesTarget renseigne ET guestsCount >= borne basse
+		//   in-progress : sinon (compte > 0 mais sous la borne basse)
+		var stGuests;
+		if (guestsCount === 0) stGuests = 'todo';
+		else if (nbInvitesTarget > 0 && guestsCount >= lowerBound) stGuests = 'done';
+		else stGuests = 'in-progress';
+
+		// Invitations envoyees : meme logique de tolerance ±20%
+		var stInvites;
+		if (STATE.invSent === 0) stInvites = 'todo';
+		else if (nbInvitesTarget > 0 && STATE.invSent >= lowerBound) stInvites = 'done';
+		else stInvites = 'in-progress';
+
+		var metaPicks = picksCount + ' choix';
+		var metaGuests = nbInvitesTarget > 0
+			? guestsCount + ' / ' + rangeLabel + ' invités'
+			: guestsCount + ' invités';
+		var metaInvites = nbInvitesTarget > 0
+			? STATE.invSent + ' / ' + rangeLabel + ' envoyées'
+			: STATE.invSent + ' envoyées';
+
+		var steps = [
+			{ key:'account',       title:'Compte créé',                meta:'',           state:stAccount },
+			{ key:'questionnaire', title:'Questionnaire complété',     meta:'',           state:stQa,      action:'questionnaire.html' },
+			{ key:'recos',         title:'Recommandations consultées', meta:recosCount + ' disponibles', state:stRecos,   action:'recommendations.html' },
+			{ key:'picks',         title:'Prestataires choisis',       meta:metaPicks,    state:stPicks,   action:'recommendations.html' },
+			{ key:'guests',        title:'Invités ajoutés',            meta:metaGuests,   state:stGuests,  action:'guests.html' },
+			{ key:'invites',       title:'Invitations envoyées',       meta:metaInvites,  state:stInvites, action:'invitations.html' }
+		];
+
+		// Calcul du % d'avancement : done = 1 / in-progress = 0.5 / todo = 0
+		var sum = 0;
+		for (var i = 0; i < steps.length; i++) {
+			if (steps[i].state === 'done') sum += 1;
+			else if (steps[i].state === 'in-progress') sum += 0.5;
+		}
+		var pct = Math.round((sum / steps.length) * 100);
+
+		var msg;
+		if (pct === 100) msg = "Tout est prêt — il ne reste plus qu'à savourer le grand jour !";
+		else if (pct >= 70) msg = "Vous y êtes presque ! Encore quelques détails à finaliser.";
+		else if (pct >= 40) msg = "Excellente progression — continuons sur cette lancée.";
+		else if (pct >= 20) msg = "Bon début ! Voici les prochaines actions à mener.";
+		else msg = "Bienvenue ! Commençons par le questionnaire pour personnaliser votre mariage.";
+
+		return { pct: pct, steps: steps, message: msg };
+	}
+
+	function renderSteps(steps) {
+		var labels = { 'done':'Terminé', 'in-progress':'En cours', 'todo':'À faire' };
+		var html = '';
+		for (var i = 0; i < steps.length; i++) {
+			var s = steps[i];
+			var st = s.state || 'todo';
+			var icon = (st === 'done') ? '✓' : (st === 'in-progress' ? '●' : (i+1));
+			html += '<div class="step ' + st + '">';
+			html += '<div class="check">' + icon + '</div>';
+			html += '<div class="step-content">';
+			html += '<div class="step-title">' + s.title + '</div>';
+			if (s.meta) html += '<div class="step-meta">' + s.meta + '</div>';
+			html += '</div>';
+			html += '<div class="step-tail">';
+			html += '<span class="step-state">' + labels[st] + '</span>';
+			if (st !== 'done' && s.action) {
+				html += '<a class="step-action" href="' + s.action + '">Faire</a>';
+			}
+			html += '</div>';
+			html += '</div>';
+		}
+		document.getElementById('stepsList').innerHTML = html;
+	}
+
+	function renderActions(progress) {
+		var actions = [];
+		var s = progress.steps;
+		var done = function(idx) { return s[idx].state === 'done'; };
+
+		// Bibliotheque d'icones SVG sobres (lineart). Pas d'emojis.
+		var ICO = {
+			doc:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13l2 2 4-4"/></svg>',
+			ring:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14"/></svg>',
+			people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3 2.7-5.2 6-5.2s6 2.2 6 5.2"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.7.4 4.5 2 4.5 4.5"/></svg>',
+			mail:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
+			crown:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4 4 5-7 5 7 4-4-2 12H5z"/></svg>',
+			star:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .9-4.4 4.4 1 6-5.2-2.9-5.2 2.9 1-6L3.4 9.5l6-.9z"/></svg>',
+			check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
+		};
+
+		if (!done(1)) {
+			actions.push({ ico:ICO.doc, title:'Compléter le questionnaire', desc:'Indispensable pour des recommandations personnalisées.', href:'questionnaire.html' });
+		}
+		if (done(1) && !done(3)) {
+			actions.push({ ico:ICO.ring, title:'Choisir vos prestataires', desc:'3 propositions par catégorie sont prêtes pour vous.', href:'recommendations.html' });
+		}
+		if (done(1) && !done(4)) {
+			actions.push({ ico:ICO.people, title:'Ajouter vos invités', desc:'Préparez votre liste avant les envois.', href:'guests.html' });
+		}
+		if (s[4].state !== 'todo' && !done(5)) {
+			actions.push({ ico:ICO.mail, title:'Envoyer les invitations', desc:'Vos modèles sont prêts, plus qu\'à cliquer.', href:'invitations.html' });
+		}
+		if (STATE.plan === 'FREE') {
+			actions.push({ ico:ICO.crown, title:'Passer à Pro ou Premium', desc:'Débloquez tous les modèles d\'invitations.', href:'premium.html' });
+		}
+		if (done(3) && STATE.picks.length < 6) {
+			actions.push({ ico:ICO.star, title:'Compléter votre sélection', desc:'Vous avez retenu ' + STATE.picks.length + ' prestataire' + (STATE.picks.length>1?'s':'') + ' — explorez plus de catégories.', href:'recommendations.html' });
+		}
+		actions = actions.slice(0, 4);
+
+		var html = '';
+		if (actions.length === 0) {
+			html = '<div class="empty"><span class="empty-ico" style="display:inline-block;color:var(--success);vertical-align:middle;margin-right:8px;">' + ICO.check + '</span>Bravo, tout est en ordre.</div>';
+		} else {
+			for (var i = 0; i < actions.length; i++) {
+				var a = actions[i];
+				html += '<a class="action-item" href="' + a.href + '">';
+				html += '<div class="ico">' + a.ico + '</div>';
+				html += '<div class="body"><h5>' + a.title + '</h5><p>' + a.desc + '</p></div>';
+				html += '<div class="arrow">→</div>';
+				html += '</a>';
+			}
+		}
+		document.getElementById('actionList').innerHTML = html;
+	}
+
+	function renderRecentPicks() {
+		var c = document.getElementById('recentPicks');
+		if (STATE.picks.length === 0) {
+			c.innerHTML = '<div class="empty">Aucun prestataire retenu pour le moment. <a href="recommendations.html">Voir les recommandations →</a></div>';
+			return;
+		}
+		var html = '';
+		var lim = Math.min(4, STATE.picks.length);
+		for (var i = 0; i < lim; i++) {
+			var p = STATE.picks[i];
+			html += '<div class="pick-mini">';
+			html += '<span class="cat-tag">' + (p.category || '') + '</span>';
+			html += '<span class="name">' + (p.vendorName || '') + '</span>';
+			html += '<span class="price">' + formatPrice(p.prixMin) + '</span>';
+			html += '</div>';
+		}
+		if (STATE.picks.length > 4) {
+			html += '<div class="empty" style="padding:8px;"><a href="mychoices.html">Voir mes ' + STATE.picks.length + ' choix →</a></div>';
+		}
+		c.innerHTML = html;
+	}
+
+	function renderTopRecos() {
+		var c = document.getElementById('topRecos');
+		if (STATE.recos.length === 0) {
+			c.innerHTML = '<div class="empty">Complétez le questionnaire pour découvrir vos recommandations. <a href="questionnaire.html">Y aller →</a></div>';
+			return;
+		}
+		var sorted = STATE.recos.slice().sort(function(a,b){
+			return (b.score || 0) - (a.score || 0);
+		});
+		var html = '';
+		var lim = Math.min(3, sorted.length);
+		for (var i = 0; i < lim; i++) {
+			var r = sorted[i];
+			html += '<div class="reco-mini">';
+			html += '<span class="score">' + Math.round(r.score || 0) + '%</span>';
+			html += '<div class="body"><strong>' + (r.vendorName || '') + '</strong>';
+			html += '<small>' + (r.category || '') + ' · ' + formatPrice(r.prixMin) + '</small></div>';
+			html += '</div>';
+		}
+		html += '<div class="empty" style="padding:8px;"><a href="recommendations.html">Voir toutes mes recommandations →</a></div>';
+		c.innerHTML = html;
+	}
+
+	function computeBudget() {
+		var total = (STATE.qa && STATE.qa.budgetTotal) ? STATE.qa.budgetTotal : 0;
+		var spent = 0;
+		for (var i = 0; i < STATE.picks.length; i++) {
+			spent += (STATE.picks[i].prixMin || 0);
+		}
+		return { total: total, spent: spent, left: Math.max(0, total - spent) };
+	}
+
+	function formatCompact(n) {
+		if (!n) return '0';
+		if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+		if (n >= 1000)    return Math.round(n/1000) + 'k';
+		return Math.round(n) + '';
+	}
+	</script>
+</body>
+</html>
