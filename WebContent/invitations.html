@@ -147,8 +147,36 @@
 	/* 6. Desert Rose */
 	.p-desert { background:linear-gradient(180deg,#F8E6E0 0%, #E8C5C0 100%); color:#9B5A6B; }
 	/* 7. Emerald Night */
-	.p-emerald { background:linear-gradient(170deg,#0a2418 0%, #0E3B2E 50%, #0a2418 100%); color:#D4B370; }
-	.p-emerald::before { content:""; position:absolute; inset:18px; border:1px solid rgba(212,179,112,.35); border-radius:6px; }
+	/* Emerald Night (PREMIUM) — anime : pulsation lumineuse emeraude qui
+	   respire au centre, comme une pierre precieuse qui scintille. */
+	.p-emerald {
+		background:linear-gradient(170deg,#0a2418 0%, #0E3B2E 50%, #0a2418 100%);
+		color:#D4B370;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-emerald::before {
+		content:""; position:absolute; inset:0;
+		background:
+			radial-gradient(ellipse 60% 70% at 50% 50%, rgba(80,220,165,.40) 0%, transparent 55%),
+			radial-gradient(ellipse 90% 60% at 50% 50%, rgba(212,179,112,.20) 0%, transparent 60%);
+		animation: emeraldPulse 5s ease-in-out infinite;
+		pointer-events:none;
+	}
+	@keyframes emeraldPulse {
+		0%, 100% { opacity:.55; transform: scale(1); }
+		50%      { opacity:1;   transform: scale(1.08); }
+	}
+	.p-emerald::after {
+		content:""; position:absolute; inset:18px;
+		border:1px solid rgba(212,179,112,.45); border-radius:6px;
+		box-shadow: inset 0 0 26px rgba(80,220,165,.18);
+		pointer-events:none;
+	}
+	.p-emerald .pv-acc, .p-emerald .pv-mono, .p-emerald .pv-title,
+	.p-emerald .pv-name, .p-emerald .pv-sub, .p-emerald .pv-orn, .p-emerald .pv-date {
+		position:relative; z-index:2;
+	}
 	/* 8. Palace Cream */
 	.p-palace { background:linear-gradient(180deg,#FFF9EE 0%, #F5E6C8 100%); color:#7C5E2F; }
 	.p-palace::before { content:""; position:absolute; inset:14px; border-top:2px solid rgba(184,146,47,.45); border-bottom:2px solid rgba(184,146,47,.45); border-radius:0; pointer-events:none; }
