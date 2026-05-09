@@ -1,5 +1,46 @@
 # Ayora — Changelog
 
+## v2.2 — Refonte dashboard + 8 nouveaux templates + tolérance ±20% (2026-05-05)
+
+### Tableau de bord — refonte premium complète
+- Hero burgundy avec **message de bienvenue personnalisé** (`Bonjour {prénom} ✨`) + pill `Avancement global X%`
+- Bandeau de **6 cartes de stats** dynamiques : Recommandations / Mes choix / Invités / Invitations envoyées / Restantes / Budget restant
+- Section **"Progression de votre mariage"** : barre de progression dorée + 6 étapes (compte / questionnaire / recos / picks / invités / invitations)
+- **3 états par étape** : `done` (vert) / `in-progress` (or) / `todo` (gris) — au lieu de juste fait/pas fait
+- **Intervalle de tolérance ±20%** sur "Invités ajoutés" et "Invitations envoyées" : ex 250 invités prévus → cible acceptable [200-300]. Étape "done" dès que le compte atteint la borne basse.
+- Section **"Vos prochains pas"** : CTA contextuels (max 4 affichés) selon l'état réel — questionnaire incomplet → CTA, picks vides → CTA, plan FREE → CTA Pro/Premium…
+- Section **"Vos derniers choix"** : top 4 picks avec tag catégorie or
+- Section **"Vos meilleures recommandations"** : top 3 par score
+- Section **"Budget mariage"** : Total / Engagé / Restant (somme des prixMin des picks)
+- Section **"Invités & invitations"** + **6 raccourcis rapides**
+- Layout des steps : grille 3 colonnes (`check | content | tail`) puis flex `!important` + `width:100%` + `box-sizing:border-box` pour éviter le débordement quand la colonne est étroite
+
+### Zone compte (header) — refonte
+- Hiérarchie : **prénom prominent** + Déconnexion discret + **badge plan** sur sa propre ligne en-dessous
+- Badge `FREE`/`PRO`/`PREMIUM` **persistant sur toutes les pages** (Tableau de bord, Recommandations, Mes choix, Prestataires, Invités, Invitations, Premium, Questionnaire)
+- Helpers réutilisables `applyAccountHeader()` + `syncPlanBadge()` dans `js/api.js`
+- Style `.badge-pro` ajouté (gradient bordeaux)
+- Plan-aware sur dashboard : Premium → aucune bannière, Pro → seulement Premium, Free → les deux
+
+### Invitations — 8 nouveaux modèles (catalogue 15 → 24)
+- **Lot 1** (5 styles) : Ocean Blush (FREE), Sunset Marrakech (PRO), Vintage Postcard (PRO), Art Déco Onyx (PREMIUM), Constellation (PREMIUM)
+- **Lot 2** (3 styles) : Lavender Dream (FREE), Henna Garden (PRO), Marble Rose Gold (PREMIUM)
+- **Catalogue réordonné** : 5 FREE → 8 PRO → 11 PREMIUM
+- Compteur UI mis à jour : "24 designs exclusifs (5 FREE • 8 PRO • 11 PREMIUM)"
+
+### Questionnaire
+- Labels "Nom complet de la mariée" / "Nom complet du marié" (au lieu de juste "Nom de…")
+- Auto-détection du **moment** (Journée/Soirée) selon l'heure : ≥18h = soirée, 10h–17h30 = journée
+- **Moments forts à capturer** typiquement marocains : Lebssa fassia, Zaghrouta, Tbarek llah, Tayfor (au lieu d'ouverture de bal occidentale)
+- Lieu de cérémonie déplacé sur la page Invitations (saisi après les recos)
+- Navbar enrichie + badge plan visible
+
+### Documentation
+- USER_STORIES.md : passe de 48 → 74 stories (Epic 8 Dashboard + Epic 9 Header ajoutés)
+- KANBAN.md : sections v2.2 ajoutées, métriques mises à jour
+
+---
+
 ## v2.1 — Refonte recommandations + catégories + invitations dynamiques (2026-05-02)
 
 ### Moteur de recommandation IA — Refonte
