@@ -40,7 +40,8 @@
 	/* ===== Venue bar (lieu de la ceremonie) ===== */
 	.venue-bar { display:flex; gap:22px; align-items:flex-start; background:linear-gradient(135deg,#FFF8EE 0%, #F4EFE6 100%); border:1.5px solid var(--gold-light); border-radius:24px; padding:26px 30px; margin-bottom:36px; box-shadow:0 6px 22px rgba(184,146,47,.08); position:relative; overflow:hidden; }
 	.venue-bar::before { content:""; position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(184,146,47,.18), transparent 70%); pointer-events:none; }
-	.venue-icon { font-size:38px; line-height:1; flex-shrink:0; padding-top:4px; }
+	.venue-icon { display:flex; align-items:center; justify-content:center; width:54px; height:54px; flex-shrink:0; color:var(--ink); border-radius:14px; background:var(--gold-soft); }
+	.venue-icon svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 	.venue-body { flex:1; position:relative; z-index:1; }
 	.venue-acc { font-size:11px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; font-family:'Cinzel',serif; font-weight:500; margin-bottom:6px; }
 	.venue-body h3 { font-family:'Italiana',serif; font-size:1.4rem; color:var(--ink); margin:0 0 6px; font-weight:400; }
@@ -784,7 +785,7 @@
 
 		<!-- LIEU DE LA CÉRÉMONIE — saisie ici (après avoir vu les recommandations) -->
 		<div class="venue-bar" id="venueBar">
-			<div class="venue-icon">📍</div>
+			<div class="venue-icon"><svg viewBox="0 0 24 24"><path d="M12 22s7-7.6 7-13a7 7 0 1 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
 			<div class="venue-body">
 				<div class="venue-acc">— Lieu de la cérémonie —</div>
 				<h3>Indiquez le palais ou la salle choisis parmi vos recommandations</h3>
