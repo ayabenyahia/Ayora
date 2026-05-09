@@ -38,7 +38,12 @@
 		.choice-card .actions .btn-contact:hover { background: var(--primary-dark); }
 
 		.empty-state { background: var(--white); padding: 60px 40px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-sm); }
-		.empty-state .ico { font-size: 48px; opacity: .35; margin-bottom: 16px; }
+		.empty-state .ico { display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; border-radius:50%; background:var(--primary-soft); color:var(--primary); margin-bottom: 16px; }
+		.empty-state .ico svg, .suggestions-banner .ico svg, .meta .ico svg, .btn-contact .ico svg { width: 18px; height: 18px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+		.empty-state .ico svg { width:30px; height:30px; }
+		.suggestions-banner .ico { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:10px; background:var(--white); color:var(--gold-dark); flex:0 0 auto; }
+		.meta .ico { display:inline-flex; align-items:center; }
+		.btn-contact .ico { display:inline-flex; vertical-align:middle; margin-right:6px; }
 		.empty-state h3 { color: var(--text-dark); font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; margin: 0 0 10px; }
 		.empty-state p { color: var(--text-muted); max-width: 480px; margin: 0 auto 20px; line-height: 1.6; }
 		.empty-state .btn-cta { display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); text-decoration: none; border-radius: 50px; font-weight: 600; letter-spacing: .5px; transition: var(--transition-fast); }
