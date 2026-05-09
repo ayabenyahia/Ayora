@@ -60,6 +60,15 @@ public class UserProfile {
 	// Mots-cles emotionnels extraits de notesSpeciales (JSON)
 	private List<String> moodKeywords;
 
+	// === Preferences enrichies extraites de notesSpeciales JSON ============
+	// Liste des categories de prestataires demandees (cf. section 4 du
+	// questionnaire). Les recommandations sont filtrees pour ne garder que
+	// les vendors dans ces categories.
+	private List<String> requestedServices;
+
+	// Ville saisie par l'utilisateur dans le questionnaire (section 1).
+	private String userCity;
+
 	public UserProfile() {
 		this.moodKeywords = new ArrayList<String>();
 		this.topCategoryIds = new ArrayList<Integer>();
@@ -142,4 +151,10 @@ public class UserProfile {
 
 	public List<String> getMoodKeywords() { return moodKeywords; }
 	public void setMoodKeywords(List<String> v) { this.moodKeywords = v; }
+
+	public List<String> getRequestedServices() { return requestedServices; }
+	public void setRequestedServices(List<String> v) { this.requestedServices = v; }
+
+	public String getUserCity() { return userCity; }
+	public void setUserCity(String v) { this.userCity = v; }
 }
