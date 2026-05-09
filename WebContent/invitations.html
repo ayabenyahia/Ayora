@@ -478,6 +478,45 @@
 		pointer-events:none;
 	}
 
+	/* Aurora Borealis (PRO) — auroras vertes/violettes/cyan qui ondulent
+	   en continu sur ciel nuit. Effet Northern Lights ultra spectaculaire. */
+	.p-aurora {
+		background:
+			radial-gradient(ellipse at 30% 100%, rgba(86,230,194,.0) 0%, transparent 60%),
+			linear-gradient(180deg, #0A0F2E 0%, #14163C 45%, #1B0F3A 100%);
+		color:#E8F4FF;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-aurora::before {
+		content:""; position:absolute; inset:-30%;
+		background:
+			radial-gradient(ellipse 50% 80% at 25% 60%, rgba(86,230,194,.55) 0%, transparent 60%),
+			radial-gradient(ellipse 60% 90% at 70% 40%, rgba(168,116,255,.50) 0%, transparent 60%),
+			radial-gradient(ellipse 45% 70% at 55% 80%, rgba(94,180,255,.45) 0%, transparent 60%);
+		filter: blur(28px);
+		animation: auroraDrift 14s ease-in-out infinite;
+		mix-blend-mode: screen;
+		pointer-events:none;
+	}
+	@keyframes auroraDrift {
+		0%, 100% { transform: translate(-4%, -2%) rotate(-3deg); opacity:.85; }
+		33%      { transform: translate( 2%,  3%) rotate( 2deg); opacity:1; }
+		66%      { transform: translate(-2%,  1%) rotate(-1deg); opacity:.9; }
+	}
+	.p-aurora::after {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(232,244,255,.45);
+		border-radius:6px;
+		box-shadow: inset 0 0 22px rgba(168,116,255,.20);
+		pointer-events:none;
+	}
+	.p-aurora .pv-acc, .p-aurora .pv-mono, .p-aurora .pv-title,
+	.p-aurora .pv-name, .p-aurora .pv-sub, .p-aurora .pv-orn, .p-aurora .pv-date {
+		position:relative; z-index:2;
+		text-shadow: 0 1px 8px rgba(0,0,0,.55);
+	}
+
 	/* Selected check */
 	.tpl.selected { border-color:var(--gold); box-shadow:0 12px 36px rgba(184,146,47,.18); }
 	.tpl-check { position:absolute; top:14px; left:14px; width:28px; height:28px; background:var(--gold); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:6; opacity:0; transform:scale(.6); transition:all .25s; font-size:14px; }
