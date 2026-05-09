@@ -681,8 +681,9 @@
 		});
 
 		// Sliders
-		['impTradition','impModernite'].forEach(function(id){
+		['impTradition','impModernite','cityTolerance'].forEach(function(id){
 			var sl = document.getElementById(id);
+			if (!sl) return;
 			var vl = document.getElementById(id+'V');
 			sl.addEventListener('input', function() { vl.textContent = sl.value; });
 		});
