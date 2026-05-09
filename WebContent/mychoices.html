@@ -173,16 +173,16 @@
 			var desc = (p.description || '').substring(0, 180);
 			if ((p.description || '').length > 180) desc += '…';
 
-			var phoneBtn = p.phone ? '<a class="btn btn-contact" href="tel:' + p.phone.replace(/[^\d+]/g,'') + '">📞 Appeler</a>' : '';
-			var igBtn = p.instagram ? '<a class="btn btn-contact" href="https://instagram.com/' + p.instagram.replace('@','') + '" target="_blank">📷 Instagram</a>' : '';
+			var phoneBtn = p.phone ? '<a class="btn btn-contact" href="tel:' + p.phone.replace(/[^\d+]/g,'') + '"><span class="ico">' + ICO.phone + '</span>Appeler</a>' : '';
+			var igBtn = p.instagram ? '<a class="btn btn-contact" href="https://instagram.com/' + p.instagram.replace('@','') + '" target="_blank"><span class="ico">' + ICO.ig + '</span>Instagram</a>' : '';
 
 			return '<article class="choice-card">' +
 				'<div class="body">' +
 					'<h4>' + (p.vendorName || '') + '</h4>' +
 					'<div class="meta">' +
 						'<span class="gamme-' + gShort + '">● ' + gLabel + '</span>' +
-						(p.city ? '<span>📍 ' + p.city + '</span>' : '') +
-						(p.phone ? '<span>📞 ' + p.phone + '</span>' : '') +
+						(p.city ? '<span><span class="ico">' + ICO.pin + '</span> ' + p.city + '</span>' : '') +
+						(p.phone ? '<span><span class="ico">' + ICO.phone + '</span> ' + p.phone + '</span>' : '') +
 						(p.instagram ? '<span>' + p.instagram + '</span>' : '') +
 					'</div>' +
 					'<p class="price">À partir de ' + formatPrice(p.prixMin) + '</p>' +
