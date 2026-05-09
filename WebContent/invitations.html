@@ -432,6 +432,52 @@
 		pointer-events:none;
 	}
 
+	/* ============================================================
+	   3 NOUVEAUX TEMPLATES "WOW" (mai 2026)
+	   ============================================================ */
+
+	/* Holographic Velvet (PRO) — velours bordeaux profond + filet hologramme
+	   metallise anime. Effet sticker holographique luxe 2026. */
+	.p-holo-velvet {
+		background:
+			radial-gradient(ellipse at 30% 20%, rgba(255,170,210,.15) 0%, transparent 50%),
+			radial-gradient(ellipse at 80% 80%, rgba(170,210,255,.18) 0%, transparent 50%),
+			linear-gradient(135deg, #2A0A18 0%, #4A1028 35%, #6B1838 65%, #2A0A18 100%);
+		color:#F5E0CC;
+		position:relative;
+		overflow:hidden;
+	}
+	.p-holo-velvet::before {
+		content:""; position:absolute; inset:0;
+		background:
+			conic-gradient(from 0deg at 50% 50%,
+				rgba(255,200,255,.0) 0deg,
+				rgba(180,255,255,.22) 60deg,
+				rgba(255,255,180,.0) 120deg,
+				rgba(255,180,220,.22) 180deg,
+				rgba(180,220,255,.0) 240deg,
+				rgba(255,255,200,.22) 300deg,
+				rgba(255,200,255,.0) 360deg);
+		mix-blend-mode: screen;
+		animation: holoSpin 12s linear infinite;
+		opacity:.55;
+		pointer-events:none;
+	}
+	@keyframes holoSpin {
+		from { transform: rotate(0deg) scale(1.4); }
+		to   { transform: rotate(360deg) scale(1.4); }
+	}
+	.p-holo-velvet::after {
+		content:""; position:absolute; inset:14px;
+		border:1.5px solid rgba(255,210,180,.55);
+		border-radius:6px;
+		box-shadow:
+			inset 0 0 0 4px rgba(0,0,0,.25),
+			inset 0 0 22px rgba(255,200,210,.18),
+			0 0 1px rgba(255,255,255,.3);
+		pointer-events:none;
+	}
+
 	/* Selected check */
 	.tpl.selected { border-color:var(--gold); box-shadow:0 12px 36px rgba(184,146,47,.18); }
 	.tpl-check { position:absolute; top:14px; left:14px; width:28px; height:28px; background:var(--gold); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:6; opacity:0; transform:scale(.6); transition:all .25s; font-size:14px; }
