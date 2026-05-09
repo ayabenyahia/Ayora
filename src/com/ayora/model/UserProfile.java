@@ -69,6 +69,11 @@ public class UserProfile {
 	// Ville saisie par l'utilisateur dans le questionnaire (section 1).
 	private String userCity;
 
+	// 1 = strictement la meme ville ; 5 = ouvert partout au Maroc.
+	// Utilise par AyoraRecommendationEngine.scoreCity pour ponderer la penalite
+	// quand le vendor est dans une autre ville que celle de l'utilisateur.
+	private int cityTolerance = 2;
+
 	public UserProfile() {
 		this.moodKeywords = new ArrayList<String>();
 		this.topCategoryIds = new ArrayList<Integer>();
@@ -157,4 +162,7 @@ public class UserProfile {
 
 	public String getUserCity() { return userCity; }
 	public void setUserCity(String v) { this.userCity = v; }
+
+	public int getCityTolerance() { return cityTolerance; }
+	public void setCityTolerance(int v) { this.cityTolerance = v; }
 }
