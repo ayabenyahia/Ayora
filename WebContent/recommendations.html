@@ -210,6 +210,9 @@
 
 	var STATE = { profile:null, blocks:{}, topPerCategory:{}, all:[], categories:[], counts:{}, pickedVendorIds:[] };
 	var ACTIVE_BLOCK = 'byCategory';   // vue principale : 3 par categorie avec bouton Choisir
+	var CAT_PAGE = 1;                   // page courante de la pagination par categories
+	var CAT_PER_PAGE = 3;               // 3 categories affichees par page
+	var EXPANDED_CATS = {};             // categories avec "Voir plus" actif (cle = nom categorie)
 
 	var BLOCK_META = {
 		byCategory:     { title:'Par catégorie (3 par service)', subtitle:'3 prestataires par catégorie — choisissez celui que vous retenez',   badge:'Choisir' },
