@@ -89,6 +89,27 @@
 		.cat-see-more:hover { background:var(--gold); color:#fff; transform:translateY(-1px); box-shadow:0 6px 16px rgba(184,146,47,.25); }
 		.cat-see-more svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; }
 
+		/* Pagination par categories */
+		.cat-pager { display:flex; justify-content:center; align-items:center; gap:8px; margin: 22px 0 4px; flex-wrap:wrap; }
+		.cat-pager button { background:var(--white); border:1px solid var(--border); color:var(--text-muted); font-weight:600; font-size:13px; padding:8px 14px; border-radius:10px; cursor:pointer; transition:var(--transition-fast); min-width:38px; }
+		.cat-pager button:hover:not(:disabled) { border-color:var(--gold); color:var(--primary-dark); }
+		.cat-pager button.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+		.cat-pager button:disabled { opacity:.4; cursor:not-allowed; }
+		.cat-pager .pager-info { font-size:12.5px; color:var(--text-muted); margin: 0 6px; }
+
+		/* Carte "Voir plus" qui occupe une cellule de la grille (a la place ou
+		   serait la 4eme carte). Remplit naturellement l'espace vide a droite. */
+		.see-more-card { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:32px 22px; min-height:280px; background:linear-gradient(180deg, var(--gold-soft) 0%, var(--cream) 100%); border:2px dashed var(--gold); border-radius:var(--radius-md); cursor:pointer; transition:var(--transition); text-align:center; color:var(--gold-dark); font-family:inherit; }
+		.see-more-card:hover { background:linear-gradient(180deg, var(--gold-light) 0%, var(--cream-dark) 100%); transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--gold-dark); }
+		.see-more-card .icon-circle { width:54px; height:54px; border-radius:50%; background:var(--white); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm); }
+		.see-more-card .icon-circle svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+		.see-more-card .label { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--primary-dark); font-weight:600; line-height:1.2; }
+		.see-more-card .sub { font-size:12px; color:var(--text-muted); letter-spacing:.5px; text-transform:uppercase; font-weight:600; }
+
+		/* Animation d'apparition des cartes ajoutees par "Voir plus" */
+		.cat-block.is-expanded > .cards-grid > .reco-card { animation: card-fade-in .35s ease both; }
+		@keyframes card-fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
 		/* Bouton Choisir */
 		.pick-btn { width:100%; margin-top:12px; padding:12px 14px; border:none; border-radius:var(--radius-sm); font-size:13px; font-weight:700; letter-spacing:.5px; cursor:pointer; transition:var(--transition-fast); background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; box-shadow:0 4px 14px rgba(139,26,43,.25); }
 		.pick-btn:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(139,26,43,.35); }
