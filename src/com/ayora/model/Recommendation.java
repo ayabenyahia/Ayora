@@ -46,6 +46,8 @@ public class Recommendation {
 	private double scoreCity;
 	// Sous-score IA Ayora : adequation capacite vs nb invites (15%)
 	private double scoreGuestCount;
+	// Sous-score IA Ayora : qualite (rating + nb avis), 5%
+	private double scoreQuality;
 
 	public Recommendation() {
 		this.tags = new ArrayList<String>();
@@ -143,6 +145,9 @@ public class Recommendation {
 
 	public double getScoreGuestCount() { return scoreGuestCount; }
 	public void setScoreGuestCount(double s) { this.scoreGuestCount = s; }
+
+	public double getScoreQuality() { return scoreQuality; }
+	public void setScoreQuality(double s) { this.scoreQuality = s; }
 
 	@Override
 	public String toString() {
