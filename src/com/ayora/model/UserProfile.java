@@ -74,6 +74,17 @@ public class UserProfile {
 	// quand le vendor est dans une autre ville que celle de l'utilisateur.
 	private int cityTolerance = 2;
 
+	// Mariage mixte/separe/hybride
+	private String mixiteMariage;
+	// Langue d'echange avec les prestataires
+	private String languePrestataires;
+	// Liste des evenements (MARIAGE, FIANCAILLES, HENNE, LENDEMAIN, MELHA)
+	private List<String> evenements;
+	// Sensibilite halal pour le traiteur
+	private String halalStrict;
+	// Priorite a la communaute fassia
+	private String prioriteFassia;
+
 	public UserProfile() {
 		this.moodKeywords = new ArrayList<String>();
 		this.topCategoryIds = new ArrayList<Integer>();
@@ -165,4 +176,19 @@ public class UserProfile {
 
 	public int getCityTolerance() { return cityTolerance; }
 	public void setCityTolerance(int v) { this.cityTolerance = v; }
+
+	public String getMixiteMariage() { return mixiteMariage; }
+	public void setMixiteMariage(String v) { this.mixiteMariage = v; }
+
+	public String getLanguePrestataires() { return languePrestataires; }
+	public void setLanguePrestataires(String v) { this.languePrestataires = v; }
+
+	public List<String> getEvenements() { return evenements; }
+	public void setEvenements(List<String> v) { this.evenements = v; }
+
+	public String getHalalStrict() { return halalStrict; }
+	public void setHalalStrict(String v) { this.halalStrict = v; }
+
+	public String getPrioriteFassia() { return prioriteFassia; }
+	public void setPrioriteFassia(String v) { this.prioriteFassia = v; }
 }
