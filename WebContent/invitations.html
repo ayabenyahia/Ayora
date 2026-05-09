@@ -310,16 +310,50 @@
 	   ============================================================ */
 
 	/* 1. SUNSET MARRAKECH - degrade radial soleil couchant orange/corail */
+	/* Sunset Marrakech (PRO) — anime : rayons solaires en eventail qui
+	   tournent lentement depuis le bas, comme un soleil couchant qui rayonne. */
 	.p-sunset-marrakech {
 		background:
 			radial-gradient(circle at 50% 90%, #FFD89A 0%, #FF9966 28%, #E55A4A 60%, #B83B5E 100%);
 		color:#FFF8EC;
 		position:relative;
+		overflow:hidden;
 	}
 	.p-sunset-marrakech::before {
-		content:""; position:absolute; bottom:0; left:0; right:0; height:60%;
-		background:linear-gradient(to top, rgba(184,59,94,.4), transparent);
+		content:""; position:absolute;
+		left:50%; bottom:-40%;
+		width:220%; height:220%;
+		margin-left:-110%;
+		background:
+			conic-gradient(from 270deg at 50% 50%,
+				rgba(255,236,200,.0) 0deg,
+				rgba(255,236,200,.32) 8deg,
+				rgba(255,236,200,.0) 16deg,
+				rgba(255,236,200,.0) 30deg,
+				rgba(255,236,200,.28) 38deg,
+				rgba(255,236,200,.0) 46deg,
+				rgba(255,236,200,.0) 60deg,
+				rgba(255,236,200,.32) 68deg,
+				rgba(255,236,200,.0) 76deg,
+				rgba(255,236,200,.0) 90deg);
+		animation: sunsetRays 24s linear infinite;
+		mix-blend-mode: screen;
 		pointer-events:none;
+	}
+	@keyframes sunsetRays {
+		from { transform: rotate(0deg);   }
+		to   { transform: rotate(360deg); }
+	}
+	.p-sunset-marrakech::after {
+		content:""; position:absolute; bottom:0; left:0; right:0; height:55%;
+		background:linear-gradient(to top, rgba(184,59,94,.55), transparent);
+		pointer-events:none;
+	}
+	.p-sunset-marrakech .pv-acc, .p-sunset-marrakech .pv-mono, .p-sunset-marrakech .pv-title,
+	.p-sunset-marrakech .pv-name, .p-sunset-marrakech .pv-sub, .p-sunset-marrakech .pv-orn,
+	.p-sunset-marrakech .pv-date {
+		position:relative; z-index:2;
+		text-shadow: 0 1px 8px rgba(80,30,60,.45);
 	}
 	.p-sunset-marrakech::after {
 		content:""; position:absolute; top:30px; left:50%; transform:translateX(-50%);
