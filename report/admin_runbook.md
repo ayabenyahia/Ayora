@@ -72,3 +72,10 @@ Cliquer un chip filtre la liste par catégorie. Le bouton *Examiner* ouvre la fi
    - *Confirmer* → `PUT /api/admin/rdv/{id}/status` avec `CONFIRME`.
    - *Annuler*   → `PUT /api/admin/rdv/{id}/status` avec `ANNULE`.
 4. Le client et le prestataire reçoivent l'information côté front.
+
+## Export CSV utilisateurs
+
+1. Onglet *Utilisateurs* → appliquer les filtres souhaités (rôle, plan, statut, questionnaire).
+2. Cliquer *Exporter CSV*.
+3. Le front appelle `/api/admin/users?perPage=10000&...` puis génère un blob CSV téléchargeable.
+4. Le fichier est nommé `ayora-utilisateurs-YYYY-MM-DD.csv` (UTF-8 avec BOM).
