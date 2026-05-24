@@ -55,3 +55,9 @@ if (status == null || !status.matches("EN_ATTENTE|ACCEPTE|REFUSE")) { 400 }
 ```
 
 Empêche injection de valeurs hors-périmètre via la requête.
+
+## Protection contre l'injection SQL
+
+- [x] Tous les DAO utilisent `PreparedStatement` via le wrapper `Database.queryList(sql, mapper, args...)`.
+- [x] Aucune concaténation directe de paramètres utilisateur dans une requête.
+- [x] Les filtres `q`, `role`, `plan` etc. passent par des `?` placeholders.
