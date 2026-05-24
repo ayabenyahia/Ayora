@@ -9,7 +9,7 @@ import java.util.List;
  *
  * Les champs "vendor*" sont des champs joints (issus du JOIN dans le DAO).
  * Les champs "tags", "raisonShort" et "subScores" ne sont pas persistes :
- * ils sont calcules a la volee par le RecommendationService.
+ * ils sont calcules a la volee par AyoraMetier (moteur IA integre).
  */
 public class Recommendation {
 
@@ -33,10 +33,19 @@ public class Recommendation {
 	private String vendorTags;
 	private double vendorRating;
 	private int vendorNbAvis;
+	// Champs media (copies depuis Vendor par AyoraRecommendationEngine.scoreVendor)
+	private String vendorPhotoUrl;
+	private String vendorGalleryUrls;
+	private String vendorReelUrl;
 
 	// Computed fields (not persisted)
 	private List<String> tags;
 	private String raisonShort;
+	// Liste de "matchs concrets" entre les reponses du questionnaire et ce
+	// prestataire. Exemple : ["Lieu RIAD ✓", "Saison ÉTÉ ✓", "Style chic ✓"].
+	// Sert a montrer visuellement au client que l'IA utilise vraiment ses
+	// reponses. Affiche en pastilles colorees sur la carte.
+	private List<String> matchHighlights = new ArrayList<String>();
 	private double scoreBudget;
 	private double scoreStyle;
 	private double scoreLuxe;
@@ -112,6 +121,15 @@ public class Recommendation {
 	public double getVendorRating() { return vendorRating; }
 	public void setVendorRating(double vendorRating) { this.vendorRating = vendorRating; }
 
+	public String getVendorPhotoUrl() { return vendorPhotoUrl; }
+	public void setVendorPhotoUrl(String v) { this.vendorPhotoUrl = v; }
+
+	public String getVendorGalleryUrls() { return vendorGalleryUrls; }
+	public void setVendorGalleryUrls(String v) { this.vendorGalleryUrls = v; }
+
+	public String getVendorReelUrl() { return vendorReelUrl; }
+	public void setVendorReelUrl(String v) { this.vendorReelUrl = v; }
+
 	public int getVendorNbAvis() { return vendorNbAvis; }
 	public void setVendorNbAvis(int vendorNbAvis) { this.vendorNbAvis = vendorNbAvis; }
 
@@ -148,6 +166,14 @@ public class Recommendation {
 
 	public double getScoreQuality() { return scoreQuality; }
 	public void setScoreQuality(double s) { this.scoreQuality = s; }
+
+	public List<String> getMatchHighlights() { return matchHighlights; }
+	public void setMatchHighlights(List<String> v) { this.matchHighlights = (v == null ? new ArrayList<String>() : v); }
+	public void addMatchHighlight(String v) {
+		if (v == null || v.isEmpty()) return;
+		if (this.matchHighlights == null) this.matchHighlights = new ArrayList<String>();
+		if (!this.matchHighlights.contains(v)) this.matchHighlights.add(v);
+	}
 
 	@Override
 	public String toString() {
