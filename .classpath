@@ -8,7 +8,5 @@
 	<classpathentry kind="lib" path="C:/Users/pc/Documents/apache-tomcat-10.0.27/lib/websocket-api.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pc/Documents/apache-tomcat-10.0.27/lib/annotations-api.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mysql-connector-j-8.3.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jakarta.mail-2.0.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jakarta.activation-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
