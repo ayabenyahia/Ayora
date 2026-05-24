@@ -61,3 +61,9 @@ Empêche injection de valeurs hors-périmètre via la requête.
 - [x] Tous les DAO utilisent `PreparedStatement` via le wrapper `Database.queryList(sql, mapper, args...)`.
 - [x] Aucune concaténation directe de paramètres utilisateur dans une requête.
 - [x] Les filtres `q`, `role`, `plan` etc. passent par des `?` placeholders.
+
+## Gestion de session
+
+- [x] Cookie `JSESSIONID` standard servlet, `HttpOnly` activé par Tomcat.
+- [x] La déconnexion (`POST /api/auth/logout`) invalide la session côté serveur ET supprime `localStorage.user` côté client.
+- [x] Aucune information sensible n'est stockée dans `localStorage` (seulement nom/prénom/role pour personnalisation UI).
