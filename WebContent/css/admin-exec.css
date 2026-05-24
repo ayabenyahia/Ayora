@@ -554,3 +554,67 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-chip.is-active .ax-chip-count { background: rgba(255,255,255,.18); }
 
 .ax-prio-list { display: flex; flex-direction: column; gap: 10px; }
+.ax-prio-item {
+	display: grid;
+	grid-template-columns: auto 1fr auto auto;
+	align-items: center;
+	gap: 16px;
+	padding: 14px 16px;
+	background: var(--ax-ivory-100);
+	border: 1px solid var(--ax-gold-200);
+	border-radius: 12px;
+	transition: all .18s;
+}
+.ax-prio-item:hover { background: #fff; border-color: var(--ax-gold-400); transform: translateX(2px); box-shadow: var(--ax-shadow-1); }
+.ax-prio-mark {
+	width: 4px; align-self: stretch;
+	border-radius: 4px;
+	flex-shrink: 0;
+}
+.ax-prio-item[data-priority="HIGH"]   .ax-prio-mark { background: var(--ax-red); }
+.ax-prio-item[data-priority="MEDIUM"] .ax-prio-mark { background: var(--ax-amber); }
+.ax-prio-item[data-priority="LOW"]    .ax-prio-mark { background: var(--ax-text-mute); }
+.ax-prio-body { min-width: 0; }
+.ax-prio-title {
+	font-size: 13.5px;
+	font-weight: 600;
+	color: var(--ax-text);
+	margin: 0 0 3px;
+	line-height: 1.3;
+}
+.ax-prio-detail {
+	font-size: 12px;
+	color: var(--ax-text-mute);
+	line-height: 1.4;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.ax-prio-badge {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .8px;
+	text-transform: uppercase;
+	padding: 3px 9px;
+	border-radius: 50px;
+	flex-shrink: 0;
+}
+.ax-prio-item[data-priority="HIGH"]   .ax-prio-badge { background: var(--ax-red-soft); color: var(--ax-red); }
+.ax-prio-item[data-priority="MEDIUM"] .ax-prio-badge { background: var(--ax-amber-soft); color: var(--ax-amber); }
+.ax-prio-item[data-priority="LOW"]    .ax-prio-badge { background: var(--ax-ivory-200); color: var(--ax-text-mute); }
+.ax-prio-action {
+	background: #fff;
+	border: 1px solid var(--ax-gold-200);
+	color: var(--ax-burgundy-700);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	padding: 7px 14px;
+	border-radius: 8px;
+	cursor: pointer;
+	flex-shrink: 0;
+	transition: all .15s;
+}
+.ax-prio-action:hover { background: var(--ax-burgundy-700); color: #fff; border-color: var(--ax-burgundy-700); }
+
