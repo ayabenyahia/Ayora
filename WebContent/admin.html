@@ -51,5 +51,45 @@
 			</div>
 		</div>
 	</header>
+
+	<main class="ax-shell" id="axTop">
+
+		<!-- ============ HERO ============ -->
+		<section class="ax-hero">
+			<div class="ax-hero-body">
+				<span class="ax-hero-badge">Espace administrateur</span>
+				<h1>Centre de pilotage <em>AYORA</em></h1>
+				<p class="ax-hero-lead">
+					Supervisez les utilisateurs, validez la qualité des prestataires et suivez l'activité de la plateforme depuis un seul espace.
+				</p>
+				<div class="ax-hero-state" id="axHeroState">
+					<span class="ax-state-icon">…</span>
+					<span id="axHeroStateText">Analyse de la plateforme en cours…</span>
+				</div>
+				<div class="ax-hero-ctas">
+					<button class="ax-btn ax-btn-primary" onclick="axScrollToPriorities()">
+						<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						Traiter les alertes
+					</button>
+					<button class="ax-btn ax-btn-ghost-light" onclick="switchTab('vendors')">
+						Gérer les prestataires
+					</button>
+					<button class="ax-btn ax-btn-ghost-light" onclick="switchTab('activity')">
+						Consulter l'activité
+					</button>
+				</div>
+			</div>
+			<aside class="ax-hero-aside">
+				<div class="ax-hero-aside-label">Synthèse du jour</div>
+				<div class="ax-hero-aside-grid" id="axHeroSummary">
+					<div class="ax-mini"><div class="ax-mini-v" id="axSumUsers">—</div><div class="ax-mini-l">Utilisateurs</div></div>
+					<div class="ax-mini"><div class="ax-mini-v" id="axSumVendors">—</div><div class="ax-mini-l">Prestataires</div></div>
+					<div class="ax-mini"><div class="ax-mini-v" id="axSumDevis">—</div><div class="ax-mini-l">Devis en attente</div></div>
+					<div class="ax-mini"><div class="ax-mini-v" id="axSumPrem">—</div><div class="ax-mini-l">Plans Premium</div></div>
+				</div>
+			</aside>
+		</section>
+
+</main>
 </body>
 </html>
