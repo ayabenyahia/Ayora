@@ -44,3 +44,13 @@ Cliquer un chip filtre la liste par catégorie. Le bouton *Examiner* ouvre la fi
 4. Cliquer *Suspendre* → modale de confirmation.
 5. Appel `POST /api/admin/users/{id}/active` avec `active=false`.
 6. Le compte n'apparaît plus dans les listes actives mais reste en base.
+
+## Changement de plan d'abonnement
+
+1. Ouvrir la fiche utilisateur via le drawer.
+2. Sélectionner le nouveau plan (`FREE`, `PRO`, `PREMIUM`).
+3. Cliquer *Enregistrer* → enchaînement de 3 appels :
+   - `PUT /api/admin/users/{id}` (identité)
+   - `POST /api/admin/users/{id}/role` (rôle)
+   - `POST /api/admin/users/{id}/plan` (plan)
+4. La table `subscriptions` est synchronisée côté serveur.
