@@ -100,6 +100,41 @@
 			<!-- rempli dynamiquement -->
 		</section>
 
+		<!-- ============ SPLIT : Priorités + Santé ============ -->
+		<section class="ax-split" id="axPrioritiesAnchor">
+			<article class="ax-card">
+				<header class="ax-card-head">
+					<div class="ax-card-head-text">
+						<h2>Priorités administratives</h2>
+						<div class="ax-card-sub">Les éléments qui nécessitent une validation ou une intervention.</div>
+					</div>
+				</header>
+				<div class="ax-card-body">
+					<div class="ax-prio-filters" id="axPrioFilters">
+						<button class="ax-chip is-active" data-prio-filter="ALL">Toutes <span class="ax-chip-count" id="axPrioCntAll">0</span></button>
+						<button class="ax-chip" data-prio-filter="VENDOR_INCOMPLETE">Prestataires <span class="ax-chip-count" id="axPrioCntVendor">0</span></button>
+						<button class="ax-chip" data-prio-filter="USER_NO_QUESTIONNAIRE">Utilisateurs <span class="ax-chip-count" id="axPrioCntUser">0</span></button>
+						<button class="ax-chip" data-prio-filter="DEVIS">Devis <span class="ax-chip-count" id="axPrioCntDevis">0</span></button>
+						<button class="ax-chip" data-prio-filter="RDV">Rendez-vous <span class="ax-chip-count" id="axPrioCntRdv">0</span></button>
+					</div>
+					<div class="ax-prio-list" id="axPrioList">
+						<div class="adm-loading"><div class="spinner"></div>Chargement des priorités…</div>
+					</div>
+				</div>
+			</article>
+
+			<article class="ax-card">
+				<header class="ax-card-head">
+					<div class="ax-card-head-text">
+						<h2>Santé de la plateforme</h2>
+						<div class="ax-card-sub">Qualité globale et taux de complétude.</div>
+					</div>
+				</header>
+				<div class="ax-card-body">
+					<div class="ax-health-list" id="axHealthList">
+						<div class="adm-loading"><div class="spinner"></div></div>
+					</div>
+				</div>
 </main>
 </body>
 </html>
