@@ -53,3 +53,13 @@ Mettre en avant :
 - *Demandes à traiter* (vert quand 0)
 
 Insister : aucune donnée inventée — tout est calculé en temps réel depuis MySQL.
+
+## 1:10 → 1:25 — Analytics
+
+*"Trois cartes analytics lisibles, pas de vanity metrics."*
+
+1. **Inscriptions sur 12 mois** — bar chart `signupsByMonth` (12 derniers mois).
+2. **Répartition des plans** — donut Free / Pro / Premium avec total au centre.
+3. **Prestataires par catégorie** — barres horizontales triées par effectif.
+
+Toutes les données viennent de `/api/admin/analytics`.
