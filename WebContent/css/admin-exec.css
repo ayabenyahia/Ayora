@@ -149,3 +149,40 @@ body.ax-body .site-footer { margin-top: 60px; }
 	text-align: center;
 	font-weight: 700;
 }
+.ax-topbar-user {
+	display: inline-flex; align-items: center; gap: 10px;
+	padding: 5px 16px 5px 5px;
+	border: 1px solid var(--ax-line);
+	border-radius: 50px;
+	cursor: pointer;
+	background: #fff;
+	transition: all .18s;
+	font-family: inherit;
+	min-height: 44px;
+	line-height: 1;
+	flex-shrink: 0;
+	white-space: nowrap;
+}
+.ax-topbar-user:hover { border-color: var(--ax-gold-400); }
+.ax-topbar-user .ax-avatar {
+	width: 34px; height: 34px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--ax-burgundy-700), var(--ax-burgundy-300));
+	color: #fff;
+	font-family: var(--ax-serif);
+	font-size: 15px;
+	font-weight: 600;
+	display: inline-flex; align-items: center; justify-content: center;
+	flex-shrink: 0;
+}
+.ax-topbar-user .ax-user-info {
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: center;
+	line-height: 1.15;
+	text-align: left;
+}
+.ax-topbar-user .ax-user-info strong { font-size: 13px; color: var(--ax-text); display: block; font-weight: 600; }
+.ax-topbar-user .ax-user-info span { font-size: 10px; color: var(--ax-text-mute); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+.ax-topbar-user .ax-caret { width: 12px; height: 12px; stroke: var(--ax-text-mute); stroke-width: 2; fill: none; flex-shrink: 0; }
+
