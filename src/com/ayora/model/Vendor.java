@@ -20,6 +20,20 @@ public class Vendor {
 	private int nbAvis;
 	private boolean active;
 
+	// === Media (migration vendors_media). Tous nullables : si la migration
+	// n'a pas ete jouee, ces champs valent null et le front retombe sur le
+	// placeholder de categorie. Pas de stockage binaire, uniquement des URLs.
+	private String photoUrl;       // URL de l'image de couverture (1 image)
+	private String galleryUrls;    // URLs separees par "|", 0..N images
+	private String reelUrl;        // URL publique d'un reel Instagram
+
+	// === Type de lieu (uniquement category_id=11 "Salle/Reception") ===
+	// Valeurs : RIAD / SALLE / JARDIN / HOTEL / PISCINE / MIXTE / null.
+	// Utilise comme CONTRAINTE FORTE par le moteur de recommandations
+	// quand l'utilisateur a choisi un lieuCeremonie au questionnaire.
+	// Migration : sql/migration_venue_type.sql (populate depuis tags).
+	private String venueType;
+
 	public Vendor() {
 		this.city = "Fes";
 		this.active = true;
@@ -172,6 +186,18 @@ public class Vendor {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
+	public String getPhotoUrl() { return photoUrl; }
+	public void setPhotoUrl(String v) { this.photoUrl = v; }
+
+	public String getGalleryUrls() { return galleryUrls; }
+	public void setGalleryUrls(String v) { this.galleryUrls = v; }
+
+	public String getReelUrl() { return reelUrl; }
+	public void setReelUrl(String v) { this.reelUrl = v; }
+
+	public String getVenueType() { return venueType; }
+	public void setVenueType(String v) { this.venueType = v; }
 
 	@Override
 	public String toString() {
