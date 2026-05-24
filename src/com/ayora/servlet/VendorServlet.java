@@ -7,19 +7,22 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.ayora.dao.VendorDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.Vendor;
 import com.ayora.model.VendorCategory;
 import com.ayora.util.JsonUtil;
 
 @WebServlet("/api/vendors/*")
 public class VendorServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private VendorDao vendorDao;
+	// Recupere l'instance unique du metier creee par AppWiring.
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		vendorDao = new VendorDao();
+		this.metier = AppWiring.getMetier();
 	}
 
 	@Override
@@ -51,14 +54,14 @@ public class VendorServlet extends HttpServlet {
 		if (categoryParam != null && !categoryParam.isEmpty()) {
 			try {
 				int categoryId = Integer.parseInt(categoryParam);
-				vendors = vendorDao.findByCategory(categoryId);
+				vendors = metier.getVendorsByCategory(categoryId);
 			} catch (NumberFormatException e) {
-				vendors = vendorDao.findAll();
+				vendors = metier.getAllVendors();
 			}
 		} else if (gammeParam != null && !gammeParam.isEmpty()) {
-			vendors = vendorDao.findByGamme(gammeParam);
+			vendors = metier.getVendorsByGamme(gammeParam);
 		} else {
-			vendors = vendorDao.findAll();
+			vendors = metier.getAllVendors();
 		}
 
 		String json = buildVendorListJson(vendors);
@@ -66,7 +69,7 @@ public class VendorServlet extends HttpServlet {
 	}
 
 	private void handleCategories(HttpServletResponse response) throws IOException {
-		List<VendorCategory> categories = vendorDao.findAllCategories();
+		List<VendorCategory> categories = metier.getAllCategories();
 		StringBuilder json = new StringBuilder("[");
 		for (int i = 0; i < categories.size(); i++) {
 			VendorCategory cat = categories.get(i);
@@ -87,13 +90,13 @@ public class VendorServlet extends HttpServlet {
 			JsonUtil.sendError(response, 400, "Mot-cle requis");
 			return;
 		}
-		List<Vendor> vendors = vendorDao.search(keyword.trim());
+		List<Vendor> vendors = metier.searchVendors(keyword.trim());
 		String json = buildVendorListJson(vendors);
 		JsonUtil.sendJson(response, json);
 	}
 
 	private void handleGetById(HttpServletResponse response, int id) throws IOException {
-		Vendor vendor = vendorDao.findById(id);
+		Vendor vendor = metier.getVendor(id);
 		if (vendor == null) {
 			JsonUtil.sendError(response, 404, "Prestataire non trouve");
 			return;
@@ -128,6 +131,9 @@ public class VendorServlet extends HttpServlet {
 				+ ",\"address\":\"" + JsonUtil.escapeJson(v.getAddress() != null ? v.getAddress() : "") + "\""
 				+ ",\"rating\":" + v.getRating()
 				+ ",\"nbAvis\":" + v.getNbAvis()
+				+ ",\"photoUrl\":\"" + JsonUtil.escapeJson(v.getPhotoUrl() != null ? v.getPhotoUrl() : "") + "\""
+				+ ",\"galleryUrls\":\"" + JsonUtil.escapeJson(v.getGalleryUrls() != null ? v.getGalleryUrls() : "") + "\""
+				+ ",\"reelUrl\":\"" + JsonUtil.escapeJson(v.getReelUrl() != null ? v.getReelUrl() : "") + "\""
 				+ "}";
 	}
 }
