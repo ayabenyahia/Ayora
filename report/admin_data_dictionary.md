@@ -20,3 +20,20 @@ Chaque section liste : nom de la colonne, type, contraintes, sémantique, et où
 | `questionnaire_completed` | TINYINT | NOT NULL DEFAULT 0 | badge Complété/À compléter |
 | `vendor_id` | INT | FK vendors.id nullable | lien fiche prestataire |
 | `created_at` | DATETIME | DEFAULT NOW | colonne *Inscrit* |
+
+## `vendors`
+
+| Colonne | Type | Contraintes | UI admin |
+|---|---|---|---|
+| `id` | INT | PK auto | drawer |
+| `name` | VARCHAR(160) | NOT NULL | tableau, drawer |
+| `category_id` | INT | FK categories.id | badge catégorie |
+| `city` | VARCHAR(80) | nullable | tableau |
+| `description` | TEXT | nullable | drawer, complétude |
+| `prix_min` / `prix_max` | DECIMAL(10,2) | nullable | colonne *À partir de* |
+| `gamme` | ENUM('ECONOMIQUE','MOYEN','PREMIUM') | NOT NULL | badge gamme |
+| `phone` / `email` / `instagram` | VARCHAR | nullable | drawer, complétude |
+| `address` / `tags` | VARCHAR/TEXT | nullable | drawer |
+| `rating` | DECIMAL(3,2) | nullable | colonne *Note* |
+| `nb_avis` | INT | DEFAULT 0 | drawer |
+| `is_active` | TINYINT | DEFAULT 1 | badge Actif/Inactif |
