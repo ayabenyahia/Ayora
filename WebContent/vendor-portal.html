@@ -2,6 +2,11 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Espace Prestataire</title>
 	<link rel="stylesheet" href="css/styles.css?v=26">
@@ -117,7 +122,7 @@
 	.vp-stars{color:#D4A853;font-size:16px;letter-spacing:2px}
 
 	/* No data */
-	.vp-empty{text-align:center;padding:60px 20px;color:#AEA0A8}
+	.vp-empty{text-align:center;padding:60px 20px;color:#7A6B74}
 	.vp-empty h3{color:#7A6B74;font-size:1.3rem;margin-bottom:8px}
 
 	/* Not configured */
@@ -335,10 +340,10 @@
 			var actions = d.statut === 'EN_ATTENTE'
 				? '<button class="vp-action accept" onclick="updateDevis(' + d.id + ',\'ACCEPTE\')">Accepter</button> '
 				  + '<button class="vp-action reject" onclick="updateDevis(' + d.id + ',\'REFUSE\')">Refuser</button>'
-				: '<span style="color:#AEA0A8;font-size:12px">Traite</span>';
+				: '<span style="color:#7A6B74;font-size:12px">Traite</span>';
 			html += '<tr>'
-				+ '<td><strong>' + d.clientName + '</strong><br><small style="color:#AEA0A8">' + (d.clientPhone || d.clientEmail || '') + '</small></td>'
-				+ '<td>' + date + '<br><small style="color:#AEA0A8">Mariage: ' + (d.dateMariage || '-') + '</small></td>'
+				+ '<td><strong>' + d.clientName + '</strong><br><small style="color:#7A6B74">' + (d.clientPhone || d.clientEmail || '') + '</small></td>'
+				+ '<td>' + date + '<br><small style="color:#7A6B74">Mariage: ' + (d.dateMariage || '-') + '</small></td>'
 				+ '<td><strong>' + budget + '</strong><br><small>' + d.nbInvites + ' invites</small></td>'
 				+ '<td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + d.message + '</td>'
 				+ '<td><span class="status-badge ' + sClass + '">' + sLabel + '</span></td>'
@@ -361,9 +366,9 @@
 			var actions = r.statut === 'EN_ATTENTE'
 				? '<button class="vp-action accept" onclick="updateRdv(' + r.id + ',\'CONFIRME\')">Confirmer</button> '
 				  + '<button class="vp-action reject" onclick="updateRdv(' + r.id + ',\'ANNULE\')">Annuler</button>'
-				: '<span style="color:#AEA0A8;font-size:12px">Traite</span>';
+				: '<span style="color:#7A6B74;font-size:12px">Traite</span>';
 			html += '<tr>'
-				+ '<td><strong>' + r.clientName + '</strong><br><small style="color:#AEA0A8">' + (r.clientPhone || '') + '</small></td>'
+				+ '<td><strong>' + r.clientName + '</strong><br><small style="color:#7A6B74">' + (r.clientPhone || '') + '</small></td>'
 				+ '<td>' + r.dateRdv + '</td>'
 				+ '<td>' + (r.heureRdv || '-') + '</td>'
 				+ '<td>' + (r.lieu || 'A definir') + '</td>'
@@ -375,16 +380,16 @@
 
 	function updateDevis(id, statut) {
 		api.post('/api/auth/devis-update', {id: String(id), statut: statut}).then(function(res) {
-			if (res.success) { loadVendorPortal(); }
-			else { alert('Erreur: ' + (res.error || '')); }
-		}).catch(function() { alert('Erreur de connexion'); });
+			if (res.success) { AyoraUI.success('Devis mis à jour'); loadVendorPortal(); }
+			else { AyoraUI.error('Erreur : ' + (res.error || '')); }
+		}).catch(function() { AyoraUI.error('Erreur de connexion'); });
 	}
 
 	function updateRdv(id, statut) {
 		api.post('/api/auth/rdv-update', {id: String(id), statut: statut}).then(function(res) {
-			if (res.success) { loadVendorPortal(); }
-			else { alert('Erreur: ' + (res.error || '')); }
-		}).catch(function() { alert('Erreur de connexion'); });
+			if (res.success) { AyoraUI.success('RDV mis à jour'); loadVendorPortal(); }
+			else { AyoraUI.error('Erreur : ' + (res.error || '')); }
+		}).catch(function() { AyoraUI.error('Erreur de connexion'); });
 	}
 
 	function renderProspects() {
@@ -401,5 +406,20 @@
 		document.getElementById('panel-' + tab).classList.add('active');
 	}
 	</script>
+
+	<script src="js/ayora-ui.js"></script>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
 </body>
 </html>
