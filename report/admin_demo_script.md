@@ -63,3 +63,12 @@ Insister : aucune donnée inventée — tout est calculé en temps réel depuis 
 3. **Prestataires par catégorie** — barres horizontales triées par effectif.
 
 Toutes les données viennent de `/api/admin/analytics`.
+
+## 1:25 → 1:40 — Gestion des utilisateurs
+
+*"Tableau complet avec filtres multi-critères et édition inline."*
+
+1. Filtres : rôle, plan, questionnaire, statut, recherche libre.
+2. Cliquer *Détail* sur une ligne → drawer d'édition.
+3. Démontrer le changement de plan FREE → PREMIUM (3 appels REST enchaînés).
+4. Toast de succès, dashboard rafraîchi.
