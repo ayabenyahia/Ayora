@@ -27,6 +27,11 @@ public class UserPick {
 	private String vendorPhone;
 	private String vendorInstagram;
 	private String vendorDescription;
+	private String vendorPhotoUrl;
+	private String vendorGalleryUrls;
+	private String vendorReelUrl;
+	private double vendorRating;
+	private int vendorNbAvis;
 
 	public UserPick() {}
 
@@ -74,4 +79,19 @@ public class UserPick {
 
 	public String getVendorDescription() { return vendorDescription; }
 	public void setVendorDescription(String s) { this.vendorDescription = s; }
+
+	public String getVendorPhotoUrl() { return vendorPhotoUrl; }
+	public void setVendorPhotoUrl(String s) { this.vendorPhotoUrl = s; }
+
+	public String getVendorGalleryUrls() { return vendorGalleryUrls; }
+	public void setVendorGalleryUrls(String s) { this.vendorGalleryUrls = s; }
+
+	public String getVendorReelUrl() { return vendorReelUrl; }
+	public void setVendorReelUrl(String s) { this.vendorReelUrl = s; }
+
+	public double getVendorRating() { return vendorRating; }
+	public void setVendorRating(double v) { this.vendorRating = v; }
+
+	public int getVendorNbAvis() { return vendorNbAvis; }
+	public void setVendorNbAvis(int v) { this.vendorNbAvis = v; }
 }
