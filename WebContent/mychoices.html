@@ -2,9 +2,16 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Mes Choix</title>
-	<link rel="stylesheet" href="css/styles.css?v=26">
+	<link rel="stylesheet" href="css/styles.css?v=43">
+	<link rel="stylesheet" href="css/account.css?v=1">
+	<link rel="stylesheet" href="css/assistant.css?v=4">
 	<style>
 		.mc-wrap { max-width: 1200px; margin: 0 auto; padding: 24px 28px 80px; }
 
@@ -36,6 +43,9 @@
 		.choice-card .actions .btn-remove:hover { background: var(--danger-light); }
 		.choice-card .actions .btn-contact { background: var(--primary); color: var(--white); border-color: var(--primary); }
 		.choice-card .actions .btn-contact:hover { background: var(--primary-dark); }
+		/* Bouton WhatsApp dedie (vert WhatsApp officiel) */
+		.choice-card .actions .btn-wa { background: #25D366; border-color: #25D366; color: #fff; }
+		.choice-card .actions .btn-wa:hover { background: #1DA851; border-color: #1DA851; }
 
 		.empty-state { background: var(--white); padding: 60px 40px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-sm); }
 		.empty-state .ico { display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; border-radius:50%; background:var(--primary-soft); color:var(--primary); margin-bottom: 16px; }
@@ -59,11 +69,29 @@
 			.choice-card .actions { flex-direction: row; flex-wrap: wrap; }
 			.choice-card .actions .btn { flex: 1; min-width: 100px; }
 		}
+
+		/* Actions specifiques aux cartes "Mes choix" (passees en actionHtml a AyoraCard) */
+		.mc-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+		.mc-btn {
+			display: inline-flex; align-items: center; justify-content: center;
+			padding: 9px 12px; font-size: 0.82rem; font-weight: 600;
+			border-radius: 10px; border: 1px solid transparent;
+			cursor: pointer; transition: background .2s, border-color .2s, color .2s;
+			text-decoration: none; background: var(--text-dark); color: #fff;
+		}
+		.mc-btn:hover { background: var(--primary-dark); color: #fff; }
+		.mc-btn-wa { background: #25D366; border-color: #25D366; }
+		.mc-btn-wa:hover { background: #1DA851; border-color: #1DA851; }
+		.mc-btn-ghost { background: var(--cream); color: var(--text-dark); border-color: rgba(212,168,83,0.3); }
+		.mc-btn-ghost:hover { background: var(--gold-soft); color: var(--primary-dark); border-color: var(--gold); }
+		.mc-btn-danger { background: #fff; color: var(--danger); border-color: rgba(201,64,64,0.3); }
+		.mc-btn-danger:hover { background: rgba(201,64,64,0.08); color: var(--danger); border-color: var(--danger); }
+		@media (max-width: 720px) { .mc-actions { grid-template-columns: 1fr; } }
 	</style>
 </head>
 <body>
 
-	<div class="menu-bar">
+		<div class="menu-bar">
 		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
 		<nav>
 			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
@@ -72,6 +100,7 @@
 			<span onclick="location.href='vendors.html'">Prestataires</span>
 			<span onclick="location.href='guests.html'">Invités</span>
 			<span onclick="location.href='invitations.html'">Invitations</span>
+			<span onclick="location.href='assistant.html'">Assistante AYORA</span>
 		</nav>
 		<div class="user-info">
 			<span id="userName"></span>
@@ -97,9 +126,8 @@
 
 	</div>
 
-	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
-
 	<script src="js/api.js"></script>
+	<script src="js/vendor-card.js?v=43"></script>
 	<script>
 		var user = checkAuth(); if (user) applyAccountHeader(user);
 		if (user) document.getElementById('userName').textContent = user.firstName;
@@ -119,9 +147,106 @@
 			ring:   '<svg viewBox="0 0 24 24"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14"/></svg>',
 			star:   '<svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .9-4.4 4.4 1 6-5.2-2.9-5.2 2.9 1-6L3.4 9.5l6-.9z"/></svg>',
 			phone:  '<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+			whatsapp: '<svg viewBox="0 0 24 24"><path d="M3 21l1.65-3.8A9 9 0 1 1 8.83 21z"/><path d="M9 8.5c.5 2 2.5 4 4.5 4.5l1.5-1 2 .5v2c-2 1-7-1-8.5-3.5C7 9.5 7 8 8 7l1.5 1z"/></svg>',
 			ig:     '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg>',
-			pin:    '<svg viewBox="0 0 24 24"><path d="M12 22s7-7.6 7-13a7 7 0 1 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>'
+			pin:    '<svg viewBox="0 0 24 24"><path d="M12 22s7-7.6 7-13a7 7 0 1 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+			send:   '<svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>'
 		};
+
+		// Infos du mariage pour personnaliser les messages
+		var WEDDING = { coupleName: '', dateMariage: '', ville: '' };
+		api.get('/api/questionnaire').then(function(qa) {
+			if (!qa) return;
+			if (qa.dateMariage) WEDDING.dateMariage = qa.dateMariage;
+			try {
+				var extras = (typeof qa.notesSpeciales === 'object') ? qa.notesSpeciales
+					: (qa.notesSpeciales ? JSON.parse(qa.notesSpeciales) : null);
+				if (extras) {
+					if (extras.nomMariee && extras.nomMarie) {
+						WEDDING.coupleName = extras.nomMariee + ' & ' + extras.nomMarie;
+					}
+					if (extras.villeMariage) WEDDING.ville = extras.villeMariage;
+				}
+			} catch(e){}
+		}).catch(function(){});
+
+		/**
+		 * Construit le message pre-rempli envoye au prestataire.
+		 * Personnalise avec le prenom du couple, la date du mariage et le nom du prestataire.
+		 */
+		function buildContactMessage(p) {
+			var couple = WEDDING.coupleName || (user ? user.firstName : 'la mariée');
+			var ville = WEDDING.ville || 'Fès';
+			var date = WEDDING.dateMariage ? (' prévu le ' + WEDDING.dateMariage) : '';
+			return 'Bonjour ' + (p.vendorName || '') + ',\n\n' +
+				'Je suis ' + couple + ' et je vous contacte via la plateforme Ayora.ma. ' +
+				'J\'ai retenu votre prestation pour mon mariage' + date + ' à ' + ville + '.\n\n' +
+				'Pourriez-vous me communiquer vos disponibilités, vos tarifs détaillés et m\'envoyer ' +
+				'quelques exemples de vos prestations récentes ?\n\nMerci d\'avance,\n' + couple;
+		}
+
+		/** Ouvre WhatsApp Web/App avec un message pre-rempli. */
+		function contactWhatsApp(vendorJson) {
+			var p = JSON.parse(decodeURIComponent(vendorJson));
+			if (!p.phone) { AyoraUI.warning('Numéro non renseigné pour ce prestataire.'); return; }
+			var phone = p.phone.replace(/[^\d]/g, '');
+			// Format international Maroc : si commence par 0, remplacer par 212
+			if (phone.charAt(0) === '0') phone = '212' + phone.substring(1);
+			var msg = encodeURIComponent(buildContactMessage(p));
+			window.open('https://wa.me/' + phone + '?text=' + msg, '_blank');
+		}
+
+		/**
+		 * Ouvre la page profil Instagram du prestataire (plus robuste que
+		 * ig.me/m/HANDLE qui plante si le handle n'existe pas).
+		 * Le message est copie dans le presse-papier : il suffit a la mariee
+		 * de cliquer "Message" sur le profil et de coller (Ctrl+V).
+		 */
+		function contactInstagram(vendorJson) {
+			var p = JSON.parse(decodeURIComponent(vendorJson));
+			if (!p.instagram) {
+				showToastMc('Compte Instagram non renseigne pour ce prestataire.');
+				return;
+			}
+			var handle = p.instagram.replace(/^@+/, '').trim();
+			var msg = buildContactMessage(p);
+			// 1) Copie le message dans le presse-papier (fallback graceful)
+			var copied = false;
+			try {
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(msg);
+					copied = true;
+				}
+			} catch (e) { /* ignore */ }
+			// 2) Toast d'info au lieu de alert (plus discret + design coherent)
+			showToastMc(copied
+				? 'Message copie. Ouverture du profil Instagram...'
+				: 'Ouverture du profil Instagram...');
+			// 3) Ouvre le PROFIL (pas le DM direct) — plus fiable, fonctionne
+			//    meme si le handle est temporairement invalide. La mariee
+			//    pourra cliquer "Message" sur le profil et coller le texte.
+			setTimeout(function(){
+				window.open('https://www.instagram.com/' + encodeURIComponent(handle) + '/', '_blank');
+			}, 300);
+		}
+
+		/** Mini toast pour mychoices (pas dans la nav). */
+		function showToastMc(msg) {
+			var t = document.getElementById('mcToast');
+			if (!t) {
+				t = document.createElement('div');
+				t.id = 'mcToast';
+				t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A0A14;color:#fff;padding:12px 22px;border-radius:50px;font-size:13px;font-weight:500;z-index:9999;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 12px 32px rgba(0,0,0,.3);';
+				document.body.appendChild(t);
+			}
+			t.textContent = msg;
+			t.style.opacity = '1';
+			t.style.transform = 'translateX(-50%) translateY(0)';
+			setTimeout(function(){
+				t.style.opacity = '0';
+				t.style.transform = 'translateX(-50%) translateY(20px)';
+			}, 2800);
+		}
 
 		function render(picks) {
 			var content = document.getElementById('content');
@@ -139,25 +264,22 @@
 				return;
 			}
 
-			// Grouper par catégorie en respectant l'ordre d'arrivée (DAO renvoie déjà trié par categoryId)
-			var groups = {};
-			var order = [];
+			// Compter les catégories distinctes pour la stat header
+			var catSet = {};
 			for (var i = 0; i < picks.length; i++) {
-				var p = picks[i];
-				if (!groups[p.category]) { groups[p.category] = []; order.push(p.category); }
-				groups[p.category].push(p);
+				if (picks[i].category) catSet[picks[i].category] = true;
 			}
-			document.getElementById('statCats').textContent = order.length;
+			document.getElementById('statCats').textContent = Object.keys(catSet).length;
 
-			var html = '';
-			for (var k = 0; k < order.length; k++) {
-				var cat = order[k];
-				var items = groups[cat];
-				html += '<section class="cat-section">';
-				html += '<h3>' + cat + ' <span class="badge-choisi">✓ Choisi</span></h3>';
-				for (var j = 0; j < items.length; j++) html += cardHtml(items[j]);
-				html += '</section>';
-			}
+			// Affichage en UNE seule grille 3-colonnes. La categorie reste
+			// visible sur chaque carte (monogramme + label + badge), ce qui
+			// rend la separation visuelle par cat-section superflue ici.
+			var html = '<section class="cat-section">';
+			html += '<h3>Mes prestataires retenus <span class="badge-choisi">' + picks.length + ' choix</span></h3>';
+			html += '<div class="vc-grid vc-grid-3">';
+			for (var j = 0; j < picks.length; j++) html += cardHtml(picks[j]);
+			html += '</div>';
+			html += '</section>';
 
 			html += '<div class="suggestions-banner">' +
 				'<div class="ico">' + ICO.star + '</div>' +
@@ -168,33 +290,112 @@
 		}
 
 		function cardHtml(p) {
-			var gShort = p.gamme === 'ECONOMIQUE' ? 'eco' : p.gamme === 'MOYEN' ? 'moyen' : p.gamme === 'PREMIUM' ? 'premium' : '';
-			var gLabel = p.gamme === 'ECONOMIQUE' ? 'Économique' : p.gamme === 'MOYEN' ? 'Moyenne' : p.gamme === 'PREMIUM' ? 'Premium' : (p.gamme || '');
-			var desc = (p.description || '').substring(0, 180);
-			if ((p.description || '').length > 180) desc += '…';
+			// Delegate au composant partage (js/vendor-card.js). Les actions
+			// specifiques a la page "Mes Choix" (WhatsApp avec message
+			// pre-rempli, IG DM, Modifier, Retirer) sont passees en actionHtml.
+			var pickJson = encodeURIComponent(JSON.stringify({
+				vendorName: p.vendorName, phone: p.phone, instagram: p.instagram
+			}));
+			var waBtn = p.phone
+				? '<button type="button" class="mc-btn mc-btn-wa" onclick="contactWhatsApp(\''+pickJson+'\')">WhatsApp</button>'
+				: '';
+			var phoneBtn = p.phone
+				? '<a class="mc-btn" href="tel:' + p.phone.replace(/[^\d+]/g,'') + '">Appeler</a>'
+				: '';
+			var modifyBtn = '<button type="button" class="mc-btn mc-btn-ghost" onclick="modifyChoice(' +
+				p.categoryId + ',\'' + escapeQ(p.category) + '\')">Modifier</button>';
+			var removeBtn = '<button type="button" class="mc-btn mc-btn-danger" onclick="removeChoice(' +
+				p.vendorId + ',\'' + escapeQ(p.vendorName) + '\')">Retirer</button>';
 
-			var phoneBtn = p.phone ? '<a class="btn btn-contact" href="tel:' + p.phone.replace(/[^\d+]/g,'') + '"><span class="ico">' + ICO.phone + '</span>Appeler</a>' : '';
-			var igBtn = p.instagram ? '<a class="btn btn-contact" href="https://instagram.com/' + p.instagram.replace('@','') + '" target="_blank"><span class="ico">' + ICO.ig + '</span>Instagram</a>' : '';
-
-			return '<article class="choice-card">' +
-				'<div class="body">' +
-					'<h4>' + (p.vendorName || '') + '</h4>' +
-					'<div class="meta">' +
-						'<span class="gamme-' + gShort + '">● ' + gLabel + '</span>' +
-						(p.city ? '<span><span class="ico">' + ICO.pin + '</span> ' + p.city + '</span>' : '') +
-						(p.phone ? '<span><span class="ico">' + ICO.phone + '</span> ' + p.phone + '</span>' : '') +
-						(p.instagram ? '<span>' + p.instagram + '</span>' : '') +
+			// === Statut de contact + notes personnelles (localStorage cote client) ===
+			var meta = getPickMeta(p.vendorId);
+			var statusOpts = [
+				['',         'À contacter'],
+				['CONTACTE', 'Contacté'],
+				['DEVIS',    'Devis demandé'],
+				['VISITE',   'Visite prévue'],
+				['CONFIRME', 'Confirmé ✓']
+			];
+			var statusBadge = '';
+			if (meta.status) {
+				var lbl = statusOpts.find(function(o){ return o[0] === meta.status; });
+				if (lbl) statusBadge = '<span class="mc-status-badge mc-status-' + meta.status.toLowerCase() + '">' + lbl[1] + '</span>';
+			}
+			var statusSelectId = 'mcStatus_' + p.vendorId;
+			var noteId = 'mcNote_' + p.vendorId;
+			var noteSaveId = 'mcNoteSave_' + p.vendorId;
+			var optionsHtml = statusOpts.map(function(o){
+				return '<option value="' + o[0] + '"' + (o[0] === (meta.status || '') ? ' selected' : '') + '>' + o[1] + '</option>';
+			}).join('');
+			var statusUi =
+				'<div class="mc-tracking">' +
+					'<div class="mc-tracking-row">' +
+						'<label>Statut</label>' +
+						'<select id="' + statusSelectId + '" onchange="savePickStatus(' + p.vendorId + ', this.value)">' + optionsHtml + '</select>' +
+						statusBadge +
 					'</div>' +
-					'<p class="price">À partir de ' + formatPrice(p.prixMin) + '</p>' +
-					(desc ? '<p class="desc">' + desc + '</p>' : '') +
+					'<div class="mc-tracking-row">' +
+						'<label>Note personnelle</label>' +
+						'<textarea id="' + noteId + '" placeholder="Ex: rappeler vendredi, devis OK, prix négocié à 8 000 DHS…" oninput="document.getElementById(\'' + noteSaveId + '\').style.opacity=1;">' + escapeHtml(meta.note || '') + '</textarea>' +
+						'<button type="button" class="mc-btn mc-btn-ghost" id="' + noteSaveId + '" onclick="savePickNote(' + p.vendorId + ')" style="margin-top:6px;opacity:0.5;font-size:11px;">Enregistrer la note</button>' +
+					'</div>' +
+				'</div>';
+
+			var actions =
+				'<div class="mc-actions">' +
+					(waBtn || phoneBtn) +
+					modifyBtn +
+					removeBtn +
 				'</div>' +
-				'<div class="actions">' +
-					phoneBtn +
-					igBtn +
-					'<button class="btn btn-modify" onclick="modifyChoice(' + p.categoryId + ',\'' + escapeQ(p.category) + '\')">Modifier</button>' +
-					'<button class="btn btn-remove" onclick="removeChoice(' + p.vendorId + ',\'' + escapeQ(p.vendorName) + '\')">Retirer</button>' +
-				'</div>' +
-			'</article>';
+				statusUi;
+			return AyoraCard.render(p, { picked: true, actionHtml: actions, showScore: false });
+		}
+
+		function escapeHtml(s) {
+			return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+		}
+
+		// ============================================================
+		// Suivi local des choix (statut + notes) — localStorage par user
+		// ============================================================
+		function pickMetaKey() {
+			var uid = (user && user.id) ? user.id : 'anon';
+			return 'ayora_pick_meta_' + uid;
+		}
+		function getAllPickMeta() {
+			try { return JSON.parse(localStorage.getItem(pickMetaKey()) || '{}') || {}; }
+			catch(e) { return {}; }
+		}
+		function getPickMeta(vendorId) {
+			var all = getAllPickMeta();
+			return all[vendorId] || { status: '', note: '' };
+		}
+		function setPickMeta(vendorId, meta) {
+			var all = getAllPickMeta();
+			all[vendorId] = meta;
+			try { localStorage.setItem(pickMetaKey(), JSON.stringify(all)); } catch(e){}
+		}
+		function savePickStatus(vendorId, status) {
+			var m = getPickMeta(vendorId);
+			m.status = status || '';
+			setPickMeta(vendorId, m);
+			if (window.AyoraUI) AyoraUI.success('Statut mis à jour');
+			// Recharge l'affichage pour mettre à jour le badge
+			loadChoices();
+		}
+		function savePickNote(vendorId) {
+			var el = document.getElementById('mcNote_' + vendorId);
+			if (!el) return;
+			var m = getPickMeta(vendorId);
+			m.note = el.value || '';
+			setPickMeta(vendorId, m);
+			var btn = document.getElementById('mcNoteSave_' + vendorId);
+			if (btn) {
+				btn.textContent = '✓ Enregistré';
+				btn.style.opacity = '1';
+				setTimeout(function(){ btn.textContent = 'Enregistrer la note'; btn.style.opacity = '0.5'; }, 1800);
+			}
+			if (window.AyoraUI) AyoraUI.success('Note enregistrée');
 		}
 
 		function escapeQ(s) { return (s || '').replace(/'/g, "\\'"); }
@@ -205,12 +406,42 @@
 		}
 
 		function removeChoice(vendorId, vendorName) {
-			if (!confirm('Retirer "' + vendorName + '" de vos choix ?')) return;
-			api.del('/api/picks/' + vendorId).then(function(r) {
-				if (r && r.success) loadChoices();
-				else alert('Erreur lors de la suppression');
-			}).catch(function() { alert('Erreur réseau'); });
+			AyoraUI.confirm({
+				title: 'Retirer ce choix ?',
+				message: 'Voulez-vous retirer "' + vendorName + '" de vos prestataires retenus ? Vous pourrez le re-sélectionner depuis la page Recommandations.',
+				confirmLabel: 'Retirer',
+				cancelLabel: 'Annuler',
+				danger: true,
+				onConfirm: function() {
+					api.del('/api/picks/' + vendorId).then(function(r) {
+						if (r && r.success) {
+							loadChoices();
+							AyoraUI.success(vendorName + ' retiré de vos choix');
+						} else {
+							AyoraUI.error('Erreur lors de la suppression');
+						}
+					}).catch(function() { AyoraUI.error('Erreur réseau'); });
+				}
+			});
 		}
 	</script>
+
+	<script src="js/ayora-ui.js"></script>
+	<script src="js/assistant.js?v=2"></script>
+	<script src="js/assistant-floating.js?v=2" data-ayora-page="comparator"></script>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
+	<script src="js/account-menu.js?v=1"></script>
 </body>
 </html>
