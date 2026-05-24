@@ -7,21 +7,20 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.SubscriptionDao;
-import com.ayora.dao.UserDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.Subscription;
 import com.ayora.util.JsonUtil;
 
 @WebServlet("/api/subscription/*")
 public class SubscriptionServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private SubscriptionDao subscriptionDao;
-	private UserDao userDao;
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		subscriptionDao = new SubscriptionDao();
-		userDao = new UserDao();
+		this.metier = AppWiring.getMetier();
 	}
 
 	@Override
@@ -33,7 +32,7 @@ public class SubscriptionServlet extends HttpServlet {
 		}
 
 		int userId = (int) session.getAttribute("userId");
-		Subscription sub = subscriptionDao.findByUserId(userId);
+		Subscription sub = metier.getSubscription(userId);
 
 		if (sub == null) {
 			JsonUtil.sendJson(response, "{\"plan\":\"FREE\",\"invitationsSent\":0,\"maxFree\":10,\"canSend\":true,\"remaining\":10}");
@@ -69,9 +68,9 @@ public class SubscriptionServlet extends HttpServlet {
 				JsonUtil.sendError(response, 400, "Plan invalide (PRO ou PREMIUM attendu)");
 				return;
 			}
-			boolean success = subscriptionDao.updatePlan(userId, plan);
+			boolean success = metier.updateSubscriptionPlan(userId, plan);
 			if (success) {
-				userDao.updateSubscription(userId, plan);
+				metier.changeSubscription(userId, plan);
 				String label = "PRO".equals(plan) ? "Pro" : "Premium";
 				JsonUtil.sendJson(response, "{\"success\":true,\"message\":\"Felicitations ! Vous etes maintenant " + label + ".\",\"plan\":\"" + plan + "\"}");
 			} else {
