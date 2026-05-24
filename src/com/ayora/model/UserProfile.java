@@ -7,11 +7,8 @@ import java.util.List;
  * Profil utilisateur deduit du questionnaire.
  *
  * Sert d'abstraction propre entre QuestionnaireAnswer (donnees brutes du form)
- * et le moteur de recommandation. Le service construit ce profil une seule fois
- * via RecommendationService.buildUserProfile(answer) et l'utilise pour scorer
- * chaque vendor.
- *
- * Ce decoupage suit le pattern Service Layer du cours (p02-jee).
+ * et le moteur de recommandation. AyoraMetier construit ce profil une seule fois
+ * via metier.buildUserProfile(answer) et l'utilise pour scorer chaque vendor.
  */
 public class UserProfile {
 
@@ -84,6 +81,41 @@ public class UserProfile {
 	private String halalStrict;
 	// Priorite a la communaute fassia
 	private String prioriteFassia;
+
+	// === Type de lieu de ceremonie (questionnaire section 3) ===================
+	// Vraie nature du lieu choisi par la mariee. Critique pour le scoring des SALLES :
+	// RIAD/PALAIS doit privilegier les riads et palais historiques en medina ;
+	// SALLE doit privilegier les salles de fete modernes ; JARDIN les espaces
+	// exterieurs avec verdure ; PISCINE les hotels/resorts avec piscine ; HOTEL
+	// les resorts complets ; MIXTE les espaces polyvalents (riad + jardin).
+	private String lieuType;           // RIAD / SALLE / JARDIN / PISCINE / HOTEL / DOMICILE / MIXTE
+
+	// === Restauration & gastronomie (questionnaire section 6) =================
+	// Servent au scoring des traiteurs : style culinaire vs tags du vendor,
+	// restrictions alimentaires comme filtre/penalite, format de service
+	// (buffet, table, cocktail...), boissons (sans alcool / open bar...),
+	// nombre de plats au menu, et politique patisserie marocaine.
+	private String styleCulinaire;     // MAROC_TRADI / MAROC_RAFFINE / FUSION / INTERNATIONAL / MEDITERRANEEN / LIBANAIS
+	private int nbPlats;               // 3 / 5 / 7 / 9
+	private String formatService;      // SERVICE_TABLE / BUFFET / COCKTAIL_DINATOIRE / MIXTE / STATIONS
+	private String formatBar;          // SANS_ALCOOL / MOCKTAILS / VIN_CHAMPAGNE / OPEN_BAR
+	private List<String> restrictionsAlimentaires;
+	private int nbConvivesRestrictions;
+	private String patisserieMaroc;    // INCLUS_GENEREUX / INCLUS_STANDARD / MIXTE / NON
+
+	// === Profil invites & dynamique de la fete ================================
+	// Le moteur ponderera : style photo selon stylePhoto, vendor musique selon
+	// energieFete/volumeSonore, accessibilite/confort selon trancheAge et
+	// considerationsSpeciales, presence d'animations pour enfants selon nbEnfants.
+	private int pctInvitesLocaux;      // 0..100 (% invites de Fes)
+	private int pctInvitesIntl;        // 0..100 (% invites internationaux)
+	private String trancheAge;         // JEUNE / MIXTE / MATURE / SENIOR
+	private int nbEnfants;
+	private int energieFete = 3;       // 1..5 (1 = posee, 5 = festive)
+	private int volumeSonore = 3;      // 1..5
+	private String dureeEvenement;     // COURTE / STANDARD / LONGUE / NUIT_COMPLETE
+	private String stylePhoto;         // DOCUMENTAIRE / EDITORIAL / CINEMA / TRADITIONNEL / MIXTE
+	private List<String> considerationsSpeciales;
 
 	public UserProfile() {
 		this.moodKeywords = new ArrayList<String>();
@@ -183,6 +215,9 @@ public class UserProfile {
 	public String getLanguePrestataires() { return languePrestataires; }
 	public void setLanguePrestataires(String v) { this.languePrestataires = v; }
 
+	public String getLieuType() { return lieuType; }
+	public void setLieuType(String v) { this.lieuType = v; }
+
 	public List<String> getEvenements() { return evenements; }
 	public void setEvenements(List<String> v) { this.evenements = v; }
 
@@ -191,4 +226,40 @@ public class UserProfile {
 
 	public String getPrioriteFassia() { return prioriteFassia; }
 	public void setPrioriteFassia(String v) { this.prioriteFassia = v; }
+
+	// Restauration & gastronomie
+	public String getStyleCulinaire() { return styleCulinaire; }
+	public void setStyleCulinaire(String v) { this.styleCulinaire = v; }
+	public int getNbPlats() { return nbPlats; }
+	public void setNbPlats(int v) { this.nbPlats = v; }
+	public String getFormatService() { return formatService; }
+	public void setFormatService(String v) { this.formatService = v; }
+	public String getFormatBar() { return formatBar; }
+	public void setFormatBar(String v) { this.formatBar = v; }
+	public List<String> getRestrictionsAlimentaires() { return restrictionsAlimentaires; }
+	public void setRestrictionsAlimentaires(List<String> v) { this.restrictionsAlimentaires = v; }
+	public int getNbConvivesRestrictions() { return nbConvivesRestrictions; }
+	public void setNbConvivesRestrictions(int v) { this.nbConvivesRestrictions = v; }
+	public String getPatisserieMaroc() { return patisserieMaroc; }
+	public void setPatisserieMaroc(String v) { this.patisserieMaroc = v; }
+
+	// Profil invites & dynamique
+	public int getPctInvitesLocaux() { return pctInvitesLocaux; }
+	public void setPctInvitesLocaux(int v) { this.pctInvitesLocaux = v; }
+	public int getPctInvitesIntl() { return pctInvitesIntl; }
+	public void setPctInvitesIntl(int v) { this.pctInvitesIntl = v; }
+	public String getTrancheAge() { return trancheAge; }
+	public void setTrancheAge(String v) { this.trancheAge = v; }
+	public int getNbEnfants() { return nbEnfants; }
+	public void setNbEnfants(int v) { this.nbEnfants = v; }
+	public int getEnergieFete() { return energieFete; }
+	public void setEnergieFete(int v) { this.energieFete = v; }
+	public int getVolumeSonore() { return volumeSonore; }
+	public void setVolumeSonore(int v) { this.volumeSonore = v; }
+	public String getDureeEvenement() { return dureeEvenement; }
+	public void setDureeEvenement(String v) { this.dureeEvenement = v; }
+	public String getStylePhoto() { return stylePhoto; }
+	public void setStylePhoto(String v) { this.stylePhoto = v; }
+	public List<String> getConsiderationsSpeciales() { return considerationsSpeciales; }
+	public void setConsiderationsSpeciales(List<String> v) { this.considerationsSpeciales = v; }
 }
