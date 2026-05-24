@@ -412,3 +412,19 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-kpi-trend.warn { color: var(--ax-amber); }
 .ax-kpi-value {
 	font-family: var(--ax-serif);
+	font-size: 2.6rem;
+	font-weight: 600;
+	line-height: 1;
+	color: var(--ax-text);
+}
+.ax-kpi-value small { font-size: 0.55em; color: var(--ax-text-mute); font-weight: 500; margin-left: 4px; }
+.ax-kpi-label {
+	font-size: 11.5px;
+	letter-spacing: 1.8px;
+	text-transform: uppercase;
+	font-weight: 700;
+	color: var(--ax-text-mute);
+	margin-top: 6px;
+}
+.ax-kpi-breakdown {
+	display: grid;
