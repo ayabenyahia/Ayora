@@ -100,3 +100,13 @@ Utilisé pour le compteur *Picks* dans le drawer utilisateur et *Choisi* dans le
 | `ended_at` | DATETIME nullable | fin éventuelle |
 
 Synchronisée automatiquement par `metier.syncSubscriptionPlan(userId, plan)` lors du changement de plan via le drawer.
+
+## `categories`
+
+| Colonne | Type | Sémantique |
+|---|---|---|
+| `id` | INT PK | identifiant |
+| `name` | VARCHAR | libellé affiché (badge `b-cat`) |
+| `slug` | VARCHAR | identifiant URL |
+
+Catégories utilisées : Salle de fête, Traiteur, Neggafa, Maquillage & coiffure, Photographe, Cake designer, Issawa, Orchestre, Décoration, Myadi / Tyafer, DJ, Hennaya.
