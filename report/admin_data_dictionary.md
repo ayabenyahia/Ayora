@@ -78,3 +78,13 @@ Chaque section liste : nom de la colonne, type, contraintes, sémantique, et où
 | `created_at` | DATETIME | dernière mise à jour |
 
 Utilisé pour calculer `questionnaire.complete` / `questionnaire.incomplete` dans `/api/admin/stats`.
+
+## `user_picks`
+
+| Colonne | Type | Sémantique |
+|---|---|---|
+| `user_id` | FK users.id | client |
+| `vendor_id` | FK vendors.id | prestataire choisi |
+| `created_at` | DATETIME | quand le choix a été fait |
+
+Utilisé pour le compteur *Picks* dans le drawer utilisateur et *Choisi* dans le drawer prestataire.
