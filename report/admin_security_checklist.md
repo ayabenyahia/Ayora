@@ -24,3 +24,16 @@ Contrôles techniques vérifiés pour l'espace admin. Aucun secret n'est version
 | Route inconnue | 404 | `{"error":"Route admin non trouvee : ..."}` |
 | Validation échouée | 400 | `{"error":"Plan invalide"}` etc. |
 | Erreur serveur | 500 | message sans stack trace |
+
+## Garde du dernier compte admin
+
+Dans `AdminServlet.handleUserDelete()` :
+
+```java
+if (u != null && "ADMIN".equals(u.getRole()) && metier.countUsersByRole("ADMIN") <= 1) {
+    JsonUtil.sendError(res, 400, "Impossible : c'est le dernier compte admin");
+    return;
+}
+```
+
+Empêche le verrouillage total de la plateforme par suppression accidentelle du dernier admin.
