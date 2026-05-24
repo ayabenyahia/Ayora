@@ -27,5 +27,11 @@
 			<a data-anchor="devis"      onclick="switchTab('devis')">Devis &amp; RDV</a>
 			<a data-anchor="activity"   onclick="switchTab('activity')">Activité</a>
 		</nav>
+		<div class="ax-topbar-spacer"></div>
+		<button class="ax-topbar-alert" id="axAlertBtn" onclick="axScrollToPriorities()" title="Voir les priorités">
+			<svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+			<span>Alertes</span>
+			<span class="ax-alert-dot" id="axAlertCount">0</span>
+		</button>
 </body>
 </html>
