@@ -4,7 +4,8 @@ public class User {
 
 	private int id;
 	private String email;
-	private String password;
+	private String password;       // legacy clair (migration progressive via lazy-hash)
+	private String passwordHash;   // PBKDF2 (nouvelle norme securite)
 	private String firstName;
 	private String lastName;
 	private String phone;
@@ -13,6 +14,8 @@ public class User {
 	private boolean questionnaireCompleted;
 	private String role;
 	private int vendorId;
+	private boolean active = true;
+	private String createdAt;
 
 	public User() {
 		this.role = "CLIENT";
@@ -55,6 +58,9 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getPasswordHash() { return passwordHash; }
+	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
 	public String getFirstName() {
 		return firstName;
@@ -119,6 +125,12 @@ public class User {
 	public void setVendorId(int vendorId) {
 		this.vendorId = vendorId;
 	}
+
+	public boolean isActive() { return active; }
+	public void setActive(boolean active) { this.active = active; }
+
+	public String getCreatedAt() { return createdAt; }
+	public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
 
 	@Override
 	public String toString() {
