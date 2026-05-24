@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora — Mon compte</title>
+	<link rel="stylesheet" href="css/styles.css?v=44">
+	<link rel="stylesheet" href="css/account.css?v=1">
+</head>
+<body>
+
+		<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+			<span onclick="location.href='assistant.html'">Assistante AYORA</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
+		</div>
+	</div>
+
+	<div class="acc-shell">
+
+		<!-- ============ HERO ============ -->
+		<section class="acc-hero">
+			<div class="acc-hero-avatar" id="accHeroAvatar" aria-hidden="true">A</div>
+			<div class="acc-hero-text">
+				<span class="eyebrow">Mon compte</span>
+				<h1 id="accHeroTitle">Bienvenue dans votre espace</h1>
+				<p class="em">Prenez soin de votre espace personnel, comme AYORA prend soin de votre organisation.</p>
+			</div>
+		</section>
+
+		<div class="acc-layout">
+
+			<!-- ============ SIDE NAV ============ -->
+			<aside class="acc-side" aria-label="Sections du compte">
+				<button type="button" class="acc-side-link is-active" data-target="profile">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+					Profil personnel
+				</button>
+				<button type="button" class="acc-side-link" data-target="security">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+					Sécurité
+				</button>
+				<div class="acc-side-sep"></div>
+				<button type="button" class="acc-side-link danger" id="accLogoutBtn">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+					Se déconnecter
+				</button>
+			</aside>
+
+			<!-- ============ CONTENT ============ -->
+			<main>
+
+				<!-- ===== Profile ===== -->
+				<section class="acc-panel acc-section is-active" id="acc-section-profile" data-section="profile">
+					<h2>Informations personnelles</h2>
+					<p class="lede">Ces informations personnalisent votre expérience AYORA et permettent aux prestataires sélectionnés de vous contacter si vous le souhaitez.</p>
+
+					<form class="acc-form" id="profileForm" autocomplete="off" novalidate>
+						<div class="acc-field">
+							<label for="firstName">Prénom</label>
+							<input type="text" id="firstName" name="firstName" required maxlength="100">
+						</div>
+						<div class="acc-field">
+							<label for="lastName">Nom</label>
+							<input type="text" id="lastName" name="lastName" required maxlength="100">
+						</div>
+						<div class="acc-field">
+							<label for="email">Adresse email</label>
+							<input type="email" id="email" name="email" readonly>
+							<span class="hint">Pour modifier votre adresse email, veuillez confirmer votre identité — fonctionnalité à venir.</span>
+						</div>
+						<div class="acc-field">
+							<label for="phone">Numéro de téléphone</label>
+							<input type="tel" id="phone" name="phone" placeholder="Ex. +212 6 12 34 56 78" maxlength="40">
+							<span class="hint">Format accepté&nbsp;: international (+212…), local (06…) ou avec préfixe 00212.</span>
+						</div>
+						<div class="acc-field">
+							<label for="city">Ville</label>
+							<input type="text" id="city" name="city" placeholder="Ex. Fès" maxlength="100">
+						</div>
+
+						<div class="acc-actions">
+							<button type="submit" class="acc-btn-primary" id="profileSaveBtn">
+								Enregistrer les modifications
+							</button>
+							<button type="button" class="acc-btn-secondary" id="profileResetBtn">Annuler</button>
+						</div>
+
+						<div class="acc-feedback" id="profileFeedback" role="status" aria-live="polite"></div>
+					</form>
+
+					<div class="acc-note">
+						Aucune information sensible n'est partagée avec les prestataires sans votre accord explicite.
+					</div>
+				</section>
+
+				<!-- ===== Security ===== -->
+				<section class="acc-panel acc-section" id="acc-section-security" data-section="security">
+					<h2>Sécurité du compte</h2>
+					<p class="lede">Modifiez votre mot de passe pour protéger votre espace personnel. Votre mot de passe actuel est demandé pour confirmer votre identité.</p>
+
+					<form class="acc-form" id="passwordForm" autocomplete="off" novalidate>
+						<div class="acc-field">
+							<label for="currentPassword">Mot de passe actuel</label>
+							<div class="with-eye">
+								<input type="password" id="currentPassword" name="currentPassword" required minlength="1" autocomplete="current-password">
+								<button type="button" class="eye" aria-label="Afficher le mot de passe" data-target="currentPassword">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+								</button>
+							</div>
+						</div>
+						<div class="acc-field">
+							<label for="newPassword">Nouveau mot de passe</label>
+							<div class="with-eye">
+								<input type="password" id="newPassword" name="newPassword" required minlength="8" autocomplete="new-password">
+								<button type="button" class="eye" aria-label="Afficher le mot de passe" data-target="newPassword">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+								</button>
+							</div>
+							<div class="acc-strength" id="strength">
+								<div class="acc-strength-bar"><div class="acc-strength-fill"></div></div>
+								<span class="label">Au moins 8 caractères</span>
+							</div>
+						</div>
+						<div class="acc-field">
+							<label for="confirmPassword">Confirmer le nouveau mot de passe</label>
+							<div class="with-eye">
+								<input type="password" id="confirmPassword" name="confirmPassword" required minlength="8" autocomplete="new-password">
+								<button type="button" class="eye" aria-label="Afficher le mot de passe" data-target="confirmPassword">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+								</button>
+							</div>
+						</div>
+
+						<div class="acc-actions">
+							<button type="submit" class="acc-btn-primary" id="passwordSaveBtn">
+								Mettre à jour le mot de passe
+							</button>
+						</div>
+
+						<div class="acc-feedback" id="passwordFeedback" role="status" aria-live="polite"></div>
+					</form>
+
+					<div class="acc-note">
+						AYORA stocke uniquement une empreinte cryptographique (PBKDF2-SHA256) de votre mot de passe. Le mot de passe en clair n'est jamais conservé ni transmis en dehors de votre saisie.
+					</div>
+				</section>
+
+			</main>
+		</div>
+	</div>
+
+	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
+
+	<script src="js/api.js"></script>
+	<script src="js/account-menu.js?v=1"></script>
+	<script>
+	(function() {
+		'use strict';
+
+		var user = checkAuth();
+		if (!user) return;
+		applyAccountHeader(user);
+
+		// ---- Sidebar navigation (and deep link from #profile / #security) ---
+		var sectionLinks = document.querySelectorAll('.acc-side-link[data-target]');
+		var sections = document.querySelectorAll('.acc-section');
+
+		function activate(name) {
+			sectionLinks.forEach(function(l) {
+				l.classList.toggle('is-active', l.dataset.target === name);
+			});
+			sections.forEach(function(s) {
+				s.classList.toggle('is-active', s.dataset.section === name);
+			});
+			if (location.hash !== '#' + name) {
+				history.replaceState(null, '', '#' + name);
+			}
+		}
+
+		sectionLinks.forEach(function(l) {
+			l.addEventListener('click', function() { activate(l.dataset.target); });
+		});
+		var initial = (location.hash || '#profile').replace('#', '');
+		if (initial !== 'profile' && initial !== 'security') initial = 'profile';
+		activate(initial);
+
+		// ---- Logout button ----------------------------------------------
+		document.getElementById('accLogoutBtn').addEventListener('click', function() {
+			if (typeof window.logout === 'function') window.logout();
+			else location.href = 'login.html';
+		});
+
+		// ---- Hero personalisation ---------------------------------------
+		function getInitials(fn, ln, em) {
+			var src = ((fn || '') + ' ' + (ln || '')).trim() || em || 'A';
+			var parts = src.split(/\s+/);
+			return (parts.length >= 2
+				? parts[0].charAt(0) + parts[1].charAt(0)
+				: src.substring(0, 2)).toUpperCase();
+		}
+		var heroAvatar = document.getElementById('accHeroAvatar');
+		var heroTitle  = document.getElementById('accHeroTitle');
+		heroAvatar.textContent = getInitials(user.firstName, user.lastName, user.email);
+		heroTitle.textContent = (user.firstName ? 'Bienvenue, ' + user.firstName : 'Bienvenue dans votre espace');
+
+		// ---- Eye toggles -------------------------------------------------
+		document.querySelectorAll('.with-eye .eye').forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				var inp = document.getElementById(btn.dataset.target);
+				if (!inp) return;
+				inp.type = inp.type === 'password' ? 'text' : 'password';
+			});
+		});
+
+		// ---- Profile form -----------------------------------------------
+		var firstNameI = document.getElementById('firstName');
+		var lastNameI  = document.getElementById('lastName');
+		var emailI     = document.getElementById('email');
+		var phoneI     = document.getElementById('phone');
+		var cityI      = document.getElementById('city');
+		var profileForm = document.getElementById('profileForm');
+		var profileFeedback = document.getElementById('profileFeedback');
+		var profileSaveBtn  = document.getElementById('profileSaveBtn');
+		var profileResetBtn = document.getElementById('profileResetBtn');
+
+		var snapshot = { firstName: '', lastName: '', email: '', phone: '', city: '' };
+
+		function loadProfile() {
+			api.get('/api/auth/me').then(function(d) {
+				if (!d || !d.user) return;
+				var u = d.user;
+				snapshot = {
+					firstName: u.firstName || '',
+					lastName:  u.lastName  || '',
+					email:     u.email     || '',
+					phone:     u.phone     || '',
+					city:      u.city      || ''
+				};
+				firstNameI.value = snapshot.firstName;
+				lastNameI.value  = snapshot.lastName;
+				emailI.value     = snapshot.email;
+				phoneI.value     = snapshot.phone;
+				cityI.value      = snapshot.city;
+			}).catch(function() {
+				showFeedback(profileFeedback, 'error',
+					'Impossible de charger votre profil pour le moment.');
+			});
+		}
+		loadProfile();
+
+		profileResetBtn.addEventListener('click', function() {
+			firstNameI.value = snapshot.firstName;
+			lastNameI.value  = snapshot.lastName;
+			phoneI.value     = snapshot.phone;
+			cityI.value      = snapshot.city;
+			hideFeedback(profileFeedback);
+		});
+
+		profileForm.addEventListener('submit', function(ev) {
+			ev.preventDefault();
+			hideFeedback(profileFeedback);
+
+			var firstName = firstNameI.value.trim();
+			var lastName  = lastNameI.value.trim();
+			var phone     = phoneI.value.trim();
+			var city      = cityI.value.trim();
+
+			if (!firstName) return showFeedback(profileFeedback, 'error', 'Le prénom est obligatoire.');
+			if (!lastName)  return showFeedback(profileFeedback, 'error', 'Le nom est obligatoire.');
+
+			if (phone) {
+				var compact = phone.replace(/[\s\-\.]/g, '');
+				if (!/^\+?\d{8,15}$/.test(compact)) {
+					return showFeedback(profileFeedback, 'error',
+						'Le numéro de téléphone ne semble pas valide.');
+				}
+			}
+
+			profileSaveBtn.disabled = true;
+			profileSaveBtn.textContent = 'Enregistrement…';
+
+			api.put('/api/auth/profile', {
+				firstName: firstName,
+				lastName: lastName,
+				phone: phone,
+				city: city
+			}).then(function(resp) {
+				profileSaveBtn.disabled = false;
+				profileSaveBtn.textContent = 'Enregistrer les modifications';
+
+				if (resp && resp.success) {
+					showFeedback(profileFeedback, 'ok',
+						resp.message || 'Vos informations ont été mises à jour avec succès.');
+					// Refresh snapshot + localStorage so the dropdown menu name updates.
+					if (resp.user) {
+						snapshot = {
+							firstName: resp.user.firstName || '',
+							lastName:  resp.user.lastName  || '',
+							email:     resp.user.email     || '',
+							phone:     resp.user.phone     || '',
+							city:      resp.user.city      || ''
+						};
+						try {
+							var stored = JSON.parse(localStorage.getItem('user') || '{}');
+							stored.firstName = snapshot.firstName;
+							stored.lastName  = snapshot.lastName;
+							localStorage.setItem('user', JSON.stringify(stored));
+						} catch (e) {}
+					}
+				} else {
+					showFeedback(profileFeedback, 'error',
+						(resp && resp.error) || 'Impossible de mettre à jour vos informations pour le moment.');
+				}
+			}).catch(function() {
+				profileSaveBtn.disabled = false;
+				profileSaveBtn.textContent = 'Enregistrer les modifications';
+				showFeedback(profileFeedback, 'error',
+					'Erreur réseau. Veuillez réessayer dans un instant.');
+			});
+		});
+
+		// ---- Password strength meter ------------------------------------
+		var newPwdI = document.getElementById('newPassword');
+		var strength = document.getElementById('strength');
+		var strengthLabel = strength.querySelector('.label');
+
+		newPwdI.addEventListener('input', function() {
+			var pwd = newPwdI.value;
+			var score = 0;
+			if (pwd.length >= 8) score++;
+			if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+			if (/\d/.test(pwd)) score++;
+			if (/[^A-Za-z0-9]/.test(pwd) || pwd.length >= 14) score++;
+			strength.classList.remove('is-medium', 'is-strong');
+			if (pwd.length === 0) {
+				strengthLabel.textContent = 'Au moins 8 caractères';
+			} else if (score <= 1) {
+				strengthLabel.textContent = 'Faible';
+			} else if (score === 2) {
+				strength.classList.add('is-medium');
+				strengthLabel.textContent = 'Correct';
+			} else {
+				strength.classList.add('is-strong');
+				strengthLabel.textContent = 'Fort';
+			}
+		});
+
+		// ---- Password form ---------------------------------------------
+		var passwordForm = document.getElementById('passwordForm');
+		var passwordFeedback = document.getElementById('passwordFeedback');
+		var passwordSaveBtn  = document.getElementById('passwordSaveBtn');
+
+		passwordForm.addEventListener('submit', function(ev) {
+			ev.preventDefault();
+			hideFeedback(passwordFeedback);
+
+			var current = document.getElementById('currentPassword').value;
+			var npwd    = document.getElementById('newPassword').value;
+			var confirm = document.getElementById('confirmPassword').value;
+
+			if (!current) return showFeedback(passwordFeedback, 'error', 'Veuillez saisir votre mot de passe actuel.');
+			if (npwd.length < 8) return showFeedback(passwordFeedback, 'error', 'Le nouveau mot de passe doit contenir au moins 8 caractères.');
+			if (npwd !== confirm) return showFeedback(passwordFeedback, 'error', 'Les deux nouveaux mots de passe ne correspondent pas.');
+			if (npwd === current) return showFeedback(passwordFeedback, 'error', 'Le nouveau mot de passe doit être différent de l\'actuel.');
+
+			passwordSaveBtn.disabled = true;
+			passwordSaveBtn.textContent = 'Mise à jour…';
+
+			api.put('/api/auth/password', {
+				currentPassword: current,
+				newPassword: npwd,
+				confirmPassword: confirm
+			}).then(function(resp) {
+				passwordSaveBtn.disabled = false;
+				passwordSaveBtn.textContent = 'Mettre à jour le mot de passe';
+
+				if (resp && resp.success) {
+					showFeedback(passwordFeedback, 'ok',
+						resp.message || 'Votre mot de passe a été modifié avec succès.');
+					passwordForm.reset();
+					strength.classList.remove('is-medium', 'is-strong');
+					strengthLabel.textContent = 'Au moins 8 caractères';
+				} else {
+					showFeedback(passwordFeedback, 'error',
+						(resp && resp.error) || 'Impossible de modifier le mot de passe.');
+				}
+			}).catch(function() {
+				passwordSaveBtn.disabled = false;
+				passwordSaveBtn.textContent = 'Mettre à jour le mot de passe';
+				showFeedback(passwordFeedback, 'error',
+					'Erreur réseau. Veuillez réessayer dans un instant.');
+			});
+		});
+
+		// ---- Feedback helpers ------------------------------------------
+		var iconOk    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+		var iconErr   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+
+		function showFeedback(box, kind, msg) {
+			box.classList.remove('is-ok', 'is-error');
+			box.classList.add('is-shown', kind === 'ok' ? 'is-ok' : 'is-error');
+			box.innerHTML = (kind === 'ok' ? iconOk : iconErr) + '<span></span>';
+			box.querySelector('span').textContent = msg;
+		}
+		function hideFeedback(box) {
+			box.classList.remove('is-shown', 'is-ok', 'is-error');
+			box.textContent = '';
+		}
+	})();
+	</script>
+</body>
+</html>
