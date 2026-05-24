@@ -785,3 +785,21 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-tl-body .ax-tl-meta { font-size: 12px; color: var(--ax-gold-700); }
 .ax-tl-time { font-size: 11.5px; color: var(--ax-text-mute); text-align: right; flex-shrink: 0; }
 
+/* ===========================================================
+ * 7. TABS + tables + drawer — héritage du design existant
+ * (on conserve les classes adm-* pour ne pas casser le JS,
+ *  on les surcharge avec un look executive)
+ * =========================================================== */
+.adm-tabs { background: #fff; border: 1px solid var(--ax-line); padding: 4px; border-radius: 12px; display: inline-flex; gap: 2px; margin-bottom: 18px; }
+.adm-tab { padding: 10px 22px; border: none; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--ax-text-mute); cursor: pointer; border-radius: 8px; transition: all .2s; letter-spacing: .5px; }
+.adm-tab:hover { color: var(--ax-burgundy-700); }
+.adm-tab.active { background: linear-gradient(135deg, var(--ax-burgundy-700), var(--ax-burgundy-300)); color: #fff; box-shadow: 0 4px 12px rgba(74,20,36,.22); }
+
+.adm-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; background: #fff; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--ax-line); }
+.adm-filters input, .adm-filters select { padding: 9px 12px; border: 1.5px solid var(--ax-line); border-radius: 8px; font-family: inherit; font-size: 13px; background: #fff; color: var(--ax-text); min-width: 150px; }
+.adm-filters input:focus, .adm-filters select:focus { outline: none; border-color: var(--ax-burgundy-300); box-shadow: 0 0 0 3px rgba(139,26,43,.08); }
+.adm-filters .search-box { flex: 1; min-width: 240px; }
+.adm-filters .clear-btn { padding: 9px 14px; background: transparent; border: 1.5px solid var(--ax-line); color: var(--ax-text-mute); font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.adm-filters .clear-btn:hover { border-color: var(--ax-burgundy-300); color: var(--ax-burgundy-300); }
+.adm-filters .export-btn { padding: 9px 14px; background: var(--ax-burgundy-700); border: 1.5px solid var(--ax-burgundy-700); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.adm-filters .export-btn:hover { background: var(--ax-burgundy-900); border-color: var(--ax-burgundy-900); }
