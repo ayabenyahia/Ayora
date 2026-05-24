@@ -67,3 +67,13 @@ Empêche injection de valeurs hors-périmètre via la requête.
 - [x] Cookie `JSESSIONID` standard servlet, `HttpOnly` activé par Tomcat.
 - [x] La déconnexion (`POST /api/auth/logout`) invalide la session côté serveur ET supprime `localStorage.user` côté client.
 - [x] Aucune information sensible n'est stockée dans `localStorage` (seulement nom/prénom/role pour personnalisation UI).
+
+## Logs d'erreurs propres
+
+- [x] Les exceptions admin sont catchées dans chaque `doGet/doPost/doPut/doDelete`.
+- [x] Le serveur log côté console (`System.out.println("## Erreur admin ...")`) mais ne renvoie au client qu'un message générique sans stack trace.
+- [x] Pas de divulgation d'informations internes (chemins fichiers, versions DB, etc.).
+
+## Revue finale
+
+Tous les points ci-dessus ont été vérifiés sur la version déployée. La checklist est revue à chaque modification d'un endpoint admin.
