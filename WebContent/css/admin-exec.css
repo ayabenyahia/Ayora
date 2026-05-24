@@ -214,3 +214,37 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-topbar-menu a.danger:hover { background: var(--ax-red-soft); }
 .ax-topbar-menu hr { border: none; height: 1px; background: var(--ax-line); margin: 6px 4px; }
 
+/* ===========================================================
+ * 2. HERO — Centre de pilotage
+ * =========================================================== */
+.ax-hero {
+	position: relative;
+	background: linear-gradient(135deg, #150812 0%, #3A0E1C 55%, #5E1828 100%);
+	color: #fff;
+	border-radius: var(--ax-radius-lg);
+	padding: 36px 44px;
+	margin: 28px 0 28px;
+	overflow: hidden;
+	display: grid;
+	grid-template-columns: 1.6fr 1fr;
+	gap: 32px;
+	align-items: center;
+}
+.ax-hero::before {
+	content: ""; position: absolute;
+	top: -100px; right: -80px;
+	width: 360px; height: 360px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(212,168,83,.18), transparent 65%);
+	pointer-events: none;
+}
+.ax-hero::after {
+	content: ""; position: absolute;
+	bottom: -60px; left: -40px;
+	width: 200px; height: 200px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(212,168,83,.08), transparent 70%);
+	pointer-events: none;
+}
+.ax-hero-body { position: relative; z-index: 2; }
+.ax-hero-badge {
