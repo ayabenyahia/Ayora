@@ -28,6 +28,17 @@ public class CorsFilter implements Filter {
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 
+		// FORCE no-cache sur HTML/JS/CSS pour eviter que le navigateur garde
+		// d'anciennes versions de l'UI (cause majeure des "changements pas
+		// visibles" pendant le developpement). En production on retirera ces
+		// headers pour activer le cache classique.
+		String uri = request.getRequestURI();
+		if (uri != null && (uri.endsWith(".html") || uri.endsWith(".js") || uri.endsWith(".css") || uri.endsWith("/"))) {
+			response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Expires", "0");
+		}
+
 		if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
 			response.setStatus(HttpServletResponse.SC_OK);
 			return;
