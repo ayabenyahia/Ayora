@@ -334,3 +334,39 @@ body.ax-body .site-footer { margin-top: 60px; }
 }
 .ax-btn-ghost:hover { border-color: var(--ax-gold-400); background: var(--ax-ivory-100); }
 
+.ax-hero-aside {
+	position: relative; z-index: 2;
+	background: rgba(255,255,255,.06);
+	border: 1px solid rgba(255,255,255,.12);
+	border-radius: 16px;
+	padding: 22px;
+	backdrop-filter: blur(6px);
+}
+.ax-hero-aside-label {
+	font-size: 10.5px;
+	letter-spacing: 3px;
+	text-transform: uppercase;
+	color: rgba(212,168,83,.9);
+	font-weight: 600;
+	margin-bottom: 10px;
+}
+.ax-hero-aside-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px 18px;
+}
+.ax-hero-aside-grid .ax-mini { line-height: 1.1; }
+.ax-hero-aside-grid .ax-mini-v {
+	font-family: var(--ax-serif);
+	font-size: 1.8rem;
+	font-weight: 600;
+	color: #fff;
+}
+.ax-hero-aside-grid .ax-mini-l {
+	font-size: 11px;
+	color: rgba(255,255,255,.6);
+	letter-spacing: 1.2px;
+	text-transform: uppercase;
+	margin-top: 4px;
+}
+
