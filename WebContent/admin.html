@@ -468,3 +468,63 @@
 		['users','vendors','devis','activity'].forEach(function(t){
 			var el = document.getElementById('tab-'+t);
 			if (el) el.style.display = (t===name) ? '' : 'none';
+		});
+		if (name==='users')    reloadUsers();
+		if (name==='vendors')  reloadVendors();
+		if (name==='devis')    reloadDevis();
+		if (name==='activity') reloadActivity();
+		var tabs = document.querySelector('.adm-tabs');
+		if (tabs) {
+			var y = tabs.getBoundingClientRect().top + window.pageYOffset - 20;
+			window.scrollTo({ top: y, behavior: 'smooth' });
+		}
+	}
+
+	function switchSubTab(which) {
+		document.getElementById('subTabDevis').classList.toggle('active', which==='devis');
+		document.getElementById('subTabRdv').classList.toggle('active', which==='rdv');
+		document.getElementById('devisStatus').style.display = (which==='devis') ? '' : 'none';
+		document.getElementById('rdvStatus').style.display   = (which==='rdv')   ? '' : 'none';
+		if (which==='devis') reloadDevis(); else reloadRdv();
+	}
+
+	// ============ DEMARRAGE ============
+	loadDashboard();
+	reloadUsers();
+
+	function loadDashboard() {
+		Promise.all([
+			api.get('/api/admin/stats'),
+			api.get('/api/admin/actions'),
+			api.get('/api/admin/analytics'),
+			api.get('/api/admin/activity?limit=8')
+		]).then(function(results) {
+			var stats = results[0], actions = results[1], analytics = results[2], activity = results[3];
+			renderHeroSummary(stats, actions);
+			renderKpis(stats);
+			renderMiniIndicators(stats);
+			renderPriorities(actions);
+			renderHealth(stats);
+			renderSignupsChart(analytics.signupsByMonth || []);
+			renderPlansDonut(analytics.plansDistribution || []);
+			renderVendorsByCategory(analytics.vendorsByCategory || []);
+			renderActivityCompact(activity || []);
+		}).catch(function(e) {
+			console.error('## Erreur dashboard:', e);
+			showToast('Erreur de chargement : ' + (e.message||''), 'error');
+		});
+	}
+
+	// ============ HERO SUMMARY + STATE ============
+	function renderHeroSummary(s, actions) {
+		document.getElementById('axSumUsers').textContent   = s.users.total;
+		document.getElementById('axSumVendors').textContent = s.vendors.actifs;
+		document.getElementById('axSumDevis').textContent   = s.devis.nouveaux;
+		document.getElementById('axSumPrem').textContent    = s.plans.premium;
+
+		var nbActions = actions ? actions.length : 0;
+		document.getElementById('axAlertCount').textContent = nbActions;
+
+		var state = document.getElementById('axHeroState');
+		var text  = document.getElementById('axHeroStateText');
+		var icon  = state.querySelector('.ax-state-icon');
