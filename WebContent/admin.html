@@ -528,3 +528,73 @@
 		var state = document.getElementById('axHeroState');
 		var text  = document.getElementById('axHeroStateText');
 		var icon  = state.querySelector('.ax-state-icon');
+		if (nbActions === 0) {
+			state.classList.add('is-calm');
+			icon.textContent = '✓';
+			text.innerHTML = 'Aucune action urgente actuellement. <strong>La plateforme est à jour.</strong>';
+		} else {
+			state.classList.remove('is-calm');
+			icon.textContent = '!';
+			var mainType = mostFrequentActionType(actions);
+			text.innerHTML = '<strong>' + nbActions + ' élément' + (nbActions>1?'s':'') + '</strong> nécessitent votre attention aujourd\'hui'
+				+ (mainType ? ', principalement <strong>' + mainType + '</strong>.' : '.');
+		}
+	}
+	function mostFrequentActionType(actions) {
+		if (!actions || actions.length === 0) return null;
+		var label = { 'VENDOR_INCOMPLETE': 'des profils prestataires incomplets',
+		              'USER_NO_QUESTIONNAIRE': 'des clients sans questionnaire',
+		              'DEVIS': 'des demandes de devis',
+		              'RDV': 'des rendez-vous à confirmer' };
+		var counts = {};
+		actions.forEach(function(a){ counts[a.type] = (counts[a.type]||0)+1; });
+		var maxKey = null, maxVal = 0;
+		Object.keys(counts).forEach(function(k){ if (counts[k] > maxVal) { maxVal = counts[k]; maxKey = k; } });
+		return label[maxKey] || null;
+	}
+
+	// ============ 4 KPI PRINCIPAUX ============
+	function renderKpis(s) {
+		var newClients = ''; // pas de "nouveaux" calculable simple sans range — pas inventé
+		var tauxIncomplet = s.vendors.total > 0 ? Math.round(s.vendors.incomplets * 100 / s.vendors.total) : 0;
+
+		var html = ''
+		+ kpiCard('users', ICO.users, s.users.total, 'Utilisateurs', [
+				{ v: s.users.clients,    l: 'Clients' },
+				{ v: s.users.prestataires, l: 'Prestataires' }
+			], 'Voir les utilisateurs', "switchTab('users')")
+
+		+ kpiCard('vendors', ICO.vendor, s.vendors.actifs, 'Prestataires actifs', [
+				{ v: s.vendors.incomplets, l: 'Incomplets' },
+				{ v: s.vendors.inactifs,   l: 'Inactifs' }
+			], 'Gérer les prestataires', "switchTab('vendors')")
+
+		+ kpiCard('plans', ICO.premium, s.plans.premium, 'Plans Premium <small>(' + s.plans.tauxPremium + '%)</small>', [
+				{ v: s.plans.free, l: 'Free' },
+				{ v: s.plans.pro,  l: 'Pro' }
+			], 'Voir les abonnements', "switchTab('users');setTimeout(function(){document.getElementById('usrPlan').value='PREMIUM';reloadUsers();},80);")
+
+		+ kpiCard('demands', ICO.demands, (s.devis.nouveaux + s.rdv.attente), 'Demandes en attente', [
+				{ v: s.devis.nouveaux, l: 'Devis' },
+				{ v: s.rdv.attente,    l: 'Rendez-vous' }
+			], 'Traiter les demandes', "switchTab('devis')");
+
+		document.getElementById('axKpiGrid').innerHTML = html;
+	}
+	function kpiCard(cls, icon, value, label, breakdown, ctaText, ctaJs) {
+		var bd = breakdown.map(function(b){ return '<div class="ax-bd"><div class="ax-bd-v">'+b.v+'</div><div class="ax-bd-l">'+b.l+'</div></div>'; }).join('');
+		return '<div class="ax-kpi '+cls+'">'
+			+ '<div class="ax-kpi-head">'
+				+ '<div class="ax-kpi-icon">'+icon+'</div>'
+			+ '</div>'
+			+ '<div class="ax-kpi-value">'+value+'</div>'
+			+ '<div class="ax-kpi-label">'+label+'</div>'
+			+ '<div class="ax-kpi-breakdown">'+bd+'</div>'
+			+ '<div class="ax-kpi-cta" onclick="'+ctaJs+'">'+ctaText+'</div>'
+		+ '</div>';
+	}
+
+	// ============ INDICATEURS SECONDAIRES ============
+	function renderMiniIndicators(s) {
+		var items = [
+			{ cls:'sage',  v: s.questionnaire.complete,   l: 'Questionnaires complétés',  js: "switchTab('users');setTimeout(function(){document.getElementById('usrQuest').value='1';reloadUsers();},80);" },
