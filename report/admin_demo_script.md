@@ -20,3 +20,14 @@ Mettre en avant :
 - Le titre serif *Centre de pilotage AYORA*
 - Le bloc d'état dynamique : *N éléments nécessitent votre attention…*
 - Les 3 CTAs : *Traiter les alertes*, *Gérer les prestataires*, *Consulter l'activité*
+
+## 0:25 → 0:40 — 4 KPI principaux
+
+*"Quatre grandes cartes hiérarchisent l'information stratégique."*
+
+1. **Utilisateurs** — total + clients + prestataires
+2. **Prestataires actifs** — actifs + incomplets + inactifs
+3. **Plans Premium** — premium + free + pro (avec taux de conversion)
+4. **Demandes en attente** — devis + rendez-vous
+
+Chaque carte est cliquable et ouvre l'onglet correspondant avec le filtre pré-appliqué.
