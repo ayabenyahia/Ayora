@@ -37,3 +37,9 @@ if (u != null && "ADMIN".equals(u.getRole()) && metier.countUsersByRole("ADMIN")
 ```
 
 Empêche le verrouillage total de la plateforme par suppression accidentelle du dernier admin.
+
+## Aucun mot de passe ou hash exposé
+
+- [x] La méthode `userJson()` du servlet ne sérialise PAS `password_hash`.
+- [x] Le drawer admin ne lit ni n'écrit le hash — modification de mot de passe = flux séparé via `AuthServlet`.
+- [x] Aucune réponse `/api/admin/*` ne contient de champ commençant par `password*`.
