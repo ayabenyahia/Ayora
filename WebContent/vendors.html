@@ -2,13 +2,20 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Prestataires</title>
-	<link rel="stylesheet" href="css/styles.css?v=26">
+	<link rel="stylesheet" href="css/styles.css?v=43">
+	<link rel="stylesheet" href="css/account.css?v=1">
+	<link rel="stylesheet" href="css/assistant.css?v=4">
 </head>
 <body>
 
-	<div class="menu-bar">
+		<div class="menu-bar">
 		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
 		<nav>
 			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
@@ -17,6 +24,7 @@
 			<span class="active" onclick="location.href='vendors.html'">Prestataires</span>
 			<span onclick="location.href='guests.html'">Invités</span>
 			<span onclick="location.href='invitations.html'">Invitations</span>
+			<span onclick="location.href='assistant.html'">Assistante AYORA</span>
 		</nav>
 		<div class="user-info">
 			<span id="userName"></span>
@@ -37,12 +45,25 @@
 			<option value="MOYEN">Moyen</option>
 			<option value="PREMIUM">Premium</option>
 		</select>
+		<select id="sortBy" onchange="applySort()">
+			<option value="default">Tri : par défaut</option>
+			<option value="price-asc">Prix croissant</option>
+			<option value="price-desc">Prix décroissant</option>
+			<option value="rating">Mieux notés</option>
+			<option value="name">Alphabétique</option>
+		</select>
 		<input type="text" id="searchInput" placeholder="Rechercher un prestataire..." onkeyup="handleSearch(event)">
 		<button class="btn btn-small btn-secondary" onclick="resetFilters()">Réinitialiser</button>
 	</div>
 
+	<!-- Compteur + chips de filtres actifs -->
+	<div class="vendors-counter-row" id="vendorsCounterRow">
+		<div class="vendors-counter" id="vendorsCounter">Chargement…</div>
+		<div class="vendors-active-chips" id="vendorsActiveChips"></div>
+	</div>
+
 	<!-- VENDOR LIST -->
-	<div id="vendorList" class="card-list">
+	<div id="vendorList" class="vendor-list-wrap">
 		<div class="loading">
 			<div class="spinner"></div>
 			<p>Chargement des prestataires...</p>
@@ -135,11 +156,9 @@
 		</div>
 	</div>
 
-	<footer>
-		<p>Ayora.ma &copy; 2026 - Planification de mariage au Maroc</p>
-	</footer>
-
 	<script src="js/api.js"></script>
+	<script src="js/format.js"></script>
+	<script src="js/vendor-card.js?v=45"></script>
 	<script>
 		var user = checkAuth(); if (user) applyAccountHeader(user);
 		if (user) {
@@ -160,6 +179,7 @@
 		});
 
 		// Charger les prestataires
+		var CURRENT_VENDORS = []; // cache local pour tri/recherche sans refetch
 		loadVendors();
 
 		function loadVendors() {
@@ -174,11 +194,51 @@
 			document.getElementById('vendorList').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
 			api.get(url).then(function(vendors) {
-				renderVendors(vendors);
+				CURRENT_VENDORS = vendors || [];
+				applySort();
+				updateCounterAndChips();
 			}).catch(function(e) {
 				console.error('Erreur chargement prestataires:', e);
 				document.getElementById('vendorList').innerHTML = '<p class="text-center text-muted p-20">Erreur de chargement</p>';
 			});
+		}
+
+		function applySort() {
+			var sortBy = document.getElementById('sortBy').value;
+			var sorted = CURRENT_VENDORS.slice();
+			if (sortBy === 'price-asc')   sorted.sort(function(a,b){ return (a.prixMin||0) - (b.prixMin||0); });
+			else if (sortBy === 'price-desc') sorted.sort(function(a,b){ return (b.prixMin||0) - (a.prixMin||0); });
+			else if (sortBy === 'rating') sorted.sort(function(a,b){ return (b.rating||0) - (a.rating||0); });
+			else if (sortBy === 'name')   sorted.sort(function(a,b){ return (a.name||'').localeCompare(b.name||'', 'fr'); });
+			renderVendors(sorted);
+		}
+
+		function updateCounterAndChips() {
+			var counter = document.getElementById('vendorsCounter');
+			var chipsBox = document.getElementById('vendorsActiveChips');
+			var n = CURRENT_VENDORS.length;
+			counter.innerHTML = '<span class="num">' + n + '</span> prestataire' + (n>1?'s':'') + ' trouvé' + (n>1?'s':'');
+
+			// Chips actifs
+			var chips = '';
+			var cat = document.getElementById('filterCategory');
+			var catName = cat.options[cat.selectedIndex] ? cat.options[cat.selectedIndex].text : '';
+			if (cat.value) chips += '<span class="filter-chip">' + catName + ' <button onclick="removeFilter(\'category\')" title="Retirer">×</button></span>';
+			var gamme = document.getElementById('filterGamme');
+			if (gamme.value) {
+				var lblG = (window.AyoraFmt && AyoraFmt.label) ? AyoraFmt.label(gamme.value) : gamme.value;
+				chips += '<span class="filter-chip">' + lblG + ' <button onclick="removeFilter(\'gamme\')" title="Retirer">×</button></span>';
+			}
+			var search = document.getElementById('searchInput').value.trim();
+			if (search) chips += '<span class="filter-chip">"' + search + '" <button onclick="removeFilter(\'search\')" title="Retirer">×</button></span>';
+			chipsBox.innerHTML = chips;
+		}
+
+		function removeFilter(which) {
+			if (which === 'category') document.getElementById('filterCategory').value = '';
+			else if (which === 'gamme') document.getElementById('filterGamme').value = '';
+			else if (which === 'search') document.getElementById('searchInput').value = '';
+			loadVendors();
 		}
 
 		function handleSearch(event) {
@@ -189,7 +249,9 @@
 					return;
 				}
 				api.get('/api/vendors/search?q=' + encodeURIComponent(keyword)).then(function(vendors) {
-					renderVendors(vendors);
+					CURRENT_VENDORS = vendors || [];
+					applySort();
+					updateCounterAndChips();
 				}).catch(function(e) {
 					console.error('Erreur recherche:', e);
 				});
@@ -200,52 +262,47 @@
 			document.getElementById('filterCategory').value = '';
 			document.getElementById('filterGamme').value = '';
 			document.getElementById('searchInput').value = '';
+			document.getElementById('sortBy').value = 'default';
 			loadVendors();
 		}
 
 		function renderVendors(vendors) {
 			var container = document.getElementById('vendorList');
 			if (!vendors || vendors.length === 0) {
-				container.innerHTML = '<p class="text-center text-muted p-20">Aucun prestataire trouvé</p>';
+				container.innerHTML = '<div class="empty-state" style="text-align:center;padding:60px 24px;color:#8B7A6E;"><h3 style="font-family:\'Cormorant Garamond\',serif;color:#8B1A2B;margin-bottom:8px;">Aucun prestataire trouvé</h3><p>Essayez d\'élargir vos critères ou de réinitialiser les filtres.</p><button class="btn btn-primary" onclick="resetFilters()" style="margin-top:14px;">Réinitialiser les filtres</button></div>';
 				return;
 			}
 
-			var html = '';
+			var html = '<div class="vc-grid vc-grid-4">';
 			for (var i = 0; i < vendors.length; i++) {
 				var v = vendors[i];
-				var tags = v.tags ? v.tags.split(',') : [];
-				html += '<article onclick="showVendor(' + v.id + ')" style="cursor:pointer">';
-				html += '<header>' + v.name + '</header>';
-				html += '<div class="card-body">';
-				html += '<p><span class="card-gamme ' + getGammeClass(v.gamme) + '">' + getGammeLabel(v.gamme) + '</span> ' + v.categoryName + '</p>';
-				if (v.rating > 0) {
-					html += '<p class="vendor-rating">';
-					var fullStars = Math.floor(v.rating);
-					var halfStar = (v.rating - fullStars) >= 0.5;
-					for (var s = 0; s < fullStars; s++) { html += '<span class="star-filled"></span>'; }
-					if (halfStar) { html += '<span class="star-half"></span>'; }
-					for (var s2 = fullStars + (halfStar ? 1 : 0); s2 < 5; s2++) { html += '<span class="star-empty"></span>'; }
-					html += ' <span class="text-muted" style="font-size:12px;">' + v.rating + '/5 (' + (v.nbAvis || 0) + ' avis)</span></p>';
-				}
-				html += '<p class="card-price">À partir de ' + formatPrice(v.prixMin) + '</p>';
-				html += '<p class="text-muted" style="font-size:13px;">' + (v.description || '').substring(0, 120) + '...</p>';
-				if (tags.length > 0) {
-					html += '<div class="card-tags">';
-					var tagLimit = Math.min(4, tags.length);
-					for (var j = 0; j < tagLimit; j++) {
-						html += '<span>' + tags[j].trim() + '</span>';
-					}
-					html += '</div>';
-				}
-				html += '</div>';
-				html += '<div class="card-footer">';
-				html += '<span class="text-muted">' + v.city + '</span>';
-				if (v.instagram) {
-					html += '<span class="text-muted" style="font-size:12px;">' + v.instagram + '</span>';
-				}
-				html += '</div>';
-				html += '</article>';
+				// Normalise les champs pour le composant AyoraCard : la
+				// page /api/vendors renvoie name/prixMin/categoryName/tags(string)
+				// alors que le composant supporte aussi vendorName/vendorPrixMin/
+				// category/tags(array). On adapte ici.
+				var tagsArr = v.tags ? v.tags.split(',').map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; }) : [];
+				var card = {
+					vendorId: v.id,
+					vendorName: v.name,
+					category: v.categoryName,
+					city: v.city,
+					gamme: v.gamme,
+					prixMin: v.prixMin,
+					prixMax: v.prixMax,
+					rating: v.rating,
+					nbAvis: v.nbAvis,
+					phone: v.phone,
+					instagram: v.instagram,
+					description: v.description,
+					photoUrl: v.photoUrl,
+					galleryUrls: v.galleryUrls,
+					reelUrl: v.reelUrl,
+					tags: tagsArr
+				};
+				var detailBtn = '<button type="button" class="vc-btn vc-btn-detail" onclick="showVendor(' + v.id + ')" style="width:100%;">Voir la fiche complète</button>';
+				html += AyoraCard.render(card, { showScore: false, actionHtml: detailBtn });
 			}
+			html += '</div>';
 			container.innerHTML = html;
 		}
 
@@ -330,12 +387,12 @@
 			};
 			api.post('/api/auth/devis-create', data).then(function(res) {
 				if (res.success) {
-					alert('Demande de devis envoyee avec succes!');
+					AyoraUI.success('Demande de devis envoyée avec succès !');
 					closeDevisModal();
 				} else {
-					alert('Erreur: ' + (res.error || 'Echec'));
+					AyoraUI.error('Erreur : ' + (res.error || 'Échec'));
 				}
-			}).catch(function() { alert('Erreur de connexion'); });
+			}).catch(function() { AyoraUI.error('Erreur de connexion'); });
 		}
 
 		function submitRdv() {
@@ -346,16 +403,34 @@
 				lieu: document.getElementById('rdvLieu').value || 'A definir',
 				note: document.getElementById('rdvNote').value || ''
 			};
-			if (!data.dateRdv) { alert('Veuillez choisir une date'); return; }
+			if (!data.dateRdv) { AyoraUI.warning('Veuillez choisir une date'); return; }
 			api.post('/api/auth/rdv-create', data).then(function(res) {
 				if (res.success) {
-					alert('Rendez-vous enregistre avec succes!');
+					AyoraUI.success('Rendez-vous enregistré avec succès !');
 					closeRdvModal();
 				} else {
-					alert('Erreur: ' + (res.error || 'Echec'));
+					AyoraUI.error('Erreur : ' + (res.error || 'Échec'));
 				}
-			}).catch(function() { alert('Erreur de connexion'); });
+			}).catch(function() { AyoraUI.error('Erreur de connexion'); });
 		}
 	</script>
+
+	<script src="js/ayora-ui.js"></script>
+	<script src="js/assistant.js?v=2"></script>
+	<script src="js/assistant-floating.js?v=2" data-ayora-page="vendors"></script>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
+	<script src="js/account-menu.js?v=1"></script>
 </body>
 </html>
