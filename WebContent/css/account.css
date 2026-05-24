@@ -1,0 +1,512 @@
+/* ============================================================
+   AYORA — Account menu (top-right user dropdown) + Settings page.
+   Uses the CSS variables already declared at the top of styles.css.
+   ============================================================ */
+
+/* ===== User menu (dropdown in the header) =============================== */
+
+.acc-menu {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+}
+
+.acc-menu-trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 6px 12px 6px 6px;
+	background: rgba(255,255,255,0.65);
+	border: 1px solid var(--border-light);
+	border-radius: 50px;
+	cursor: pointer;
+	transition: var(--transition-fast);
+	font-family: 'Montserrat', sans-serif;
+	color: var(--text-dark);
+}
+
+.acc-menu-trigger:hover {
+	border-color: var(--gold);
+	background: #FFFFFF;
+	box-shadow: 0 4px 14px rgba(212,168,83,0.15);
+}
+
+.acc-menu-trigger:focus-visible {
+	outline: 2px solid var(--gold);
+	outline-offset: 2px;
+}
+
+.acc-menu-avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #FFFCF6 0%, #F8E8C8 100%);
+	border: 1.5px solid rgba(212,168,83,0.55);
+	color: var(--primary-dark);
+	font-family: 'Cormorant Garamond', serif;
+	font-weight: 600;
+	font-size: 16px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	letter-spacing: 0.5px;
+}
+
+.acc-menu-name {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-dark);
+	max-width: 120px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.acc-menu-caret {
+	width: 11px; height: 11px;
+	color: var(--text-muted);
+	transition: transform 0.2s;
+}
+
+.acc-menu.is-open .acc-menu-caret {
+	transform: rotate(180deg);
+	color: var(--gold-dark);
+}
+
+.acc-menu-panel {
+	position: absolute;
+	top: calc(100% + 10px);
+	right: 0;
+	min-width: 240px;
+	background: #FFFFFF;
+	border: 1px solid var(--border-light);
+	border-radius: 18px;
+	box-shadow: 0 18px 48px rgba(26,10,16,0.16);
+	padding: 10px;
+	opacity: 0;
+	transform: translateY(-6px);
+	pointer-events: none;
+	transition: opacity 0.18s ease, transform 0.18s ease;
+	z-index: 1100;
+}
+
+.acc-menu.is-open .acc-menu-panel {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.acc-menu-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px 14px;
+	border-bottom: 1px solid var(--border-light);
+	margin-bottom: 8px;
+}
+
+.acc-menu-header .av {
+	width: 40px; height: 40px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #FFFCF6, #F5E6B8);
+	border: 1.5px solid rgba(212,168,83,0.55);
+	color: var(--primary-dark);
+	display: flex; align-items: center; justify-content: center;
+	font-family: 'Cormorant Garamond', serif;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.acc-menu-header .meta { display: flex; flex-direction: column; min-width: 0; }
+.acc-menu-header .meta .nm {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-dark);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.acc-menu-header .meta .em {
+	font-size: 11.5px;
+	color: var(--text-muted);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 180px;
+}
+
+.acc-menu-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 12px;
+	border-radius: 10px;
+	color: var(--text-dark);
+	font-size: 13.5px;
+	font-weight: 500;
+	cursor: pointer;
+	text-decoration: none;
+	border: none;
+	background: transparent;
+	width: 100%;
+	text-align: left;
+	font-family: 'Montserrat', sans-serif;
+	transition: background 0.15s, color 0.15s;
+}
+
+.acc-menu-item:hover {
+	background: var(--gold-soft);
+	color: var(--primary-dark);
+}
+
+.acc-menu-item svg {
+	width: 16px; height: 16px;
+	color: var(--gold-dark);
+	flex-shrink: 0;
+}
+
+.acc-menu-item.danger {
+	color: var(--danger);
+}
+.acc-menu-item.danger:hover {
+	background: var(--danger-light);
+	color: var(--danger);
+}
+.acc-menu-item.danger svg { color: var(--danger); }
+
+.acc-menu-sep {
+	height: 1px;
+	background: var(--border-light);
+	margin: 6px 8px;
+}
+
+.acc-menu-badge {
+	margin-left: auto;
+	font-size: 9.5px;
+	letter-spacing: 1.5px;
+	padding: 2px 8px;
+	border-radius: 50px;
+	font-weight: 700;
+}
+
+/* When the user menu is rendered, the legacy "Déconnexion" span we
+   inherited from the existing header gets hidden so we don't show two
+   logout entries. If JS doesn't load, the original menu still works. */
+.user-info.acc-enhanced > span[onclick*="logout"],
+.user-info.acc-enhanced > #userName,
+.user-info.acc-enhanced > #userBadge { display: none; }
+
+/* ===== Settings page ==================================================== */
+
+.acc-shell {
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 28px 28px 80px;
+}
+
+.acc-hero {
+	background:
+		radial-gradient(ellipse 600px 220px at 0% 0%, rgba(255,224,178,0.35), transparent 60%),
+		linear-gradient(135deg, #FFFCF6 0%, #FDF6EC 100%);
+	border: 1px solid rgba(212,168,83,0.35);
+	border-radius: 24px;
+	padding: 30px 36px;
+	margin-bottom: 24px;
+	display: grid;
+	grid-template-columns: 76px 1fr;
+	gap: 22px;
+	align-items: center;
+	box-shadow: 0 10px 30px rgba(139,26,43,0.08);
+}
+
+.acc-hero-avatar {
+	width: 76px; height: 76px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #FFFCF6, #F5E6B8);
+	border: 2px solid rgba(212,168,83,0.55);
+	color: var(--primary-dark);
+	display: flex; align-items: center; justify-content: center;
+	font-family: 'Cormorant Garamond', serif;
+	font-size: 36px;
+	font-weight: 600;
+	box-shadow: 0 0 0 6px rgba(255,255,255,0.6),
+		0 8px 22px rgba(212,168,83,0.25);
+}
+
+.acc-hero-text .eyebrow {
+	display: inline-block;
+	font-size: 11px;
+	letter-spacing: 3px;
+	text-transform: uppercase;
+	color: var(--gold-dark);
+	font-weight: 600;
+	margin-bottom: 6px;
+}
+.acc-hero-text h1 {
+	font-family: 'Cormorant Garamond', serif;
+	font-size: 2.1rem;
+	color: var(--text-dark);
+	margin: 0 0 6px;
+	line-height: 1.15;
+}
+.acc-hero-text .em {
+	color: var(--text-muted);
+	font-size: 13px;
+}
+
+.acc-layout {
+	display: grid;
+	grid-template-columns: 240px 1fr;
+	gap: 26px;
+	align-items: flex-start;
+}
+
+@media (max-width: 880px) {
+	.acc-layout { grid-template-columns: 1fr; }
+}
+
+.acc-side {
+	background: #FFFFFF;
+	border: 1px solid var(--border-light);
+	border-radius: 18px;
+	padding: 16px 12px;
+	box-shadow: var(--shadow-sm);
+	position: sticky;
+	top: 96px;
+}
+
+.acc-side-link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	border-radius: 12px;
+	color: var(--text-body);
+	font-size: 13.5px;
+	font-weight: 600;
+	cursor: pointer;
+	border: none;
+	background: transparent;
+	width: 100%;
+	text-align: left;
+	font-family: 'Montserrat', sans-serif;
+	transition: background 0.15s, color 0.15s;
+}
+
+.acc-side-link:hover { background: var(--cream); color: var(--primary-dark); }
+
+.acc-side-link.is-active {
+	background: linear-gradient(135deg, var(--gold-soft), #FEF6E0);
+	color: var(--primary-dark);
+}
+
+.acc-side-link.is-active::before {
+	content: '';
+	width: 3px;
+	height: 18px;
+	background: var(--gold);
+	border-radius: 2px;
+	margin-right: -2px;
+}
+
+.acc-side-link svg { width: 16px; height: 16px; color: var(--gold-dark); }
+
+.acc-side-sep { height: 1px; background: var(--border-light); margin: 8px 4px; }
+
+.acc-side-link.danger { color: var(--danger); }
+.acc-side-link.danger svg { color: var(--danger); }
+.acc-side-link.danger:hover { background: var(--danger-light); }
+
+.acc-panel {
+	background: #FFFFFF;
+	border: 1px solid var(--border-light);
+	border-radius: 22px;
+	padding: 32px 36px;
+	box-shadow: var(--shadow-sm);
+}
+
+.acc-panel h2 {
+	font-family: 'Cormorant Garamond', serif;
+	font-size: 1.75rem;
+	color: var(--text-dark);
+	margin: 0 0 6px;
+}
+
+.acc-panel .lede {
+	color: var(--text-muted);
+	font-size: 14px;
+	margin: 0 0 24px;
+}
+
+.acc-form { display: grid; gap: 18px; max-width: 560px; }
+
+.acc-field { display: flex; flex-direction: column; gap: 6px; }
+
+.acc-field label {
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--text-dark);
+	letter-spacing: 0.3px;
+}
+
+.acc-field .hint {
+	font-size: 11.5px;
+	color: var(--text-muted);
+}
+
+.acc-field input[type="text"],
+.acc-field input[type="email"],
+.acc-field input[type="tel"],
+.acc-field input[type="password"] {
+	padding: 12px 14px;
+	background: var(--cream);
+	border: 1px solid var(--border-light);
+	border-radius: 12px;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 14px;
+	color: var(--text-dark);
+	transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.acc-field input:focus {
+	outline: none;
+	background: #FFFFFF;
+	border-color: var(--gold);
+	box-shadow: 0 0 0 3px rgba(212,168,83,0.18);
+}
+
+.acc-field input[readonly] {
+	background: #FBF6EE;
+	color: var(--text-muted);
+	cursor: not-allowed;
+}
+
+.acc-field .with-eye {
+	position: relative;
+}
+.acc-field .with-eye input { width: 100%; padding-right: 44px; }
+.acc-field .with-eye .eye {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: var(--text-muted);
+	padding: 6px;
+	border-radius: 8px;
+}
+.acc-field .with-eye .eye:hover { color: var(--primary-dark); background: var(--gold-soft); }
+.acc-field .with-eye .eye svg { width: 18px; height: 18px; }
+
+.acc-strength {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 11.5px;
+	color: var(--text-muted);
+	margin-top: 2px;
+}
+.acc-strength-bar {
+	flex: 1;
+	height: 4px;
+	border-radius: 4px;
+	background: var(--border-light);
+	overflow: hidden;
+}
+.acc-strength-fill {
+	height: 100%;
+	width: 0;
+	background: var(--danger);
+	transition: width 0.2s, background 0.2s;
+	border-radius: 4px;
+}
+.acc-strength.is-medium .acc-strength-fill { width: 55%; background: var(--warning); }
+.acc-strength.is-strong .acc-strength-fill { width: 100%; background: var(--success); }
+.acc-strength.is-medium .label { color: var(--warning); }
+.acc-strength.is-strong .label { color: var(--success); }
+
+.acc-actions {
+	display: flex;
+	gap: 12px;
+	margin-top: 8px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.acc-btn-primary,
+.acc-btn-secondary {
+	padding: 12px 24px;
+	border-radius: 50px;
+	font-size: 13.5px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	font-family: 'Montserrat', sans-serif;
+	cursor: pointer;
+	border: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	transition: var(--transition-fast);
+}
+.acc-btn-primary {
+	background: linear-gradient(135deg, #5C0E1B, #8B1A2B);
+	color: #fff;
+	box-shadow: 0 6px 16px rgba(139,26,43,0.25);
+}
+.acc-btn-primary:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 12px 26px rgba(139,26,43,0.35);
+	color: var(--gold-light);
+}
+.acc-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.acc-btn-secondary {
+	background: transparent;
+	color: var(--gold-dark);
+	border: 1.5px solid var(--gold);
+}
+.acc-btn-secondary:hover { background: var(--gold-soft); color: var(--primary-dark); }
+
+.acc-feedback {
+	margin-top: 18px;
+	padding: 12px 16px;
+	border-radius: 12px;
+	font-size: 13px;
+	display: none;
+	align-items: flex-start;
+	gap: 10px;
+}
+.acc-feedback.is-shown { display: flex; }
+.acc-feedback.is-ok {
+	background: var(--success-light);
+	color: var(--success);
+	border: 1px solid rgba(61,139,94,0.25);
+}
+.acc-feedback.is-error {
+	background: var(--danger-light);
+	color: var(--danger);
+	border: 1px solid rgba(201,64,64,0.25);
+}
+.acc-feedback svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.acc-section { display: none; }
+.acc-section.is-active { display: block; animation: acc-fade 0.25s ease; }
+
+@keyframes acc-fade {
+	from { opacity: 0; transform: translateY(4px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.acc-note {
+	margin-top: 24px;
+	padding: 14px 16px;
+	background: var(--cream);
+	border: 1px dashed var(--border);
+	border-radius: 12px;
+	font-size: 12.5px;
+	color: var(--text-muted);
+	line-height: 1.55;
+}
