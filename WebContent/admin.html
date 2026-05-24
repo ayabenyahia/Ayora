@@ -267,6 +267,36 @@
 					<option value="PREMIUM">Premium</option>
 				</select>
 				<select id="vndActive" onchange="reloadVendors()">
+					<option value="">Statut (tous)</option>
+					<option value="1">Actif</option>
+					<option value="0">Inactif</option>
+				</select>
+				<button class="clear-btn" onclick="clearVendorsFilters()">Réinitialiser</button>
+				<button class="export-btn" onclick="exportVendorsCSV()">Exporter CSV</button>
+			</div>
+			<div class="adm-table-wrap" id="vendorsTableWrap">
+				<div class="adm-loading"><div class="spinner"></div>Chargement…</div>
+			</div>
+		</div>
+
+		<div id="tab-devis" class="tab-pane" style="display:none;">
+			<div class="adm-tabs" style="margin-bottom: 14px;">
+				<button class="adm-tab active" id="subTabDevis" onclick="switchSubTab('devis')">Demandes de devis</button>
+				<button class="adm-tab"        id="subTabRdv"   onclick="switchSubTab('rdv')">Rendez-vous</button>
+			</div>
+			<div class="adm-filters">
+				<select id="devisStatus" onchange="reloadDevis()">
+					<option value="">Tous statuts</option>
+					<option value="EN_ATTENTE">En attente</option>
+					<option value="ACCEPTE">Accepté</option>
+					<option value="REFUSE">Refusé</option>
+				</select>
+				<select id="rdvStatus" onchange="reloadRdv()" style="display:none;">
+					<option value="">Tous statuts</option>
+					<option value="EN_ATTENTE">En attente</option>
+					<option value="CONFIRME">Confirmé</option>
+					<option value="ANNULE">Annulé</option>
+				</select>
 </main>
 </body>
 </html>
