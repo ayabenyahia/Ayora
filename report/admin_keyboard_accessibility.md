@@ -26,3 +26,15 @@ Le menu `#axUserMenu` porte `role="menu"`. Chaque entrée est cliquable au clic 
 - Tous les `input` et `select` des filtres affichent un anneau de focus burgundy doux : `box-shadow: 0 0 0 3px rgba(139,26,43,.08)`.
 - Les boutons d'action critique (Supprimer, Suspendre) ont un contraste WCAG AA minimum sur fond ivoire.
 - Les badges de rôle/plan/statut respectent le ratio 4.5:1 entre texte et arrière-plan.
+
+## Palette et daltonisme
+
+Les états utilisent **doublement** couleur + libellé (jamais couleur seule) :
+
+- HIGH (rouge soft) + libellé *Urgent*
+- MEDIUM (ambre soft) + libellé *Important*
+- LOW (gris) + libellé *À traiter*
+- Actif (sauge soft) + libellé *Actif*
+- Suspendu (rouge soft) + libellé *Suspendu*
+
+Les barres de santé combinent largeur + couleur pour rester lisibles en simulation deuteranopia/protanopia.
