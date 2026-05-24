@@ -88,3 +88,15 @@ Utilisé pour calculer `questionnaire.complete` / `questionnaire.incomplete` dan
 | `created_at` | DATETIME | quand le choix a été fait |
 
 Utilisé pour le compteur *Picks* dans le drawer utilisateur et *Choisi* dans le drawer prestataire.
+
+## `subscriptions`
+
+| Colonne | Type | Sémantique |
+|---|---|---|
+| `id` | INT PK | identifiant |
+| `user_id` | FK users.id | propriétaire |
+| `plan` | ENUM('FREE','PRO','PREMIUM') | plan facturé |
+| `started_at` | DATETIME | début |
+| `ended_at` | DATETIME nullable | fin éventuelle |
+
+Synchronisée automatiquement par `metier.syncSubscriptionPlan(userId, plan)` lors du changement de plan via le drawer.
