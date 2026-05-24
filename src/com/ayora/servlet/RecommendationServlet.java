@@ -4,55 +4,32 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.QuestionnaireDao;
-import com.ayora.dao.UserPickDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.QuestionnaireAnswer;
 import com.ayora.model.Recommendation;
 import com.ayora.model.UserProfile;
-import com.ayora.service.RecommendationService;
+import com.ayora.util.AyoraRecommendationEngine;
 import com.ayora.util.JsonUtil;
-import java.util.Set;
 
 @WebServlet("/api/recommendations/*")
 public class RecommendationServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private QuestionnaireDao questionnaireDao;
-	private RecommendationService recommendationService;
-	private UserPickDao userPickDao;
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		questionnaireDao = new QuestionnaireDao();
-		recommendationService = new RecommendationService();
-		userPickDao = new UserPickDao();
+		this.metier = AppWiring.getMetier();
 	}
 
-	/**
-	 * GET /api/recommendations
-	 *
-	 * Retourne un payload riche :
-	 *   {
-	 *     "profile": {...},
-	 *     "blocks":  { topPicks: [...], bestValue: [...], mostChic: [...], ... },
-	 *     "all":     [...],
-	 *     "categories": [{id, name, count}]
-	 *   }
-	 *
-	 * Filtres optionnels (en query params) appliques a "all" :
-	 *   - category   : nom_fr de la categorie (string, exact match)
-	 *   - gamme      : ECONOMIQUE / MOYEN / PREMIUM
-	 *   - minScore   : 0..100
-	 *   - maxPrice   : double
-	 *   - tag        : tag (texte recherche dans la liste de tags)
-	 *
-	 * Si le questionnaire n'existe pas : 400 et body indicatif.
-	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
@@ -62,15 +39,15 @@ public class RecommendationServlet extends HttpServlet {
 		}
 
 		int userId = (int) session.getAttribute("userId");
-		QuestionnaireAnswer answers = questionnaireDao.findByUserId(userId);
+		QuestionnaireAnswer answers = metier.getQuestionnaire(userId);
 		if (answers == null) {
 			JsonUtil.sendJson(response, "{\"completed\":false,\"profile\":null,\"blocks\":{},\"all\":[]}");
 			return;
 		}
 
-		UserProfile profile = recommendationService.buildUserProfile(answers);
+		UserProfile profile = metier.buildUserProfile(answers);
 		profile.setUserId(userId);
-		List<Recommendation> all = recommendationService.computeRecommendations(userId, answers);
+		List<Recommendation> all = metier.computeRecommendations(userId, answers);
 
 		// Filtres
 		String fCategory = request.getParameter("category");
@@ -81,16 +58,14 @@ public class RecommendationServlet extends HttpServlet {
 
 		List<Recommendation> filtered = applyFilters(all, fCategory, fGamme, fTag, fMinScore, fMaxPrice);
 
-		Map<String, List<Recommendation>> blocks = recommendationService.buildBlocks(filtered, profile);
-		Map<String, List<Recommendation>> topPerCategory = recommendationService.buildTopPerCategory(filtered, profile);
+		Map<String, List<Recommendation>> blocks = metier.buildRecommendationBlocks(filtered, profile);
+		Map<String, List<Recommendation>> topPerCategory = metier.buildTopRecommendationsPerCategory(filtered, profile);
 
-		// Choix deja faits par la mariee : sert a marquer les cards "Choisi"
-		Set<Integer> pickedIds = userPickDao.findPickedVendorIds(userId);
+		Set<Integer> pickedIds = metier.getPickedVendorIds(userId);
 
-		// Construire JSON
 		StringBuilder json = new StringBuilder();
 		json.append("{\"completed\":true,");
-		json.append("\"profile\":").append(recommendationService.profileToJson(profile));
+		json.append("\"profile\":").append(profileToJson(profile));
 		json.append(",\"counts\":{");
 		json.append("\"total\":").append(all.size());
 		json.append(",\"filtered\":").append(filtered.size());
@@ -120,12 +95,12 @@ public class RecommendationServlet extends HttpServlet {
 		String path = request.getPathInfo();
 
 		if ("/refresh".equals(path)) {
-			QuestionnaireAnswer answers = questionnaireDao.findByUserId(userId);
+			QuestionnaireAnswer answers = metier.getQuestionnaire(userId);
 			if (answers == null) {
 				JsonUtil.sendError(response, 400, "Questionnaire non rempli");
 				return;
 			}
-			List<Recommendation> recommendations = recommendationService.generateRecommendations(userId, answers);
+			List<Recommendation> recommendations = metier.generateRecommendations(userId, answers);
 			JsonUtil.sendJson(response, "{\"success\":true,\"count\":" + recommendations.size() + "}");
 		} else {
 			JsonUtil.sendError(response, 404, "Route non trouvee");
@@ -166,7 +141,7 @@ public class RecommendationServlet extends HttpServlet {
 	}
 
 	// ============================================================
-	// JSON BUILDERS
+	// JSON BUILDERS (presentation : reste dans le servlet)
 	// ============================================================
 
 	private String intSetToJson(Set<Integer> ids) {
@@ -185,7 +160,7 @@ public class RecommendationServlet extends HttpServlet {
 		StringBuilder sb = new StringBuilder("[");
 		for (int i = 0; i < list.size(); i++) {
 			if (i > 0) sb.append(",");
-			sb.append(recommendationService.toJson(list.get(i)));
+			sb.append(toJson(list.get(i)));
 		}
 		sb.append("]");
 		return sb.toString();
@@ -224,6 +199,100 @@ public class RecommendationServlet extends HttpServlet {
 			first = false;
 		}
 		sb.append("]");
+		return sb.toString();
+	}
+
+	private String toJson(Recommendation r) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		sb.append("\"vendorId\":").append(r.getVendorId());
+		sb.append(",\"vendorName\":\"").append(JsonUtil.escapeJson(r.getVendorName())).append("\"");
+		sb.append(",\"category\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorCategory()))).append("\"");
+		sb.append(",\"categoryId\":").append(r.getVendorCategoryId());
+		sb.append(",\"gamme\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorGamme()))).append("\"");
+		sb.append(",\"prixMin\":").append(r.getVendorPrixMin());
+		sb.append(",\"prixMax\":").append(r.getVendorPrixMax());
+		sb.append(",\"city\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorCity()))).append("\"");
+		sb.append(",\"phone\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorPhone()))).append("\"");
+		sb.append(",\"instagram\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorInstagram()))).append("\"");
+		sb.append(",\"rating\":").append(r.getVendorRating());
+		sb.append(",\"nbAvis\":").append(r.getVendorNbAvis());
+		sb.append(",\"photoUrl\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorPhotoUrl()))).append("\"");
+		sb.append(",\"galleryUrls\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorGalleryUrls()))).append("\"");
+		sb.append(",\"reelUrl\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getVendorReelUrl()))).append("\"");
+		sb.append(",\"score\":").append(r.getScore());
+		sb.append(",\"scoreBudget\":").append(r.getScoreBudget());
+		sb.append(",\"scoreStyle\":").append(r.getScoreStyle());
+		sb.append(",\"scoreCity\":").append(r.getScoreCity());
+		sb.append(",\"scoreGuestCount\":").append(r.getScoreGuestCount());
+		sb.append(",\"scoreLuxe\":").append(r.getScoreLuxe());
+		sb.append(",\"scoreQuality\":").append(r.getScoreQuality());
+		sb.append(",\"scorePopularite\":").append(r.getScorePopularite());
+		sb.append(",\"raison\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(r.getRaison()))).append("\"");
+		sb.append(",\"tags\":[");
+		List<String> tags = r.getTags();
+		if (tags != null) {
+			for (int i = 0; i < tags.size(); i++) {
+				if (i > 0) sb.append(",");
+				sb.append("\"").append(JsonUtil.escapeJson(tags.get(i))).append("\"");
+			}
+		}
+		sb.append("]");
+		sb.append(",\"matchHighlights\":[");
+		List<String> mh = r.getMatchHighlights();
+		if (mh != null) {
+			for (int i = 0; i < mh.size(); i++) {
+				if (i > 0) sb.append(",");
+				sb.append("\"").append(JsonUtil.escapeJson(mh.get(i))).append("\"");
+			}
+		}
+		sb.append("]");
+		sb.append("}");
+		return sb.toString();
+	}
+
+	private String profileToJson(UserProfile p) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		sb.append("\"style\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getStyle()))).append("\"");
+		sb.append(",\"ambiance\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getAmbiance()))).append("\"");
+		sb.append(",\"niveauLuxe\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getNiveauLuxe()))).append("\"");
+		sb.append(",\"themeCouleur\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getThemeCouleur()))).append("\"");
+		sb.append(",\"saison\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getSaison()))).append("\"");
+		sb.append(",\"budgetTotal\":").append(p.getBudgetTotal());
+		sb.append(",\"budgetPerGuest\":").append(p.getBudgetPerGuest());
+		sb.append(",\"budgetTier\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getBudgetTier()))).append("\"");
+		sb.append(",\"budgetFlexibility\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getBudgetFlexibility()))).append("\"");
+		sb.append(",\"nbInvites\":").append(p.getNbInvites());
+		sb.append(",\"guestSize\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getGuestSize()))).append("\"");
+		sb.append(",\"typeMusique\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getTypeMusique()))).append("\"");
+		sb.append(",\"typeCuisine\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getTypeCuisine()))).append("\"");
+		sb.append(",\"prefPhoto\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getPrefPhoto()))).append("\"");
+		sb.append(",\"prefDecoration\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getPrefDecoration()))).append("\"");
+		sb.append(",\"styleNeggafa\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getStyleNeggafa()))).append("\"");
+		sb.append(",\"nbTenuesNeggafa\":").append(p.getNbTenuesNeggafa());
+		sb.append(",\"lieuType\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getLieuType()))).append("\"");
+		sb.append(",\"userCity\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getUserCity()))).append("\"");
+		sb.append(",\"halalStrict\":\"").append(JsonUtil.escapeJson(JsonUtil.safe(p.getHalalStrict()))).append("\"");
+		sb.append(",\"topCategories\":[");
+		List<Integer> top = p.getTopCategoryIds();
+		if (top != null) {
+			for (int i = 0; i < top.size(); i++) {
+				if (i > 0) sb.append(",");
+				sb.append(top.get(i));
+			}
+		}
+		sb.append("]");
+		// Poids du moteur IA (transparence pour le frontend)
+		sb.append(",\"aiWeights\":{");
+		sb.append("\"budget\":").append(AyoraRecommendationEngine.WEIGHT_BUDGET);
+		sb.append(",\"style\":").append(AyoraRecommendationEngine.WEIGHT_STYLE);
+		sb.append(",\"city\":").append(AyoraRecommendationEngine.WEIGHT_CITY);
+		sb.append(",\"guests\":").append(AyoraRecommendationEngine.WEIGHT_GUESTS);
+		sb.append(",\"luxury\":").append(AyoraRecommendationEngine.WEIGHT_LUXURY);
+		sb.append(",\"quality\":").append(AyoraRecommendationEngine.WEIGHT_QUALITY);
+		sb.append("}");
+		sb.append("}");
 		return sb.toString();
 	}
 }
