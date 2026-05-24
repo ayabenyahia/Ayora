@@ -49,6 +49,11 @@ public class JsonUtil {
 				   .replace("\t", "\\t");
 	}
 
+	/** Renvoie la chaine telle quelle, ou "" si elle est null. */
+	public static String safe(String s) {
+		return s == null ? "" : s;
+	}
+
 	public static String getStringValue(String json, String key) {
 		String search = "\"" + key + "\"";
 		int keyIndex = json.indexOf(search);
