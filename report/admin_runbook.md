@@ -35,3 +35,12 @@ Cliquer un chip filtre la liste par catégorie. Le bouton *Examiner* ouvre la fi
 3. Compléter les champs manquants (description, téléphone, Instagram, etc.).
 4. Cliquer *Enregistrer* → appel `PUT /api/admin/vendors/{id}`.
 5. Le score de complétude se met à jour automatiquement.
+
+## Suspension d'un compte client
+
+1. Ouvrir l'onglet *Utilisateurs*.
+2. Filtrer par rôle CLIENT et statut Actif.
+3. Cliquer *Détail* sur la ligne ciblée.
+4. Cliquer *Suspendre* → modale de confirmation.
+5. Appel `POST /api/admin/users/{id}/active` avec `active=false`.
+6. Le compte n'apparaît plus dans les listes actives mais reste en base.
