@@ -7,77 +7,54 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
+
 import com.ayora.model.UserPick;
-import com.ayora.util.DatabaseConnection;
+import com.ayora.util.Database;
 
 /**
- * DAO de la table user_picks (choix retenus par la mariee).
+ * DAO de l'entite UserPick.
  *
- * Pattern p02-jee : JDBC pur, PreparedStatement, mapping ResultSet -> POJO.
- * Une selection par categorie pour un user donne (UNIQUE KEY).
- * "Choisir" un prestataire d'une categorie ecrase la selection precedente.
+ * pick() utilise une transaction (delete+insert atomique) ; elle obtient
+ * sa Connection via Database (centralise) plutot que par les methodes
+ * template, pour pouvoir commit/rollback.
  */
-public class UserPickDao {
+public class UserPickDao implements IDao {
 
 	private static final String SELECT_BASE =
 		"SELECT p.id, p.user_id, p.vendor_id, p.category_id, p.picked_at, "
 		+ "v.name AS vendor_name, vc.name_fr AS vendor_category, "
 		+ "v.gamme AS vendor_gamme, v.prix_min AS vendor_prix_min, "
 		+ "v.city AS vendor_city, v.phone AS vendor_phone, "
-		+ "v.instagram AS vendor_instagram, v.description AS vendor_description "
+		+ "v.instagram AS vendor_instagram, v.description AS vendor_description, "
+		+ "v.rating AS vendor_rating, v.nb_avis AS vendor_nb_avis "
 		+ "FROM user_picks p "
 		+ "JOIN vendors v ON p.vendor_id = v.id "
 		+ "JOIN vendor_categories vc ON p.category_id = vc.id ";
 
-	public UserPickDao() {}
+	private final Database db;
+
+	public UserPickDao(Database db) {
+		this.db = db;
+	}
 
 	public List<UserPick> findByUserId(int userId) {
-		List<UserPick> list = new Vector<UserPick>();
-		Connection c = null;
-		try {
-			c = DatabaseConnection.getConnection();
-			String sql = SELECT_BASE + "WHERE p.user_id = ? ORDER BY vc.id, p.picked_at DESC";
-			PreparedStatement ps = c.prepareStatement(sql);
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) list.add(map(rs));
-		} catch (SQLException e) {
-			System.out.println("## Erreur findByUserId user_picks : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(c);
-		}
-		return list;
+		return db.queryList(
+			SELECT_BASE + "WHERE p.user_id = ? ORDER BY vc.id, p.picked_at DESC",
+			this::map, userId);
 	}
 
-	/** Retourne les vendor_id deja choisis par cet utilisateur. Sert a marquer
-	 *  les cards comme "Choisi" cote frontend. */
 	public Set<Integer> findPickedVendorIds(int userId) {
-		Set<Integer> ids = new HashSet<Integer>();
-		Connection c = null;
-		try {
-			c = DatabaseConnection.getConnection();
-			PreparedStatement ps = c.prepareStatement(
-				"SELECT vendor_id FROM user_picks WHERE user_id = ?");
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) ids.add(rs.getInt(1));
-		} catch (SQLException e) {
-			System.out.println("## Erreur findPickedVendorIds : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(c);
-		}
-		return ids;
+		List<Integer> ids = db.queryList(
+			"SELECT vendor_id FROM user_picks WHERE user_id = ?",
+			rs -> rs.getInt(1), userId);
+		return new HashSet<Integer>(ids);
 	}
 
-	/** Choisit (ou remplace) le prestataire pour une categorie. Comme la cle
-	 *  unique est (user_id, category_id), on supprime la ligne existante puis
-	 *  on insere la nouvelle. ON DUPLICATE KEY ferait l'affaire mais on garde
-	 *  delete+insert pour rester portable et avoir un picked_at frais. */
 	public boolean pick(int userId, int vendorId, int categoryId) {
+		// Transaction : delete + insert dans la meme connection
 		Connection c = null;
 		try {
-			c = DatabaseConnection.getConnection();
+			c = db.getConnection();
 			c.setAutoCommit(false);
 			PreparedStatement del = c.prepareStatement(
 				"DELETE FROM user_picks WHERE user_id = ? AND category_id = ?");
@@ -98,42 +75,14 @@ public class UserPickDao {
 			return false;
 		} finally {
 			try { if (c != null) c.setAutoCommit(true); } catch (SQLException ignore) {}
-			DatabaseConnection.closeConnection(c);
+			db.close(c);
 		}
 	}
 
 	public boolean unpick(int userId, int vendorId) {
-		Connection c = null;
-		try {
-			c = DatabaseConnection.getConnection();
-			PreparedStatement ps = c.prepareStatement(
-				"DELETE FROM user_picks WHERE user_id = ? AND vendor_id = ?");
-			ps.setInt(1, userId);
-			ps.setInt(2, vendorId);
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur unpick : " + e.getMessage());
-			return false;
-		} finally {
-			DatabaseConnection.closeConnection(c);
-		}
-	}
-
-	public boolean unpickByCategory(int userId, int categoryId) {
-		Connection c = null;
-		try {
-			c = DatabaseConnection.getConnection();
-			PreparedStatement ps = c.prepareStatement(
-				"DELETE FROM user_picks WHERE user_id = ? AND category_id = ?");
-			ps.setInt(1, userId);
-			ps.setInt(2, categoryId);
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur unpickByCategory : " + e.getMessage());
-			return false;
-		} finally {
-			DatabaseConnection.closeConnection(c);
-		}
+		return db.executeUpdate(
+			"DELETE FROM user_picks WHERE user_id = ? AND vendor_id = ?",
+			userId, vendorId) > 0;
 	}
 
 	private UserPick map(ResultSet rs) throws SQLException {
@@ -151,6 +100,8 @@ public class UserPickDao {
 		p.setVendorPhone(rs.getString("vendor_phone"));
 		p.setVendorInstagram(rs.getString("vendor_instagram"));
 		p.setVendorDescription(rs.getString("vendor_description"));
+		p.setVendorRating(rs.getDouble("vendor_rating"));
+		p.setVendorNbAvis(rs.getInt("vendor_nb_avis"));
 		return p;
 	}
 }
