@@ -63,3 +63,12 @@ Cliquer un chip filtre la liste par catégorie. Le bouton *Examiner* ouvre la fi
    - *Accepter* → `PUT /api/admin/devis/{id}/status` avec `ACCEPTE`.
    - *Refuser* → `PUT /api/admin/devis/{id}/status` avec `REFUSE`.
 4. Le dashboard se rafraîchit (KPI Demandes, Santé).
+
+## Confirmation des rendez-vous
+
+1. Onglet *Devis & RDV* → sous-onglet *Rendez-vous*.
+2. Filtrer par statut `EN_ATTENTE` (tri par date_rdv croissant).
+3. Actions :
+   - *Confirmer* → `PUT /api/admin/rdv/{id}/status` avec `CONFIRME`.
+   - *Annuler*   → `PUT /api/admin/rdv/{id}/status` avec `ANNULE`.
+4. Le client et le prestataire reçoivent l'information côté front.
