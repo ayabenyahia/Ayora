@@ -8,31 +8,22 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.InvitationDao;
-import com.ayora.dao.SubscriptionDao;
-import com.ayora.dao.GuestDao;
-import com.ayora.dao.UserDao;
-import com.ayora.dao.QuestionnaireDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.Invitation;
 import com.ayora.model.Subscription;
-import com.ayora.model.Guest;
-import com.ayora.model.User;
-import com.ayora.model.QuestionnaireAnswer;
-import com.ayora.service.EmailService;
 import com.ayora.util.JsonUtil;
 
 @WebServlet("/api/invitations/*")
 public class InvitationServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private InvitationDao invitationDao;
-	private SubscriptionDao subscriptionDao;
-	private GuestDao guestDao;
-	private UserDao userDao;
-	private QuestionnaireDao questionnaireDao;
-	private EmailService emailService;
+	private IAyoraMetier metier;
 
 	// === Catalogue des templates avec leur niveau requis ===
-	// Mappe le slug visible cote frontend vers (visualTemplate utilise par EmailService, niveau requis).
+	// Mappe le slug visible cote frontend vers (visualTemplate, niveau requis).
+	// L'envoi reel des emails est gere par le frontend ; le backend se contente
+	// de valider le droit d'acces et de marquer l'invitation comme envoyee.
 	// FREE = libre / PRO = abonnement Pro / PREMIUM = abonnement Premium.
 	private static final java.util.Map<String, String[]> TEMPLATE_CATALOG = new java.util.HashMap<>();
 	static {
@@ -84,16 +75,6 @@ public class InvitationServlet extends HttpServlet {
 		TEMPLATE_CATALOG.put("moderne",        new String[]{"moderne",   "PRO"});
 	}
 
-	private static boolean isVideoTemplate(String slug) {
-		String[] entry = TEMPLATE_CATALOG.get(slug);
-		return entry != null && "video".equals(entry[0]);
-	}
-
-	private static String resolveVisual(String slug) {
-		String[] entry = TEMPLATE_CATALOG.get(slug);
-		return entry != null ? entry[0] : "classique";
-	}
-
 	private static String requiredLevel(String slug) {
 		String[] entry = TEMPLATE_CATALOG.get(slug);
 		return entry != null ? entry[1] : "FREE";
@@ -101,12 +82,7 @@ public class InvitationServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		invitationDao = new InvitationDao();
-		subscriptionDao = new SubscriptionDao();
-		guestDao = new GuestDao();
-		userDao = new UserDao();
-		questionnaireDao = new QuestionnaireDao();
-		emailService = new EmailService();
+		this.metier = AppWiring.getMetier();
 	}
 
 	@Override
@@ -118,8 +94,8 @@ public class InvitationServlet extends HttpServlet {
 		}
 
 		int userId = (int) session.getAttribute("userId");
-		List<Invitation> invitations = invitationDao.findByUserId(userId);
-		Subscription sub = subscriptionDao.findByUserId(userId);
+		List<Invitation> invitations = metier.getInvitationsByUser(userId);
+		Subscription sub = metier.getSubscription(userId);
 
 		StringBuilder json = new StringBuilder("{\"invitations\":[");
 		for (int i = 0; i < invitations.size(); i++) {
@@ -170,7 +146,7 @@ public class InvitationServlet extends HttpServlet {
 		String requiredLvl = requiredLevel(slug);
 
 		// Verifier le droit d'acces au template selon l'abonnement
-		Subscription subCheck = subscriptionDao.findByUserId(userId);
+		Subscription subCheck = metier.getSubscription(userId);
 		if (subCheck == null) subCheck = new Subscription();
 		if (!subCheck.canUseTemplateLevel(requiredLvl)) {
 			JsonUtil.sendError(response, 403,
@@ -186,7 +162,7 @@ public class InvitationServlet extends HttpServlet {
 		invitation.setMessagePerso(messagePerso);
 		invitation.setVideoUrl(videoUrl);
 
-		int invId = invitationDao.create(invitation);
+		int invId = metier.addInvitation(invitation);
 		if (invId == -1) {
 			JsonUtil.sendError(response, 500, "Erreur lors de la creation de l'invitation");
 			return;
@@ -205,7 +181,7 @@ public class InvitationServlet extends HttpServlet {
 		}
 
 		// Verifier la limite d'invitations
-		Subscription sub = subscriptionDao.findByUserId(userId);
+		Subscription sub = metier.getSubscription(userId);
 		if (sub == null) {
 			JsonUtil.sendError(response, 500, "Abonnement non trouve");
 			return;
@@ -225,8 +201,8 @@ public class InvitationServlet extends HttpServlet {
 			return;
 		}
 
-		// Recuperer les infos de l'invitation pour l'email
-		List<Invitation> invitations = invitationDao.findByUserId(userId);
+		// Recuperer l'invitation ciblee
+		List<Invitation> invitations = metier.getInvitationsByUser(userId);
 		Invitation targetInv = null;
 		for (Invitation inv : invitations) {
 			if (inv.getId() == invitationId) {
@@ -249,97 +225,23 @@ public class InvitationServlet extends HttpServlet {
 			return;
 		}
 
-		// Recuperer l'invite et l'utilisateur
-		Guest guest = guestDao.findById(targetInv.getGuestId());
-		User user = userDao.findById(userId);
-
-		// Envoyer l'email reel si l'invite a un email
-		boolean emailSent = false;
-		String emailMessage = "";
-
-		if (guest != null && guest.getEmail() != null && !guest.getEmail().isEmpty()) {
-			// Recupere les infos riches du questionnaire (date, heure, lieu, ville, noms du couple)
-			QuestionnaireAnswer qa = questionnaireDao.findByUserId(userId);
-			String dateRaw = "";
-			String heureMariage = "";
-			String villeMariage = "";
-			String lieuMariageNom = "";
-			String nomMariee = "";
-			String nomMarie = "";
-
-			if (qa != null) {
-				dateRaw = qa.getDateMariage() != null ? qa.getDateMariage() : "";
-				String notes = qa.getNotesSpeciales();
-				if (notes != null && (notes.trim().startsWith("{") || notes.trim().startsWith("["))) {
-					nomMariee = nullSafe(JsonUtil.getStringValue(notes, "nomMariee"));
-					nomMarie = nullSafe(JsonUtil.getStringValue(notes, "nomMarie"));
-					heureMariage = nullSafe(JsonUtil.getStringValue(notes, "heureMariage"));
-					villeMariage = nullSafe(JsonUtil.getStringValue(notes, "villeMariage"));
-					lieuMariageNom = nullSafe(JsonUtil.getStringValue(notes, "lieuMariageNom"));
-				}
-				if (villeMariage.isEmpty() && qa.getLieuCeremonie() != null) {
-					villeMariage = qa.getLieuCeremonie();
-				}
-			}
-
-			// hostName = "Mariée & Marié" si renseignes, sinon le compte utilisateur
-			String hostName;
-			if (!nomMariee.isEmpty() && !nomMarie.isEmpty()) {
-				hostName = firstWord(nomMariee) + " & " + firstWord(nomMarie);
-			} else if (user != null) {
-				hostName = user.getFirstName() + " " + user.getLastName();
-			} else {
-				hostName = "Les maries";
-			}
-
-			// dateMariage enrichie : "12 Juin 2026 a 19h00"
-			String dateMariage = formatDateLongFr(dateRaw);
-			if (!heureMariage.isEmpty()) {
-				dateMariage += " a " + heureMariage.replace(":", "h");
-			}
-
-			// lieuMariage enrichi : "Palais Mokri - Fes" ou juste "Fes"
-			StringBuilder lieuSb = new StringBuilder();
-			if (!lieuMariageNom.isEmpty()) lieuSb.append(lieuMariageNom);
-			if (!villeMariage.isEmpty()) {
-				if (lieuSb.length() > 0) lieuSb.append(" - ");
-				lieuSb.append(villeMariage);
-			}
-			String lieuMariage = lieuSb.toString();
-
-			String guestName = guest.getFirstName() + " " + guest.getLastName();
-			String visualTemplate = resolveVisual(targetInv.getTemplateName());
-
-			emailSent = emailService.sendInvitation(
-				guest.getEmail(),
-				guestName,
-				hostName,
-				dateMariage,
-				lieuMariage,
-				visualTemplate,
-				targetInv.getMessagePerso()
-			);
-
-			emailMessage = emailSent ? "Email envoye a " + guest.getEmail() : "Echec envoi email";
-		} else {
-			emailMessage = "Pas d'email pour cet invite";
-		}
-
-		// Mettre a jour le statut
-		boolean updated = invitationDao.updateStatut(invitationId, "ENVOYEE");
+		// L'envoi reel de l'email est gere cote frontend ; le backend ne fait
+		// que marquer l'invitation comme envoyee et incrementer le compteur.
+		boolean updated = metier.updateInvitationStatut(invitationId, "ENVOYEE");
 		if (!updated) {
 			JsonUtil.sendError(response, 500, "Erreur lors de l'envoi");
 			return;
 		}
 
-		// Incrementer le compteur
-		subscriptionDao.incrementInvitationsSent(userId);
+		metier.incrementInvitationsSent(userId);
 
-		sub = subscriptionDao.findByUserId(userId);
+		// emailSent/emailMessage : champs conserves pour compatibilite avec
+		// invitations.html (le frontend gere l'envoi reel de l'email).
+		sub = metier.getSubscription(userId);
 		JsonUtil.sendJson(response, "{\"success\":true,"
 				+ "\"message\":\"Invitation envoyee\","
-				+ "\"emailSent\":" + emailSent + ","
-				+ "\"emailMessage\":\"" + JsonUtil.escapeJson(emailMessage) + "\","
+				+ "\"emailSent\":true,"
+				+ "\"emailMessage\":\"Envoi gere par le frontend\","
 				+ "\"invitationsSent\":" + sub.getInvitationsSent() + ","
 				+ "\"remaining\":" + sub.getRemainingFreeInvitations()
 				+ "}");
@@ -367,7 +269,7 @@ public class InvitationServlet extends HttpServlet {
 			return;
 		}
 
-		boolean success = invitationDao.delete(invId);
+		boolean success = metier.deleteInvitation(invId);
 		if (success) {
 			JsonUtil.sendSuccess(response, "Invitation supprimee");
 		} else {
@@ -386,37 +288,4 @@ public class InvitationServlet extends HttpServlet {
 				+ "}";
 	}
 
-	// ============================================================
-	// HELPERS pour enrichir les emails avec les infos du couple
-	// ============================================================
-
-	private static final String[] FR_MONTHS = {
-		"Janvier","Fevrier","Mars","Avril","Mai","Juin",
-		"Juillet","Aout","Septembre","Octobre","Novembre","Decembre"
-	};
-
-	/** Formate une date ISO YYYY-MM-DD en "12 Juin 2026". */
-	private String formatDateLongFr(String iso) {
-		if (iso == null || iso.length() < 10) return iso != null ? iso : "";
-		try {
-			int y = Integer.parseInt(iso.substring(0, 4));
-			int m = Integer.parseInt(iso.substring(5, 7));
-			int d = Integer.parseInt(iso.substring(8, 10));
-			if (m < 1 || m > 12) return iso;
-			return d + " " + FR_MONTHS[m - 1] + " " + y;
-		} catch (NumberFormatException e) {
-			return iso;
-		}
-	}
-
-	private String firstWord(String s) {
-		if (s == null) return "";
-		String t = s.trim();
-		int sp = t.indexOf(' ');
-		return sp > 0 ? t.substring(0, sp) : t;
-	}
-
-	private String nullSafe(String s) {
-		return s != null ? s : "";
-	}
 }
