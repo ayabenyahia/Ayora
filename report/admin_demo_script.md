@@ -40,3 +40,16 @@ Chaque carte est cliquable et ouvre l'onglet correspondant avec le filtre pré-a
 2. Cliquer un chip → la liste se restreint instantanément.
 3. Cliquer *Examiner* sur un profil prestataire incomplet → le drawer s'ouvre à droite avec la fiche complète.
 4. Pointer les champs manquants (description, téléphone, Instagram).
+
+## 0:55 → 1:10 — Santé de la plateforme
+
+*"Les barres de progression donnent une vue d'ensemble qualitative."*
+
+Mettre en avant :
+
+- *Profils prestataires complets* (X / Y)
+- *Questionnaires clients terminés*
+- *Comptes actifs*
+- *Demandes à traiter* (vert quand 0)
+
+Insister : aucune donnée inventée — tout est calculé en temps réel depuis MySQL.
