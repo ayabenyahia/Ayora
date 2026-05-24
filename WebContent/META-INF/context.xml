@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Contexte Tomcat specifique a Ayora. Permet :
+     1) Cookies SameSite=Strict (anti-CSRF) sur JSESSIONID
+     2) cachingAllowed=false : tout ajout de fichier statique
+        (favicon, images, css) est immediatement servi sans
+        attendre une invalidation manuelle du cache de ressources. -->
+<Context reloadable="true">
+	<CookieProcessor sameSiteCookies="strict"/>
+	<Resources cachingAllowed="false"/>
+</Context>
