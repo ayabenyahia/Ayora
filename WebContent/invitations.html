@@ -2,9 +2,16 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora — Invitations</title>
 	<link rel="stylesheet" href="css/styles.css?v=30">
+	<link rel="stylesheet" href="css/assistant.css?v=4">
+	<link rel="stylesheet" href="css/account.css?v=1">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Italiana&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -104,39 +111,58 @@
 	.p-ivory::before { content:""; position:absolute; inset:14px; border:1px solid rgba(184,146,47,.35); border-radius:8px; pointer-events:none; }
 	.p-ivory::after { content:""; position:absolute; inset:18px; border:1px solid rgba(184,146,47,.18); border-radius:6px; pointer-events:none; }
 	/* 2. Royal Black */
-	/* Royal Black (PREMIUM) — anime : sweep dore qui balaye la surface
-	   en continu, comme une feuille d'or qui capte la lumiere. */
+	/* Royal Black (PREMIUM) — MAGIE WOW : pluie de confettis dores qui
+	   tombent en continu sur fond noir profond. Comme un feu d'artifice
+	   royal qui scintille. */
 	.p-royal {
 		background:linear-gradient(160deg,#0d0904 0%, #1A0F08 50%, #0d0904 100%);
 		color:#D4B370;
 		position:relative;
 		overflow:hidden;
 	}
+	/* Pluie de confettis dores : background avec 12 points qui chutent */
 	.p-royal::before {
+		content:""; position:absolute; inset:-20% 0;
+		background:
+			radial-gradient(circle, #FFE49E 1.5px, transparent 2.5px) 5%   0%   / 6% 14% repeat-y,
+			radial-gradient(circle, #D4A853 1.2px, transparent 2.2px) 18%  0%   / 7% 18% repeat-y,
+			radial-gradient(circle, #FFE49E 1.8px, transparent 2.8px) 32%  0%   / 5% 12% repeat-y,
+			radial-gradient(circle, #B8851F 1px,   transparent 2px)   45%  0%   / 8% 16% repeat-y,
+			radial-gradient(circle, #FFE49E 1.4px, transparent 2.4px) 60%  0%   / 6% 15% repeat-y,
+			radial-gradient(circle, #D4A853 1.6px, transparent 2.6px) 75%  0%   / 7% 13% repeat-y,
+			radial-gradient(circle, #FFE49E 1.2px, transparent 2.2px) 88%  0%   / 5% 17% repeat-y,
+			radial-gradient(circle, #B8851F 1.5px, transparent 2.5px) 95%  0%   / 6% 14% repeat-y;
+		animation: royalConfetti 8s linear infinite;
+		filter: drop-shadow(0 0 4px rgba(255,228,158,.6));
+		pointer-events:none;
+	}
+	@keyframes royalConfetti {
+		from { transform: translateY(-15%); }
+		to   { transform: translateY(15%); }
+	}
+	/* Sweep dore par-dessus pour amplifier l'effet luxe */
+	.p-royal::after {
 		content:""; position:absolute; inset:0;
 		background:linear-gradient(110deg,
-			transparent 0%,
-			transparent 35%,
-			rgba(212,179,112,.0) 42%,
-			rgba(212,179,112,.30) 50%,
-			rgba(255,228,158,.55) 52%,
-			rgba(212,179,112,.30) 54%,
-			rgba(212,179,112,.0) 62%,
-			transparent 70%,
-			transparent 100%);
-		animation: royalSweep 6s ease-in-out infinite;
+			transparent 30%,
+			rgba(255,228,158,.18) 48%,
+			rgba(255,255,200,.45) 50%,
+			rgba(255,228,158,.18) 52%,
+			transparent 70%);
+		animation: royalSweep 4s ease-in-out infinite;
 		mix-blend-mode: screen;
 		pointer-events:none;
+		z-index: 1;
 	}
 	@keyframes royalSweep {
-		0%   { transform: translateX(-110%); }
-		60%  { transform: translateX(110%); }
-		100% { transform: translateX(110%); }
+		0%   { transform: translateX(-100%); }
+		50%  { transform: translateX(100%); }
+		100% { transform: translateX(100%); }
 	}
-	.p-royal::after {
-		content:""; position:absolute; inset:16px;
-		border:1px solid rgba(212,179,112,.45); border-radius:6px;
-		pointer-events:none;
+	.p-royal .pv-acc, .p-royal .pv-mono, .p-royal .pv-title,
+	.p-royal .pv-name, .p-royal .pv-sub, .p-royal .pv-orn, .p-royal .pv-date {
+		position:relative; z-index:3;
+		text-shadow: 0 0 10px rgba(0,0,0,.8);
 	}
 	/* 3. Moroccan Pearl */
 	.p-pearl { background:linear-gradient(180deg,#F0E8DC 0%, #E5D9C3 100%); color:#7C5E2F; }
@@ -148,42 +174,113 @@
 	/* 6. Desert Rose */
 	.p-desert { background:linear-gradient(180deg,#F8E6E0 0%, #E8C5C0 100%); color:#9B5A6B; }
 	/* 7. Emerald Night */
-	/* Emerald Night (PREMIUM) — anime : pulsation lumineuse emeraude qui
-	   respire au centre, comme une pierre precieuse qui scintille. */
+	/* Emerald Night (PREMIUM) — MAGIE WOW : eclat de pierre precieuse, rayons
+	   de lumiere emeraude qui partent du centre + scintillement intense. */
 	.p-emerald {
 		background:linear-gradient(170deg,#0a2418 0%, #0E3B2E 50%, #0a2418 100%);
 		color:#D4B370;
 		position:relative;
 		overflow:hidden;
 	}
+	/* Rayons de lumiere qui partent du centre et tournent (gemme) */
 	.p-emerald::before {
+		content:""; position:absolute;
+		top:50%; left:50%; width:200%; height:200%;
+		margin-left:-100%; margin-top:-100%;
+		background:
+			conic-gradient(from 0deg at 50% 50%,
+				rgba(80,255,180,.0) 0deg,
+				rgba(80,255,180,.45) 6deg,
+				rgba(80,255,180,.0) 12deg,
+				rgba(80,255,180,.0) 30deg,
+				rgba(255,228,158,.40) 36deg,
+				rgba(80,255,180,.0) 42deg,
+				rgba(80,255,180,.0) 60deg,
+				rgba(80,255,180,.45) 66deg,
+				rgba(80,255,180,.0) 72deg,
+				rgba(80,255,180,.0) 90deg,
+				rgba(255,228,158,.40) 96deg,
+				rgba(80,255,180,.0) 102deg,
+				rgba(80,255,180,.0) 120deg,
+				rgba(80,255,180,.45) 126deg,
+				rgba(80,255,180,.0) 132deg,
+				rgba(80,255,180,.0) 360deg);
+		animation: emeraldRays 12s linear infinite;
+		mix-blend-mode: screen;
+		pointer-events:none;
+	}
+	@keyframes emeraldRays {
+		from { transform: rotate(0deg); }
+		to   { transform: rotate(360deg); }
+	}
+	/* Eclat lumineux pulsant au centre (gemme) */
+	.p-emerald::after {
 		content:""; position:absolute; inset:0;
 		background:
-			radial-gradient(ellipse 60% 70% at 50% 50%, rgba(80,220,165,.40) 0%, transparent 55%),
-			radial-gradient(ellipse 90% 60% at 50% 50%, rgba(212,179,112,.20) 0%, transparent 60%);
-		animation: emeraldPulse 5s ease-in-out infinite;
+			radial-gradient(ellipse 30% 40% at 50% 50%, rgba(120,255,200,.65) 0%, rgba(80,220,165,.30) 30%, transparent 60%);
+		animation: emeraldPulse 2.5s ease-in-out infinite;
 		pointer-events:none;
+		z-index:1;
 	}
 	@keyframes emeraldPulse {
-		0%, 100% { opacity:.55; transform: scale(1); }
-		50%      { opacity:1;   transform: scale(1.08); }
-	}
-	.p-emerald::after {
-		content:""; position:absolute; inset:18px;
-		border:1px solid rgba(212,179,112,.45); border-radius:6px;
-		box-shadow: inset 0 0 26px rgba(80,220,165,.18);
-		pointer-events:none;
+		0%, 100% { opacity:.45; transform: scale(0.85); }
+		50%      { opacity:1;   transform: scale(1.15); }
 	}
 	.p-emerald .pv-acc, .p-emerald .pv-mono, .p-emerald .pv-title,
 	.p-emerald .pv-name, .p-emerald .pv-sub, .p-emerald .pv-orn, .p-emerald .pv-date {
-		position:relative; z-index:2;
+		position:relative; z-index:3;
+		text-shadow: 0 0 12px rgba(0,0,0,.8), 0 0 6px rgba(80,220,165,.4);
 	}
 	/* 8. Palace Cream */
 	.p-palace { background:linear-gradient(180deg,#FFF9EE 0%, #F5E6C8 100%); color:#7C5E2F; }
 	.p-palace::before { content:""; position:absolute; inset:14px; border-top:2px solid rgba(184,146,47,.45); border-bottom:2px solid rgba(184,146,47,.45); border-radius:0; pointer-events:none; }
 	/* 9. Andalusian Touch */
-	.p-andalou { background:linear-gradient(180deg,#1A0F0F 0%, #5C1A2B 50%, #1A0F0F 100%); color:#F0D8B8; }
-	.p-andalou::before { content:""; position:absolute; inset:18px; border:1px solid rgba(240,216,184,.3); border-radius:8px; }
+	/* Andalusian Touch (PREMIUM) — Refonte : 4 ornements arabesques aux
+	   coins (style manuscrit andalou) + cadre or + texture zellige tres
+	   discrete. Le texte respire au centre sans aucun motif qui le masque.
+	   Animation : les ornements et la lueur respirent doucement. */
+	.p-andalou {
+		background:
+			radial-gradient(ellipse at top, rgba(232,201,122,.10) 0%, transparent 50%),
+			radial-gradient(ellipse at bottom, rgba(232,201,122,.08) 0%, transparent 50%),
+			linear-gradient(180deg, #2C0E18 0%, #5C1A2B 50%, #2C0E18 100%);
+		color: #F0D8B8;
+		position: relative;
+		overflow: hidden;
+	}
+	/* Texture zellige tres subtile (en background, n'empechera pas la lecture) */
+	.p-andalou::before {
+		content:""; position:absolute; inset:0;
+		background-image:
+			repeating-linear-gradient(60deg, rgba(232,201,122,.04) 0 1px, transparent 1px 18px),
+			repeating-linear-gradient(-60deg, rgba(232,201,122,.04) 0 1px, transparent 1px 18px),
+			repeating-linear-gradient(0deg,  rgba(232,201,122,.03) 0 1px, transparent 1px 24px);
+		opacity: .9;
+		pointer-events: none;
+	}
+	/* Cadre dore et 4 ornements arabesques aux coins (SVG inline data-URL).
+	   L'image SVG contient 4 motifs de coin elegants — type page de
+	   manuscrit andalou enlumine. Bordure or fine partout. */
+	.p-andalou::after {
+		content:""; position:absolute; inset:14px;
+		border: 1px solid rgba(232,201,122,.45);
+		border-radius: 4px;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 560' preserveAspectRatio='none'><g fill='none' stroke='%23E8C97A' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'><path d='M30 50 Q30 30 50 30 M30 60 Q30 40 60 40 M40 30 Q60 30 60 50' opacity='0.9'/><path d='M50 50 Q60 50 60 60 Q70 60 70 70 M50 50 Q50 60 60 60' opacity='0.7'/><circle cx='35' cy='35' r='2.5' fill='%23E8C97A' opacity='0.85'/><path d='M370 50 Q370 30 350 30 M370 60 Q370 40 340 40 M360 30 Q340 30 340 50' opacity='0.9'/><path d='M350 50 Q340 50 340 60 Q330 60 330 70 M350 50 Q350 60 340 60' opacity='0.7'/><circle cx='365' cy='35' r='2.5' fill='%23E8C97A' opacity='0.85'/><path d='M30 510 Q30 530 50 530 M30 500 Q30 520 60 520 M40 530 Q60 530 60 510' opacity='0.9'/><path d='M50 510 Q60 510 60 500 Q70 500 70 490 M50 510 Q50 500 60 500' opacity='0.7'/><circle cx='35' cy='525' r='2.5' fill='%23E8C97A' opacity='0.85'/><path d='M370 510 Q370 530 350 530 M370 500 Q370 520 340 520 M360 530 Q340 530 340 510' opacity='0.9'/><path d='M350 510 Q340 510 340 500 Q330 500 330 490 M350 510 Q350 500 340 500' opacity='0.7'/><circle cx='365' cy='525' r='2.5' fill='%23E8C97A' opacity='0.85'/><path d='M180 30 Q200 25 220 30' opacity='0.5'/><path d='M180 530 Q200 535 220 530' opacity='0.5'/></g></svg>");
+		background-repeat: no-repeat;
+		background-size: 100% 100%;
+		box-shadow: inset 0 0 30px rgba(232,201,122,.10);
+		animation: andalouBreath 6s ease-in-out infinite;
+		pointer-events: none;
+	}
+	@keyframes andalouBreath {
+		0%, 100% { opacity: 0.7; }
+		50%      { opacity: 1; box-shadow: inset 0 0 50px rgba(232,201,122,.20); }
+	}
+	.p-andalou .pv-acc, .p-andalou .pv-mono, .p-andalou .pv-title,
+	.p-andalou .pv-name, .p-andalou .pv-sub, .p-andalou .pv-orn, .p-andalou .pv-date {
+		position: relative; z-index: 2;
+		text-shadow: 0 1px 8px rgba(0,0,0,.5);
+	}
 	/* 10. Soft Calligraphy */
 	.p-cal { background:linear-gradient(180deg,#F8F4ED 0%, #F0E8D8 100%); color:#3D2232; }
 
@@ -236,52 +333,95 @@
 
 	/* === NOUVEAUX TEMPLATES WOW (remplacent les videos) === */
 
-	/* Or Liquide — degrade dore anime, signature absolue */
+	/* Or Liquide — MAGIE WOW : vagues d'or qui ondulent + bandeaux brillants
+	   qui balayent en diagonale (signature ultra premium). */
 	.p-or-liquide {
 		background:
 			radial-gradient(circle at 30% 20%, #FFF4D6 0%, transparent 40%),
 			radial-gradient(circle at 70% 80%, #C99A2C 0%, transparent 50%),
-			linear-gradient(135deg, #B8821C 0%, #F0D58A 30%, #B8821C 60%, #FFE9A8 100%);
-		background-size: 200% 200%;
-		animation: orShine 8s ease-in-out infinite;
+			linear-gradient(135deg, #B8821C 0%, #FFE9A8 25%, #B8821C 50%, #FFE9A8 75%, #B8821C 100%);
+		background-size: 300% 300%;
+		animation: orShine 5s ease-in-out infinite;
 		color:#3A2410;
 		position:relative;
+		overflow:hidden;
 	}
 	@keyframes orShine {
 		0%, 100% { background-position: 0% 50%; }
-		50% { background-position: 100% 50%; }
+		50%      { background-position: 100% 50%; }
 	}
+	/* Bandeaux brillants type lingot d'or qui balaye */
 	.p-or-liquide::before {
+		content:""; position:absolute; inset:0;
+		background:linear-gradient(115deg,
+			transparent 35%,
+			rgba(255,255,255,.55) 47%,
+			rgba(255,255,240,.85) 50%,
+			rgba(255,255,255,.55) 53%,
+			transparent 65%);
+		animation: orStreak 4s ease-in-out infinite;
+		mix-blend-mode: overlay;
+		pointer-events:none;
+	}
+	@keyframes orStreak {
+		0%   { transform: translateX(-100%) skewX(-10deg); }
+		70%  { transform: translateX(120%)  skewX(-10deg); }
+		100% { transform: translateX(120%)  skewX(-10deg); }
+	}
+	.p-or-liquide::after {
 		content:""; position:absolute; inset:14px;
 		border:1.5px solid rgba(58,36,16,.4); border-radius:6px;
 		box-shadow:inset 0 0 30px rgba(255,235,180,.4);
 		pointer-events:none;
+		z-index: 2;
 	}
-	.p-or-liquide::after {
-		content:""; position:absolute; inset:22px;
-		border:1px dashed rgba(58,36,16,.25); border-radius:4px;
-		pointer-events:none;
+	.p-or-liquide .pv-acc, .p-or-liquide .pv-mono, .p-or-liquide .pv-title,
+	.p-or-liquide .pv-name, .p-or-liquide .pv-sub, .p-or-liquide .pv-orn, .p-or-liquide .pv-date {
+		position:relative; z-index:3;
 	}
 
-	/* Caftan Ivoire — broderies dorees, ivoire luxueux */
+	/* Caftan Ivoire (PREMIUM) — MAGIE : broderies dorees scintillantes
+	   sur fond ivoire (multi-radial-gradient anime). */
 	.p-caftan {
 		background:
 			radial-gradient(ellipse at top, #FFF8EE 0%, #F0DEC5 60%, #E2C99C 100%);
 		color:#5C3A1A;
 		position:relative;
+		overflow:hidden;
 	}
 	.p-caftan::before {
+		/* Trame de broderies + 7 etoiles dorees qui scintillent en cascade */
 		content:""; position:absolute; inset:0;
-		background-image:
+		background:
+			radial-gradient(circle at 15% 22%, rgba(212,168,83,.95) 1px, transparent 2px),
+			radial-gradient(circle at 78% 18%, rgba(212,168,83,.95) 1.2px, transparent 2.2px),
+			radial-gradient(circle at 45% 38%, rgba(212,168,83,.95) 0.8px, transparent 1.6px),
+			radial-gradient(circle at 88% 52%, rgba(212,168,83,.95) 1px, transparent 2px),
+			radial-gradient(circle at 22% 65%, rgba(212,168,83,.95) 1.2px, transparent 2.2px),
+			radial-gradient(circle at 62% 80%, rgba(212,168,83,.95) 0.9px, transparent 1.8px),
+			radial-gradient(circle at 12% 88%, rgba(212,168,83,.95) 1px, transparent 2px),
 			repeating-linear-gradient(0deg, transparent 0 22px, rgba(180,138,52,.08) 22px 23px),
 			repeating-linear-gradient(90deg, transparent 0 22px, rgba(180,138,52,.08) 22px 23px);
+		animation: caftanShimmer 4s ease-in-out infinite;
+		filter: drop-shadow(0 0 4px rgba(212,168,83,.5));
 		pointer-events:none;
+	}
+	@keyframes caftanShimmer {
+		0%, 100% { opacity: .35; transform: scale(0.92) rotate(-1deg); }
+		20%      { opacity: 1;   transform: scale(1.08) rotate(0deg); }
+		50%      { opacity: .55; transform: scale(0.95) rotate(1deg); }
+		80%      { opacity: 1;   transform: scale(1.06) rotate(-0.5deg); }
 	}
 	.p-caftan::after {
 		content:""; position:absolute; inset:18px;
 		border:2px solid rgba(180,138,52,.6); border-radius:8px;
 		box-shadow:inset 0 0 0 4px rgba(255,255,255,.5), inset 0 0 0 6px rgba(180,138,52,.4);
 		pointer-events:none;
+		z-index: 3;
+	}
+	.p-caftan .pv-acc, .p-caftan .pv-mono, .p-caftan .pv-title,
+	.p-caftan .pv-name, .p-caftan .pv-sub, .p-caftan .pv-orn, .p-caftan .pv-date {
+		position: relative; z-index: 2;
 	}
 
 	/* Imperial Bordeaux — sceau royal, bordeaux profond + or */
@@ -320,6 +460,7 @@
 		position:relative;
 		overflow:hidden;
 	}
+	/* Rayons solaires en eventail BEAUCOUP plus voyants */
 	.p-sunset-marrakech::before {
 		content:""; position:absolute;
 		left:50%; bottom:-40%;
@@ -328,16 +469,22 @@
 		background:
 			conic-gradient(from 270deg at 50% 50%,
 				rgba(255,236,200,.0) 0deg,
-				rgba(255,236,200,.32) 8deg,
-				rgba(255,236,200,.0) 16deg,
+				rgba(255,236,200,.7) 6deg,
+				rgba(255,255,200,.55) 9deg,
+				rgba(255,236,200,.0) 14deg,
 				rgba(255,236,200,.0) 30deg,
-				rgba(255,236,200,.28) 38deg,
-				rgba(255,236,200,.0) 46deg,
+				rgba(255,236,200,.7) 36deg,
+				rgba(255,255,200,.55) 39deg,
+				rgba(255,236,200,.0) 44deg,
 				rgba(255,236,200,.0) 60deg,
-				rgba(255,236,200,.32) 68deg,
-				rgba(255,236,200,.0) 76deg,
-				rgba(255,236,200,.0) 90deg);
-		animation: sunsetRays 24s linear infinite;
+				rgba(255,236,200,.7) 66deg,
+				rgba(255,255,200,.55) 69deg,
+				rgba(255,236,200,.0) 74deg,
+				rgba(255,236,200,.0) 90deg,
+				rgba(255,236,200,.7) 96deg,
+				rgba(255,236,200,.0) 102deg,
+				rgba(255,236,200,.0) 360deg);
+		animation: sunsetRays 16s linear infinite;
 		mix-blend-mode: screen;
 		pointer-events:none;
 	}
@@ -415,19 +562,36 @@
 		color:#5C3A1A;
 		position:relative;
 	}
+	/* Vintage Postcard (PRO) — MAGIE : le timbre apparait avec un effet
+	   "tap" + le cachet rond s'imprime ensuite avec rotation. */
 	.p-vintage-postcard::before {
 		content:""; position:absolute; top:14px; right:14px;
 		width:50px; height:60px;
 		background:linear-gradient(135deg, #B83B5E, #8B1A2B);
 		border:3px dashed #F4E8D2;
 		box-shadow:0 0 0 2px #B83B5E, 0 4px 12px rgba(0,0,0,.2);
+		animation: stampDrop 6s ease-in-out infinite;
+		transform-origin: center;
+	}
+	@keyframes stampDrop {
+		0%, 8%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+		18%      { transform: scale(1.2) rotate(5deg); opacity: 1; }
+		25%      { transform: scale(1) rotate(0deg); }
+		88%, 100%{ transform: scale(1) rotate(0deg); opacity: 1; }
 	}
 	.p-vintage-postcard::after {
 		content:""; position:absolute; top:90px; right:18px;
 		width:70px; height:70px; border-radius:50%;
 		border:2px solid rgba(92,58,26,.35);
 		background:radial-gradient(circle, transparent 50%, rgba(92,58,26,.08) 50%, rgba(92,58,26,.08) 56%, transparent 56%);
-		opacity:.7;
+		opacity:0;
+		animation: stampSeal 6s ease-in-out infinite;
+	}
+	@keyframes stampSeal {
+		0%, 30%  { transform: scale(2.2) rotate(-25deg); opacity: 0; }
+		38%      { transform: scale(0.95) rotate(-10deg); opacity: .85; }
+		45%      { transform: scale(1) rotate(-12deg); opacity: .7; }
+		88%, 100%{ transform: scale(1) rotate(-12deg); opacity: .7; }
 	}
 
 	/* 5. CONSTELLATION - etoiles or sur fond indigo profond */
@@ -445,38 +609,66 @@
 		color:#E5C77A;
 		position:relative;
 	}
-	/* Constellation (PREMIUM) — anime : etoiles qui scintillent en cascade,
-	   chaque petite etoile clignote a son propre rythme (twinkling). */
+	/* Constellation (PREMIUM) — MAGIE WOW : grande etoile filante (comete)
+	   qui traverse l'ecran de bas-gauche a haut-droite + etoiles intenses
+	   qui scintillent en cascade derriere. */
 	.p-constellation::before {
 		content:""; position:absolute; inset:0;
 		background:
-			radial-gradient(circle at 18% 22%, #FFE9B0 0.7px, transparent 1.3px),
-			radial-gradient(circle at 78% 35%, #FFE9B0 0.7px, transparent 1.3px),
-			radial-gradient(circle at 35% 65%, #FFE9B0 0.7px, transparent 1.3px),
-			radial-gradient(circle at 62% 80%, #FFE9B0 0.7px, transparent 1.3px),
-			radial-gradient(circle at 88% 18%, #FFE9B0 0.7px, transparent 1.3px),
-			radial-gradient(circle at 12% 75%, #FFE9B0 0.7px, transparent 1.3px),
-			radial-gradient(circle at 45% 12%, #FFE9B0 0.7px, transparent 1.3px),
-			radial-gradient(circle at 92% 60%, #FFE9B0 0.7px, transparent 1.3px);
-		animation: starsTwinkle 4s ease-in-out infinite;
-		filter: drop-shadow(0 0 4px rgba(255,233,176,.6));
+			radial-gradient(circle at 18% 22%, #FFE9B0 1.2px, transparent 2.2px),
+			radial-gradient(circle at 78% 35%, #FFE9B0 1.2px, transparent 2.2px),
+			radial-gradient(circle at 35% 65%, #FFE9B0 1px,   transparent 2px),
+			radial-gradient(circle at 62% 80%, #FFE9B0 1.4px, transparent 2.4px),
+			radial-gradient(circle at 88% 18%, #FFE9B0 1px,   transparent 2px),
+			radial-gradient(circle at 12% 75%, #FFE9B0 1.2px, transparent 2.2px),
+			radial-gradient(circle at 45% 12%, #FFE9B0 1.4px, transparent 2.4px),
+			radial-gradient(circle at 92% 60%, #FFE9B0 1px,   transparent 2px),
+			radial-gradient(circle at 28% 45%, #FFE9B0 0.8px, transparent 1.6px),
+			radial-gradient(circle at 70% 55%, #FFE9B0 1.2px, transparent 2.2px);
+		animation: starsTwinkle 3s ease-in-out infinite;
+		filter: drop-shadow(0 0 6px rgba(255,233,176,.85));
 		pointer-events:none;
 	}
 	@keyframes starsTwinkle {
-		0%, 100% { opacity:.55; transform: scale(1); }
-		25%      { opacity:1;   transform: scale(1.04); }
-		50%      { opacity:.7;  transform: scale(0.98); }
-		75%      { opacity:.95; transform: scale(1.02); }
+		0%, 100% { opacity:.45; transform: scale(0.98); }
+		25%      { opacity:1;   transform: scale(1.06); }
+		50%      { opacity:.55; transform: scale(0.95); }
+		75%      { opacity:.95; transform: scale(1.04); }
+	}
+	/* COMETE : trainee blanche qui traverse l'ecran toutes les 5s */
+	.p-constellation::after {
+		content:""; position:absolute;
+		top:0; left:0; width:100%; height:100%;
+		background:linear-gradient(60deg,
+			transparent 0%,
+			transparent 35%,
+			rgba(255,255,255,.0) 38%,
+			rgba(255,228,158,.55) 41%,
+			rgba(255,255,255,.95) 43%,
+			rgba(255,228,158,.55) 45%,
+			rgba(255,255,255,.0) 48%,
+			transparent 55%,
+			transparent 100%);
+		background-size: 200% 200%;
+		background-position: 200% -100%;
+		animation: cometSweep 5s ease-out infinite;
+		mix-blend-mode: screen;
+		filter: blur(0.6px) drop-shadow(0 0 8px rgba(255,255,255,.7));
+		pointer-events:none;
+	}
+	@keyframes cometSweep {
+		0%   { background-position: 200% -100%; opacity: 0; }
+		15%  { opacity: 1; }
+		70%  { opacity: 1; background-position: -100% 200%; }
+		85%, 100% { background-position: -100% 200%; opacity: 0; }
 	}
 	.p-constellation .pv-orn {
 		display:inline-block;
-		animation: starsTwinkle 3s ease-in-out infinite;
+		animation: starsTwinkle 2s ease-in-out infinite;
 	}
-	.p-constellation::after {
-		content:""; position:absolute; inset:18px;
-		border:1px solid rgba(229,199,122,.4); border-radius:8px;
-		box-shadow: inset 0 0 30px rgba(255,233,176,.10);
-		pointer-events:none;
+	.p-constellation .pv-acc, .p-constellation .pv-mono, .p-constellation .pv-title,
+	.p-constellation .pv-name, .p-constellation .pv-sub, .p-constellation .pv-date {
+		position:relative; z-index:2;
 	}
 
 	/* ============================================================
@@ -551,6 +743,121 @@
 	}
 
 	/* ============================================================
+	   APERCU PLEIN ECRAN
+	   ============================================================ */
+	.fs-overlay {
+		position: fixed; inset: 0;
+		background: rgba(15, 5, 10, 0.85);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		display: none;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		gap: 24px;
+		z-index: 9000;
+		padding: 24px;
+		opacity: 0;
+		transition: opacity .25s ease;
+	}
+	.fs-overlay.show {
+		display: flex;
+		opacity: 1;
+	}
+	.fs-close {
+		position: absolute;
+		top: 22px; right: 22px;
+		width: 44px; height: 44px;
+		background: rgba(255,255,255,0.12);
+		border: 1.5px solid rgba(255,255,255,0.2);
+		border-radius: 50%;
+		display: flex; align-items: center; justify-content: center;
+		color: #fff;
+		cursor: pointer;
+		transition: all .2s;
+		z-index: 9001;
+	}
+	.fs-close:hover { background: rgba(255,255,255,0.22); transform: rotate(90deg); }
+	.fs-close svg { width: 20px; height: 20px; }
+
+	/* Stage = grande zone d'affichage de l'invitation */
+	.fs-stage {
+		width: min(680px, 95vw);
+		height: min(900px, 80vh);
+		max-height: 80vh;
+		border-radius: 18px;
+		overflow: hidden;
+		box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.05);
+		animation: fsZoomIn .35s cubic-bezier(.22,1,.36,1);
+	}
+	@keyframes fsZoomIn {
+		from { opacity: 0; transform: scale(.92) translateY(20px); }
+		to   { opacity: 1; transform: scale(1) translateY(0); }
+	}
+
+	/* Le .preview a l'interieur du stage : passer en grand format */
+	.fs-stage .preview {
+		width: 100%;
+		height: 100%;
+		padding: clamp(28px, 6vh, 64px) clamp(24px, 4vw, 56px);
+		gap: 0;
+	}
+	.fs-stage .pv-monogram { font-size: clamp(28px, 5vh, 56px) !important; margin-bottom: 18px; }
+	.fs-stage .pv-acc      { font-size: clamp(11px, 1.4vh, 14px) !important; letter-spacing: 5px !important; margin-bottom: clamp(20px, 3vh, 40px); }
+	.fs-stage .pv-title    { font-size: clamp(34px, 6vh, 64px) !important; line-height: 1.05 !important; margin-bottom: clamp(18px, 2.5vh, 32px); }
+	.fs-stage .pv-name     { font-size: clamp(28px, 5vh, 52px) !important; margin: clamp(16px, 2.5vh, 28px) 0; }
+	.fs-stage .pv-sub      { font-size: clamp(14px, 1.8vh, 18px) !important; margin: clamp(14px, 2vh, 24px) 0; letter-spacing: 1.5px !important; }
+	.fs-stage .pv-ornament { font-size: clamp(16px, 2.5vh, 26px) !important; margin: clamp(16px, 2vh, 26px) 0; }
+	.fs-stage .pv-date     { font-size: clamp(14px, 1.8vh, 18px) !important; margin-top: clamp(14px, 2vh, 24px); }
+	.fs-stage .pv-line, .fs-stage .pv-line-fancy {
+		width: 70% !important; max-width: 360px;
+	}
+
+	/* Boutons d'action sous l'invitation */
+	.fs-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+	.fs-btn {
+		display: inline-flex; align-items: center; gap: 10px;
+		padding: 14px 28px;
+		border-radius: 50px;
+		font-family: 'Cinzel', serif;
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 2.5px;
+		text-transform: uppercase;
+		cursor: pointer;
+		border: 1.5px solid;
+		transition: all .25s;
+	}
+	.fs-btn svg { width: 16px; height: 16px; }
+	.fs-btn-secondary {
+		background: rgba(255,255,255,0.08);
+		border-color: rgba(255,255,255,0.3);
+		color: #fff;
+	}
+	.fs-btn-secondary:hover {
+		background: rgba(255,255,255,0.18);
+		border-color: rgba(255,255,255,0.55);
+		transform: translateY(-1px);
+	}
+	.fs-btn-primary {
+		background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+		border-color: transparent;
+		color: #fff;
+		box-shadow: 0 8px 28px rgba(184,146,47,0.45);
+	}
+	.fs-btn-primary:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 12px 36px rgba(184,146,47,0.6);
+	}
+
+	body.fs-open { overflow: hidden; }
+
+	@media (max-width: 600px) {
+		.fs-stage { height: min(700px, 75vh); }
+		.fs-btn { font-size: 11px; padding: 12px 20px; letter-spacing: 1.5px; }
+	}
+
+	/* ============================================================
 	   3 NOUVEAUX TEMPLATES "WOW" (mai 2026)
 	   ============================================================ */
 
@@ -569,21 +876,21 @@
 		content:""; position:absolute; inset:0;
 		background:
 			conic-gradient(from 0deg at 50% 50%,
-				rgba(255,200,255,.0) 0deg,
-				rgba(180,255,255,.22) 60deg,
-				rgba(255,255,180,.0) 120deg,
-				rgba(255,180,220,.22) 180deg,
-				rgba(180,220,255,.0) 240deg,
-				rgba(255,255,200,.22) 300deg,
-				rgba(255,200,255,.0) 360deg);
+				rgba(255,150,255,.45) 0deg,
+				rgba(150,255,255,.55) 60deg,
+				rgba(255,255,150,.50) 120deg,
+				rgba(255,120,200,.55) 180deg,
+				rgba(150,200,255,.50) 240deg,
+				rgba(255,255,180,.55) 300deg,
+				rgba(255,150,255,.45) 360deg);
 		mix-blend-mode: screen;
-		animation: holoSpin 12s linear infinite;
-		opacity:.55;
+		animation: holoSpin 6s linear infinite;
+		opacity:.95;
 		pointer-events:none;
 	}
 	@keyframes holoSpin {
-		from { transform: rotate(0deg) scale(1.4); }
-		to   { transform: rotate(360deg) scale(1.4); }
+		from { transform: rotate(0deg) scale(1.6); }
+		to   { transform: rotate(360deg) scale(1.6); }
 	}
 	.p-holo-velvet::after {
 		content:""; position:absolute; inset:14px;
@@ -609,18 +916,19 @@
 	.p-aurora::before {
 		content:""; position:absolute; inset:-30%;
 		background:
-			radial-gradient(ellipse 50% 80% at 25% 60%, rgba(86,230,194,.55) 0%, transparent 60%),
-			radial-gradient(ellipse 60% 90% at 70% 40%, rgba(168,116,255,.50) 0%, transparent 60%),
-			radial-gradient(ellipse 45% 70% at 55% 80%, rgba(94,180,255,.45) 0%, transparent 60%);
-		filter: blur(28px);
-		animation: auroraDrift 14s ease-in-out infinite;
+			radial-gradient(ellipse 60% 90% at 25% 60%, rgba(86,250,210,.85) 0%, transparent 55%),
+			radial-gradient(ellipse 70% 100% at 70% 40%, rgba(180,120,255,.80) 0%, transparent 55%),
+			radial-gradient(ellipse 55% 80% at 55% 80%, rgba(94,180,255,.75) 0%, transparent 55%),
+			radial-gradient(ellipse 40% 70% at 40% 30%, rgba(255,180,255,.50) 0%, transparent 55%);
+		filter: blur(22px);
+		animation: auroraDrift 8s ease-in-out infinite;
 		mix-blend-mode: screen;
 		pointer-events:none;
 	}
 	@keyframes auroraDrift {
-		0%, 100% { transform: translate(-4%, -2%) rotate(-3deg); opacity:.85; }
-		33%      { transform: translate( 2%,  3%) rotate( 2deg); opacity:1; }
-		66%      { transform: translate(-2%,  1%) rotate(-1deg); opacity:.9; }
+		0%, 100% { transform: translate(-8%, -4%) rotate(-5deg) scale(1); opacity:.95; }
+		33%      { transform: translate( 6%,  6%) rotate( 4deg) scale(1.1); opacity:1; }
+		66%      { transform: translate(-4%,  2%) rotate(-2deg) scale(.95); opacity:.95; }
 	}
 	.p-aurora::after {
 		content:""; position:absolute; inset:14px;
@@ -635,8 +943,10 @@
 		text-shadow: 0 1px 8px rgba(0,0,0,.55);
 	}
 
-	/* Mihrab d'Or (PREMIUM) — arche andalouse ogivale en SVG inline,
-	   bordures arabesques dorees sur bleu nuit profond. Manuscrit royal. */
+	/* Mihrab d'Or (PREMIUM) — MAGIE : l'arche andalouse ogivale s'ouvre
+	   en 2 portes coulissantes (gauche + droite), revelant un coeur dore
+	   lumineux au centre, comme une ouverture ceremoniale.
+	   Cycle : ferme (1s) -> s'ouvre (2.5s) -> ouvert (2s) -> se referme (2.5s) */
 	.p-mihrab {
 		background:
 			radial-gradient(ellipse at 50% 5%, rgba(220,180,90,.15) 0%, transparent 55%),
@@ -646,27 +956,56 @@
 		position:relative;
 		overflow:hidden;
 	}
+	/* Halo dore central (revele quand les portes s'ouvrent) */
 	.p-mihrab::before {
-		/* Arche ogivale en SVG (encodee en data URL pour rester self-contained) */
 		content:""; position:absolute; inset:0;
-		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280' preserveAspectRatio='xMidYMid meet'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23E8C97A' stop-opacity='0.85'/><stop offset='100%25' stop-color='%23B8851F' stop-opacity='0.55'/></linearGradient></defs><path d='M30 270 L30 90 Q30 30 100 30 Q170 30 170 90 L170 270 Z' fill='none' stroke='url(%23g)' stroke-width='1.6'/><path d='M40 270 L40 95 Q40 40 100 40 Q160 40 160 95 L160 270' fill='none' stroke='%23DCB46A' stroke-width='0.7' stroke-dasharray='2 3' opacity='0.65'/><path d='M50 270 L50 100 Q50 50 100 50 Q150 50 150 100 L150 270' fill='none' stroke='%23DCB46A' stroke-width='0.4' opacity='0.4'/><circle cx='100' cy='90' r='6' fill='none' stroke='%23E8C97A' stroke-width='0.8' opacity='0.7'/><circle cx='100' cy='90' r='2.5' fill='%23E8C97A' opacity='0.85'/></svg>");
-		background-repeat: no-repeat;
-		background-position: center 12px;
-		background-size: 86% 92%;
-		opacity:.85;
+		background:
+			radial-gradient(ellipse 35% 50% at 50% 55%, rgba(255,225,150,.55) 0%, rgba(232,201,122,.20) 35%, transparent 70%);
+		animation: mihrabGlow 8s ease-in-out infinite;
 		pointer-events:none;
 	}
+	@keyframes mihrabGlow {
+		0%, 12%   { opacity: 0.15; transform: scale(0.85); }
+		40%, 60%  { opacity: 1; transform: scale(1); }
+		88%, 100% { opacity: 0.15; transform: scale(0.85); }
+	}
+	/* Cadre dore */
 	.p-mihrab::after {
 		content:""; position:absolute; inset:12px;
 		border:1px solid rgba(220,180,90,.4);
 		border-radius:6px;
 		box-shadow: inset 0 0 0 4px rgba(10,18,40,.4), inset 0 0 22px rgba(232,201,122,.10);
 		pointer-events:none;
+		z-index: 4;
+	}
+	/* Les 2 portes (demi-arches) — generees via les attributs html
+	   "doorL" et "doorR" qui sont eux-memes des spans absolument positionnes. */
+	.p-mihrab .mihrab-door {
+		content:""; position:absolute; top:0; bottom:0; width:50%;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280' preserveAspectRatio='xMidYMid meet'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%25' stop-color='%23E8C97A' stop-opacity='0.95'/><stop offset='100%25' stop-color='%23B8851F' stop-opacity='0.65'/></linearGradient><linearGradient id='gold' x1='0' y1='0' x2='1' y2='0'><stop offset='0%25' stop-color='%2317213B'/><stop offset='80%25' stop-color='%231D2A50'/><stop offset='100%25' stop-color='%23E8C97A'/></linearGradient></defs><rect x='0' y='0' width='200' height='280' fill='url(%23gold)' opacity='0.92'/><path d='M30 270 L30 90 Q30 30 100 30 Q170 30 170 90 L170 270 Z' fill='none' stroke='url(%23g)' stroke-width='2'/><path d='M40 270 L40 95 Q40 40 100 40 Q160 40 160 95 L160 270' fill='none' stroke='%23DCB46A' stroke-width='0.9' stroke-dasharray='2 3' opacity='0.75'/><path d='M50 270 L50 100 Q50 50 100 50 Q150 50 150 100 L150 270' fill='none' stroke='%23DCB46A' stroke-width='0.5' opacity='0.5'/><circle cx='100' cy='90' r='6' fill='none' stroke='%23E8C97A' stroke-width='1' opacity='0.8'/><circle cx='100' cy='90' r='2.5' fill='%23E8C97A'/></svg>");
+		background-repeat: no-repeat;
+		background-size: 200% 100%;
+		z-index: 1;
+		pointer-events: none;
+		animation: mihrabDoors 8s ease-in-out infinite;
+		box-shadow: inset 0 0 30px rgba(0,0,0,.4);
+	}
+	.p-mihrab .mihrab-door.left  { left:0;  background-position: left center; transform-origin: right center; }
+	.p-mihrab .mihrab-door.right { right:0; background-position: right center; transform-origin: left center; animation-name: mihrabDoorsR; }
+	@keyframes mihrabDoors {
+		0%, 12%   { transform: translateX(0); }
+		40%, 60%  { transform: translateX(-95%); }
+		88%, 100% { transform: translateX(0); }
+	}
+	@keyframes mihrabDoorsR {
+		0%, 12%   { transform: translateX(0); }
+		40%, 60%  { transform: translateX(95%); }
+		88%, 100% { transform: translateX(0); }
 	}
 	.p-mihrab .pv-acc, .p-mihrab .pv-mono, .p-mihrab .pv-title,
 	.p-mihrab .pv-name, .p-mihrab .pv-sub, .p-mihrab .pv-orn, .p-mihrab .pv-date {
-		position:relative; z-index:2;
-		text-shadow: 0 1px 8px rgba(0,0,0,.45);
+		position:relative; z-index:3;
+		text-shadow: 0 1px 8px rgba(0,0,0,.55), 0 0 12px rgba(232,201,122,.35);
 	}
 
 	/* Selected check */
@@ -744,7 +1083,7 @@
 </head>
 <body>
 
-	<div class="menu-bar">
+		<div class="menu-bar">
 		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
 		<nav>
 			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
@@ -753,11 +1092,12 @@
 			<span onclick="location.href='vendors.html'">Prestataires</span>
 			<span onclick="location.href='guests.html'">Invités</span>
 			<span class="active" onclick="location.href='invitations.html'">Invitations</span>
+			<span onclick="location.href='assistant.html'">Assistante AYORA</span>
 		</nav>
 		<div class="user-info">
-			<span id="userBadge" class="badge-free">FREE</span>
 			<span id="userName"></span>
 			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
 		</div>
 	</div>
 
@@ -828,6 +1168,33 @@
 
 	</div>
 
+	<!-- ============================================================
+	     APERCU PLEIN ECRAN DE L'INVITATION
+	     - Ouvre au clic sur une carte d'invitation
+	     - Affiche l'invitation en GROS avec animations
+	     - Aucun badge PRO/PREMIUM affiche : exactement ce que verra
+	       l'invite dans son mail
+	     - 2 boutons : "Envoyer cette invitation" + "Choisir un autre modele"
+	     ============================================================ -->
+	<div class="fs-overlay" id="fsPreview" onclick="closeFullscreen(event)" role="dialog" aria-modal="true" aria-label="Apercu de l'invitation">
+		<button class="fs-close" onclick="closeFullscreen()" aria-label="Fermer">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+		</button>
+		<div class="fs-stage" id="fsStage">
+			<!-- L'invitation grande (rendue dynamiquement) -->
+		</div>
+		<div class="fs-actions">
+			<button class="fs-btn fs-btn-secondary" onclick="closeFullscreen()" type="button">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+				Choisir un autre modèle
+			</button>
+			<button class="fs-btn fs-btn-primary" id="fsSendBtn" type="button">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+				Envoyer cette invitation
+			</button>
+		</div>
+	</div>
+
 	<!-- MODAL -->
 	<div class="modal-overlay" id="modalCreate">
 		<div class="modal">
@@ -853,14 +1220,46 @@
 			</div>
 			<div class="modal-foot">
 				<button class="btn-cancel" onclick="closeModal()">Annuler</button>
-				<button class="btn-confirm" id="btnConfirm" onclick="confirmAndSend()">Confirmer & envoyer</button>
+				<button class="btn-confirm" id="btnWhatsapp" onclick="sendByWhatsApp()" style="background:#25D366;border-color:#25D366;">
+					Envoyer par WhatsApp
+				</button>
+				<button class="btn-confirm" id="btnConfirm" onclick="confirmAndSend()">Envoyer par e-mail</button>
 			</div>
 		</div>
 	</div>
 
 	<script src="js/api.js"></script>
 	<script>
-		var user = checkAuth(); if (user) applyAccountHeader(user);
+		// ============================================================
+		// MODE "VIEW PUBLIC" (envoi WhatsApp / partage)
+		// Si l'URL contient ?view=SLUG, on bypass l'auth et on affiche
+		// uniquement l'invitation en plein ecran (page publique pour
+		// l'invite destinataire).
+		// ============================================================
+		var __viewParams = (function(){
+			var p = {};
+			var s = location.search.substring(1);
+			if (!s) return null;
+			s.split('&').forEach(function(kv){
+				var i = kv.indexOf('=');
+				if (i > 0) p[decodeURIComponent(kv.substring(0,i))] = decodeURIComponent(kv.substring(i+1));
+			});
+			return p.view ? p : null;
+		})();
+
+		if (__viewParams) {
+			// Mode public : on cache tout, on attend que TEMPLATES soit construit puis on affiche en plein ecran
+			document.addEventListener('DOMContentLoaded', function() {
+				document.querySelector('.menu-bar').style.display = 'none';
+				var sections = document.querySelectorAll('body > div:not(.fs-overlay):not(.modal-overlay)');
+				sections.forEach(function(el) { if (el.id !== 'fsPreview') el.style.display = 'none'; });
+				document.querySelector('footer').style.display = 'none';
+				document.body.style.background = '#0d0904';
+			});
+		}
+
+		var user = __viewParams ? null : checkAuth();
+		if (user) applyAccountHeader(user);
 		var currentPlan = 'FREE';
 		var planRank = { FREE:0, PRO:1, PREMIUM:2 };
 		var selectedTemplate = null;
@@ -995,6 +1394,38 @@
 
 		var TEMPLATES = buildTemplates();
 
+		// === Mode VIEW PUBLIC : afficher l'invitation en grand et stop ===
+		if (__viewParams) {
+			// Override des infos du couple/date avec les params URL
+			if (__viewParams.couple) weddingInfo.coupleNames = __viewParams.couple;
+			if (__viewParams.date) weddingInfo.dateLong = __viewParams.date;
+			if (__viewParams.lieu) weddingInfo.lieu = __viewParams.lieu;
+			if (__viewParams.heure) weddingInfo.heure = __viewParams.heure;
+			if (__viewParams.ville) weddingInfo.ville = __viewParams.ville;
+			TEMPLATES = buildTemplates(); // re-build avec les nouvelles infos
+			var t = TEMPLATES.find(function(x){ return x.slug === __viewParams.view; });
+			if (!t) {
+				document.body.innerHTML = '<div style="padding:40px;color:#fff;text-align:center;font-family:serif;">Invitation introuvable.</div>';
+			} else {
+				// Personnalise le titre avec le nom de l'invite
+				if (__viewParams.guest) {
+					t.pv.acc = 'Cher(e) ' + __viewParams.guest;
+				}
+				document.getElementById('fsStage').innerHTML =
+					'<div class="preview ' + t.palette + '">' + previewInnerHtml(t) + '</div>';
+				document.getElementById('fsPreview').classList.add('show');
+				document.body.classList.add('fs-open');
+				// Cacher les boutons d'action (Envoyer / Choisir un autre) en mode view
+				var actsEl = document.querySelector('.fs-actions');
+				if (actsEl) actsEl.style.display = 'none';
+				// Cacher la croix de fermeture (page publique standalone)
+				var closeBtn = document.querySelector('.fs-close');
+				if (closeBtn) closeBtn.style.display = 'none';
+			}
+			// Stop tous les autres init en mode view
+			throw new Error('__view_mode__'); // arrete le reste du script proprement
+		}
+
 		if (user) {
 			document.getElementById('userName').textContent = user.firstName;
 			// 1) Affichage immediat depuis localStorage (fallback)
@@ -1100,6 +1531,37 @@
 
 		function canAccess(level) { return planRank[currentPlan] >= planRank[level]; }
 
+		/**
+		 * Retourne le HTML interne d'une preview (champs textes + elements
+		 * d'animation magique specifiques a chaque template).
+		 *
+		 * Pour un template sans animation magique : juste les .pv-*.
+		 * Pour un template magique (ex: mihrab-or qui ouvre des portes) :
+		 * on ajoute des wrappers / divs supplementaires consommees par CSS.
+		 */
+		function previewInnerHtml(t) {
+			var pv = t.pv;
+			var monoHtml = pv.mono ? '<div class="pv-monogram">' + pv.mono + '</div>' : '';
+
+			// Elements magiques supplementaires selon la palette
+			var magicHtml = '';
+			if (t.palette === 'p-mihrab') {
+				// 2 portes (gauche + droite) qui s'ouvrent en s'ecartant
+				magicHtml = '<span class="mihrab-door left"></span><span class="mihrab-door right"></span>';
+			}
+
+			return magicHtml +
+				monoHtml +
+				'<div class="pv-acc">' + pv.acc + '</div>' +
+				'<div class="pv-title">' + pv.title + '</div>' +
+				'<div class="pv-line-fancy"></div>' +
+				'<div class="pv-name">' + pv.name + '</div>' +
+				'<div class="pv-line"></div>' +
+				'<div class="pv-sub">' + pv.sub + '</div>' +
+				'<div class="pv-ornament">' + pv.orn + '</div>' +
+				'<div class="pv-date">' + pv.date + '</div>';
+		}
+
 		function renderTemplates(filter) {
 			var grid = document.getElementById('tplGrid');
 			grid.innerHTML = '';
@@ -1108,22 +1570,11 @@
 				var div = document.createElement('div');
 				div.className = 'tpl' + (locked ? ' locked' : '') + (selectedTemplate===t.slug ? ' selected' : '');
 
-				var pv = t.pv;
-				var monoHtml = pv.mono ? '<div class="pv-monogram">' + pv.mono + '</div>' : '';
-
 				div.innerHTML =
 					'<div class="tpl-check">✓</div>' +
 					'<span class="tier tier-' + t.level + '">' + t.level + '</span>' +
 					'<div class="preview ' + t.palette + '">' +
-						monoHtml +
-						'<div class="pv-acc">' + pv.acc + '</div>' +
-						'<div class="pv-title">' + pv.title + '</div>' +
-						'<div class="pv-line-fancy"></div>' +
-						'<div class="pv-name">' + pv.name + '</div>' +
-						'<div class="pv-line"></div>' +
-						'<div class="pv-sub">' + pv.sub + '</div>' +
-						'<div class="pv-ornament">' + pv.orn + '</div>' +
-						'<div class="pv-date">' + pv.date + '</div>' +
+						previewInnerHtml(t) +
 					'</div>' +
 					(locked ? '<div class="lock lock-tier-' + t.level + '">' +
 						'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="11" width="16" height="11" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>' +
@@ -1140,11 +1591,13 @@
 				div.querySelector('button').addEventListener('click', function(e) {
 					e.stopPropagation();
 					if (this.getAttribute('data-locked')) { location.href='premium.html'; return; }
+					// Le bouton "Utiliser ce modele" ouvre directement la fenetre d'envoi
 					openCreateModal(this.getAttribute('data-slug'));
 				});
 				div.addEventListener('click', function() {
 					if (locked) { location.href='premium.html'; return; }
-					openCreateModal(t.slug);
+					// Le clic sur la card ouvre l'apercu plein ecran
+					openFullscreenPreview(t.slug);
 				});
 				grid.appendChild(div);
 			});
@@ -1156,6 +1609,48 @@
 				p.classList.add('active');
 				renderTemplates(p.getAttribute('data-f'));
 			});
+		});
+
+		/**
+		 * Ouvre la vue plein ecran de l'invitation choisie.
+		 * C'est EXACTEMENT le meme rendu visuel que la card mais
+		 * en grand format, avec les animations CSS toutes actives.
+		 *
+		 * Aucun badge PRO/PREMIUM n'est affiche -> c'est exactement
+		 * ce que verra le destinataire dans son mail.
+		 *
+		 * Le bouton "Envoyer cette invitation" ouvre la modale de
+		 * confirmation classique (selection invite + message perso).
+		 */
+		function openFullscreenPreview(slug) {
+			var t = TEMPLATES.find(function(x){ return x.slug===slug; });
+			if (!t) return;
+			document.getElementById('fsStage').innerHTML =
+				'<div class="preview ' + t.palette + '">' +
+					previewInnerHtml(t) +
+				'</div>';
+
+			// Memorise le slug pour le bouton "Envoyer cette invitation"
+			document.getElementById('fsSendBtn').onclick = function() {
+				closeFullscreen();
+				// petit delai pour que l'animation de fermeture finisse
+				setTimeout(function(){ openCreateModal(slug); }, 200);
+			};
+
+			document.getElementById('fsPreview').classList.add('show');
+			document.body.classList.add('fs-open');
+		}
+
+		function closeFullscreen(ev) {
+			// Ne ferme que si on clique sur l'overlay lui-meme (pas sur l'invitation)
+			if (ev && ev.target.id !== 'fsPreview' && !ev.target.classList.contains('fs-close')) return;
+			document.getElementById('fsPreview').classList.remove('show');
+			document.body.classList.remove('fs-open');
+		}
+
+		// Fermeture par touche Escape
+		document.addEventListener('keydown', function(ev) {
+			if (ev.key === 'Escape') closeFullscreen({ target: { id: 'fsPreview' } });
 		});
 
 		function openCreateModal(slug) {
@@ -1221,6 +1716,40 @@
 				showModalNotice('error', 'Erreur réseau.');
 				btn.disabled = false; btn.textContent = 'Confirmer & envoyer';
 			});
+		}
+
+		/**
+		 * Envoi par WhatsApp : ouvre WhatsApp avec un message pre-rempli
+		 * (texte simple, sans piece jointe).
+		 */
+		function sendByWhatsApp() {
+			var gid = parseInt(document.getElementById('selectGuest').value, 10);
+			if (!gid) { showModalNotice('error', 'Veuillez choisir un invité.'); return; }
+			var guest = guests.find(function(g){ return g.id === gid; });
+			if (!guest) { showModalNotice('error', 'Invité introuvable.'); return; }
+
+			var phone = (guest.whatsapp || guest.phone || '').replace(/[^\d]/g, '');
+			if (!phone) {
+				showModalNotice('error', 'L\'invité n\'a pas de numéro de téléphone WhatsApp. Modifiez sa fiche pour en ajouter un.');
+				return;
+			}
+			if (phone.charAt(0) === '0') phone = '212' + phone.substring(1);
+
+			var msgPerso = document.getElementById('messagePerso').value.trim();
+			var waMsg = 'Bonjour ' + (guest.firstName||'') + ',\n\n' +
+				weddingInfo.coupleNames + ' ont l\'honneur de vous inviter à leur mariage' +
+				(weddingInfo.dateLong ? ' le ' + weddingInfo.dateLong : '') +
+				(weddingInfo.ville ? ' à ' + weddingInfo.ville : '') + '.\n\n' +
+				(msgPerso ? msgPerso + '\n\n' : '') +
+				'Avec toute notre affection,\n' + weddingInfo.coupleNames;
+
+			api.post('/api/invitations', {
+				guestId: gid, templateName: selectedTemplate, messagePerso: msgPerso
+			}).catch(function(){});
+
+			window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(waMsg), '_blank');
+			showModalNotice('success', 'WhatsApp ouvert avec le message pré-rempli.');
+			setTimeout(function(){ closeModal(); loadInvitations(); }, 1500);
 		}
 
 		function showModalNotice(type, text) {
@@ -1297,9 +1826,19 @@
 					item.querySelector('button').addEventListener('click', function() {
 						var btn = this; btn.disabled = true; btn.textContent = '…';
 						api.post('/api/invitations/send/' + this.getAttribute('data-id'), {}).then(function(r) {
-							if (r && r.success) loadInvitations();
-							else if (r && r.limitReached) { alert(r.message); loadInvitations(); }
-							else { btn.disabled=false; btn.textContent='Envoyer'; alert((r && r.error) || 'Erreur'); }
+							if (r && r.success) {
+								AyoraUI.success('Invitation envoyée');
+								loadInvitations();
+							}
+							else if (r && r.limitReached) {
+								AyoraUI.warning(r.message, 6000);
+								loadInvitations();
+							}
+							else {
+								btn.disabled=false;
+								btn.textContent='Envoyer';
+								AyoraUI.error((r && r.error) || 'Erreur');
+							}
 						});
 					});
 				}
@@ -1307,5 +1846,23 @@
 			});
 		}
 	</script>
-</body>
+
+	<script src="js/ayora-ui.js"></script>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
+	<script src="js/account-menu.js?v=1"></script>
+	<script src="js/assistant.js?v=2"></script>
+	<script src="js/assistant-floating.js?v=2" data-ayora-page="invitations"></script>
+
 </html>
