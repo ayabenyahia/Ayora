@@ -31,3 +31,12 @@ Mettre en avant :
 4. **Demandes en attente** — devis + rendez-vous
 
 Chaque carte est cliquable et ouvre l'onglet correspondant avec le filtre pré-appliqué.
+
+## 0:40 → 0:55 — Priorités administratives
+
+*"Le bloc priorités centralise tout ce qui demande une intervention."*
+
+1. Montrer les chips de filtrage : Toutes / Prestataires / Utilisateurs / Devis / Rendez-vous.
+2. Cliquer un chip → la liste se restreint instantanément.
+3. Cliquer *Examiner* sur un profil prestataire incomplet → le drawer s'ouvre à droite avec la fiche complète.
+4. Pointer les champs manquants (description, téléphone, Instagram).
