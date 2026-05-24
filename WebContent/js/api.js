@@ -3,60 +3,70 @@
    Communication avec le backend Java
    ============================================ */
 
-var api = {
+var api = (function() {
+	var BASE = '/ayora';
+	var TIMEOUT_MS = 15000;
 
-	baseUrl: '/ayora',
-
-	get: function(url) {
-		return fetch(api.baseUrl + url, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then(function(response) {
-			return response.json();
-		});
-	},
-
-	post: function(url, data) {
-		return fetch(api.baseUrl + url, {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(data)
-		}).then(function(response) {
-			return response.json();
-		});
-	},
-
-	put: function(url, data) {
-		return fetch(api.baseUrl + url, {
-			method: 'PUT',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(data)
-		}).then(function(response) {
-			return response.json();
-		});
-	},
-
-	del: function(url) {
-		return fetch(api.baseUrl + url, {
-			method: 'DELETE',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then(function(response) {
-			return response.json();
-		});
+	// Toast helper qui marche que AyoraUI soit charge ou non.
+	function toastErr(msg) {
+		if (window.AyoraUI && AyoraUI.error) AyoraUI.error(msg);
+		else console.error('[api] ' + msg);
 	}
-};
+
+	function send(method, url, data) {
+		var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+		var opts = {
+			method: method,
+			credentials: 'include',
+			headers: { 'Content-Type': 'application/json' }
+		};
+		if (data !== undefined) opts.body = JSON.stringify(data);
+		if (controller) opts.signal = controller.signal;
+		var timer = controller ? setTimeout(function() { controller.abort(); }, TIMEOUT_MS) : null;
+
+		return fetch(BASE + url, opts)
+			.then(function(response) {
+				if (timer) clearTimeout(timer);
+				// 401 sur une page protegee : on coupe propre.
+				if (response.status === 401 && url !== '/api/auth/login' && url !== '/api/auth/me') {
+					localStorage.removeItem('user');
+					if (location.pathname.indexOf('login.html') === -1
+						&& location.pathname.indexOf('register.html') === -1
+						&& location.pathname.indexOf('index.html') === -1) {
+						location.href = 'login.html';
+					}
+				}
+				// 429 : rate-limit
+				if (response.status === 429) {
+					return response.json().catch(function(){ return {}; }).then(function(j) {
+						toastErr(j.error || 'Trop de tentatives, reessayez plus tard.');
+						throw new Error('rate-limited');
+					});
+				}
+				// Parse JSON propre meme sur erreur (sinon renvoyer texte)
+				return response.json().catch(function() { return { _nonJson: true, status: response.status }; });
+			})
+			.catch(function(err) {
+				if (timer) clearTimeout(timer);
+				if (err && err.name === 'AbortError') {
+					toastErr('Le serveur met trop de temps a repondre. Reessayez.');
+					throw err;
+				}
+				if (err && err.message === 'rate-limited') throw err;
+				if (!navigator.onLine) toastErr('Pas de connexion internet.');
+				else toastErr('Erreur reseau, reessayez.');
+				throw err;
+			});
+	}
+
+	return {
+		baseUrl: BASE,
+		get:  function(url)        { return send('GET',    url);       },
+		post: function(url, data)  { return send('POST',   url, data); },
+		put:  function(url, data)  { return send('PUT',    url, data); },
+		del:  function(url)        { return send('DELETE', url);       }
+	};
+})();
 
 /* ============================================
    Verification de session
@@ -67,7 +77,20 @@ function checkAuth() {
 		location.href = 'login.html';
 		return null;
 	}
-	return JSON.parse(user);
+	var u = JSON.parse(user);
+	// Garde-fou : l'admin ne doit JAMAIS naviguer sur les pages utilisateur
+	// classiques (dashboard, recommendations, mychoices, questionnaire, ...).
+	// On le redirige automatiquement vers son back-office admin.html.
+	// Exceptions : admin.html lui-meme + login.html + index.html.
+	if (u && u.role === 'ADMIN') {
+		var page = location.pathname.split('/').pop().toLowerCase();
+		var allowed = { 'admin.html':1, 'login.html':1, 'index.html':1, '':1 };
+		if (!allowed[page]) {
+			location.href = 'admin.html';
+			return null;
+		}
+	}
+	return u;
 }
 
 function checkRole(requiredRole) {
