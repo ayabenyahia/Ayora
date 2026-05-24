@@ -598,3 +598,123 @@
 	function renderMiniIndicators(s) {
 		var items = [
 			{ cls:'sage',  v: s.questionnaire.complete,   l: 'Questionnaires complétés',  js: "switchTab('users');setTimeout(function(){document.getElementById('usrQuest').value='1';reloadUsers();},80);" },
+			{ cls:'amber', v: s.questionnaire.incomplete, l: 'Questionnaires en cours',   js: "switchTab('users');setTimeout(function(){document.getElementById('usrQuest').value='0';reloadUsers();},80);" },
+			{ cls:'red',   v: s.users.suspendus,          l: 'Comptes suspendus',         js: "switchTab('users');setTimeout(function(){document.getElementById('usrActive').value='0';reloadUsers();},80);" },
+			{ cls:'mute',  v: s.vendors.inactifs,         l: 'Prestataires inactifs',     js: "switchTab('vendors');setTimeout(function(){document.getElementById('vndActive').value='0';reloadVendors();},80);" },
+			{ cls:'gold',  v: s.devis.acceptes,           l: 'Devis acceptés',            js: "switchTab('devis');setTimeout(function(){document.getElementById('devisStatus').value='ACCEPTE';reloadDevis();},80);" }
+		];
+		document.getElementById('axMiniGrid').innerHTML = items.map(function(it){
+			return '<div class="ax-mini-card '+it.cls+'" onclick="'+it.js+'">'
+				+ '<span class="ax-mc-dot"></span>'
+				+ '<div class="ax-mc-body">'
+					+ '<div class="ax-mc-v">'+it.v+'</div>'
+					+ '<div class="ax-mc-l">'+it.l+'</div>'
+				+ '</div>'
+			+ '</div>';
+		}).join('');
+	}
+
+	// ============ PRIORITÉS ============
+	var ALL_ACTIONS = [];
+	var CURRENT_PRIO_FILTER = 'ALL';
+	function renderPriorities(actions) {
+		ALL_ACTIONS = actions || [];
+		var counts = { ALL: ALL_ACTIONS.length, VENDOR_INCOMPLETE: 0, USER_NO_QUESTIONNAIRE: 0, DEVIS: 0, RDV: 0 };
+		ALL_ACTIONS.forEach(function(a){ counts[a.type] = (counts[a.type]||0) + 1; });
+		document.getElementById('axPrioCntAll').textContent    = counts.ALL;
+		document.getElementById('axPrioCntVendor').textContent = counts.VENDOR_INCOMPLETE;
+		document.getElementById('axPrioCntUser').textContent   = counts.USER_NO_QUESTIONNAIRE;
+		document.getElementById('axPrioCntDevis').textContent  = counts.DEVIS;
+		document.getElementById('axPrioCntRdv').textContent    = counts.RDV;
+
+		// chip handlers
+		document.querySelectorAll('#axPrioFilters .ax-chip').forEach(function(chip){
+			chip.onclick = function(){
+				document.querySelectorAll('#axPrioFilters .ax-chip').forEach(function(c){ c.classList.remove('is-active'); });
+				chip.classList.add('is-active');
+				CURRENT_PRIO_FILTER = chip.getAttribute('data-prio-filter');
+				renderPrioritiesList();
+			};
+		});
+		renderPrioritiesList();
+	}
+	function renderPrioritiesList() {
+		var list = CURRENT_PRIO_FILTER === 'ALL' ? ALL_ACTIONS : ALL_ACTIONS.filter(function(a){ return a.type === CURRENT_PRIO_FILTER; });
+		var box = document.getElementById('axPrioList');
+		if (list.length === 0) {
+			box.innerHTML = '<div class="ax-empty">'
+				+ '<div class="ax-empty-icon">'+ICO.check+'</div>'
+				+ '<h4>Tout est en ordre</h4>'
+				+ '<p>Aucune action administrative ne nécessite votre attention pour ce filtre.</p>'
+			+ '</div>';
+			return;
+		}
+		box.innerHTML = list.map(function(a){
+			var clickJs = '';
+			if (a.type === 'DEVIS') clickJs = "switchTab('devis');";
+			else if (a.type === 'RDV') clickJs = "switchTab('devis');switchSubTab('rdv');";
+			else if (a.type === 'VENDOR_INCOMPLETE') clickJs = 'openVendorDetail('+a.id+')';
+			else if (a.type === 'USER_NO_QUESTIONNAIRE') clickJs = 'openUserDetail('+a.id+')';
+			var prioLabel = a.priority === 'HIGH' ? 'Urgent' : (a.priority === 'MEDIUM' ? 'Important' : 'À traiter');
+			return '<div class="ax-prio-item" data-priority="'+a.priority+'">'
+				+ '<div class="ax-prio-mark"></div>'
+				+ '<div class="ax-prio-body">'
+					+ '<div class="ax-prio-title">'+escapeHtml(a.title)+'</div>'
+					+ '<div class="ax-prio-detail">'+escapeHtml(a.detail)+'</div>'
+				+ '</div>'
+				+ '<span class="ax-prio-badge">'+prioLabel+'</span>'
+				+ '<button class="ax-prio-action" onclick="'+clickJs+'">Examiner</button>'
+			+ '</div>';
+		}).join('');
+	}
+
+	// ============ SANTÉ ============
+	function renderHealth(s) {
+		var rows = [];
+		var totalVendors = s.vendors.total;
+		var totalClients = s.users.clients;
+		var totalUsers   = s.users.total;
+		var nbDevisPend  = s.devis.nouveaux;
+		var nbRdvPend    = s.rdv.attente;
+
+		var vendorComplete = totalVendors - s.vendors.incomplets;
+		rows.push({
+			cls: vendorComplete / Math.max(totalVendors,1) >= .8 ? 'sage' : (vendorComplete / Math.max(totalVendors,1) >= .5 ? 'gold' : 'amber'),
+			label: 'Profils prestataires complets',
+			value: vendorComplete + ' / ' + totalVendors,
+			pct: totalVendors > 0 ? Math.round(vendorComplete * 100 / totalVendors) : 0,
+			meta: s.vendors.incomplets + ' à compléter'
+		});
+		rows.push({
+			cls: s.questionnaire.complete / Math.max(totalClients,1) >= .8 ? 'sage' : 'gold',
+			label: 'Questionnaires clients terminés',
+			value: s.questionnaire.complete + ' / ' + totalClients,
+			pct: totalClients > 0 ? Math.round(s.questionnaire.complete * 100 / totalClients) : 0,
+			meta: s.questionnaire.incomplete + ' en cours'
+		});
+		rows.push({
+			cls: s.users.actifs === totalUsers ? 'sage' : 'amber',
+			label: 'Comptes actifs',
+			value: s.users.actifs + ' / ' + totalUsers,
+			pct: totalUsers > 0 ? Math.round(s.users.actifs * 100 / totalUsers) : 0,
+			meta: s.users.suspendus + ' suspendus'
+		});
+		rows.push({
+			cls: (nbDevisPend + nbRdvPend) === 0 ? 'sage' : (nbDevisPend + nbRdvPend < 5 ? 'gold' : 'amber'),
+			label: 'Demandes à traiter',
+			value: (nbDevisPend + nbRdvPend) + '',
+			pct: (nbDevisPend + nbRdvPend) === 0 ? 100 : Math.max(0, 100 - Math.min((nbDevisPend + nbRdvPend) * 10, 100)),
+			meta: nbDevisPend + ' devis · ' + nbRdvPend + ' rendez-vous'
+		});
+
+		document.getElementById('axHealthList').innerHTML = rows.map(function(r){
+			return '<div class="ax-health-row '+r.cls+'">'
+				+ '<div class="ax-h-top"><strong>'+r.label+'</strong><span>'+r.value+'</span></div>'
+				+ '<div class="ax-health-bar"><div style="width:'+r.pct+'%;"></div></div>'
+				+ '<div class="ax-h-meta">'+r.meta+'</div>'
+			+ '</div>';
+		}).join('');
+	}
+
+	// ============ ANALYTICS ============
+	function renderSignupsChart(data) {
