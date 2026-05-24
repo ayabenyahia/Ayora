@@ -1,0 +1,38 @@
+/* ============================================================
+ * AYORA — Executive Admin (admin-exec.css)
+ * Design system exclusivement pour /admin.html
+ * Sobre, premium, opérationnel. Aucune influence sur le reste.
+ * ============================================================ */
+
+:root {
+	--ax-burgundy-900: #1A0A14;
+	--ax-burgundy-700: #4A1424;
+	--ax-burgundy-500: #6B1B30;
+	--ax-burgundy-300: #8B1A2B;
+	--ax-gold-700: #8B6F2A;
+	--ax-gold-500: #B89035;
+	--ax-gold-400: #D4A853;
+	--ax-gold-200: #F0E6D8;
+	--ax-ivory-50:  #FCF8F5;
+	--ax-ivory-100: #FAF6F0;
+	--ax-ivory-200: #F4ECE0;
+	--ax-line:      #E8D8DE;
+	--ax-sage:      #2D7A52;
+	--ax-sage-soft: #DEF5E5;
+	--ax-amber:     #C66635;
+	--ax-amber-soft:#FCE8DA;
+	--ax-red:       #B83434;
+	--ax-red-soft:  #FCE0E0;
+	--ax-blue:      #2C5C9C;
+	--ax-blue-soft: #E0EDFC;
+	--ax-text:      #1A0A14;
+	--ax-text-2:    #4A1424;
+	--ax-text-mute: #7A6B74;
+	--ax-shadow-1: 0 2px 8px rgba(26,10,20,.05);
+	--ax-shadow-2: 0 6px 20px rgba(26,10,20,.08);
+	--ax-shadow-3: 0 16px 40px rgba(26,10,20,.16);
+	--ax-radius:    16px;
+	--ax-radius-sm: 10px;
+	--ax-radius-lg: 22px;
+	--ax-serif: 'Cormorant Garamond', 'Times New Roman', serif;
+}
