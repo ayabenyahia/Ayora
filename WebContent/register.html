@@ -2,9 +2,69 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Inscription</title>
 	<link rel="stylesheet" href="css/styles.css?v=26">
+	<style>
+		.password-hint {
+			font-size: 12px;
+			color: #8B7A6E;
+			margin-top: 4px;
+			display: block;
+		}
+		.password-strength {
+			height: 4px;
+			background: #F5EEE5;
+			border-radius: 2px;
+			margin-top: 6px;
+			overflow: hidden;
+		}
+		.password-strength-bar {
+			height: 100%;
+			width: 0%;
+			background: var(--danger);
+			border-radius: 2px;
+			transition: width 0.2s ease, background 0.2s ease;
+		}
+		.password-match-feedback {
+			font-size: 12px;
+			margin-top: 4px;
+			display: none;
+		}
+		.password-match-feedback.match { color: #3D8B5E; display: block; }
+		.password-match-feedback.no-match { color: var(--danger); display: block; }
+		.cgu-row {
+			margin: 14px 0 22px;
+			display: flex;
+			gap: 10px;
+			align-items: flex-start;
+			font-size: 13px;
+			color: #5a4a3e;
+			line-height: 1.45;
+		}
+		.cgu-row input[type="checkbox"] {
+			margin: 3px 0 0;
+			flex-shrink: 0;
+			width: 16px;
+			height: 16px;
+			accent-color: var(--primary);
+		}
+		.cgu-row a {
+			color: var(--primary);
+			font-weight: 600;
+		}
+		.optional-tag {
+			font-size: 11px;
+			color: #8B7A6E;
+			font-weight: 400;
+			margin-left: 4px;
+		}
+	</style>
 </head>
 <body>
 
@@ -39,18 +99,30 @@
 					<input type="email" id="email" placeholder="votre@email.com" required>
 				</div>
 				<div class="form-group">
-					<label for="phone">Téléphone</label>
+					<label for="phone">Téléphone <span class="optional-tag">(optionnel)</span></label>
 					<input type="tel" id="phone" placeholder="06XX-XXXXXX">
 				</div>
 				<div class="form-group">
 					<label for="password">Mot de passe</label>
-					<input type="password" id="password" placeholder="Minimum 6 caractères" required minlength="6">
+					<input type="password" id="password" placeholder="Minimum 6 caractères" required minlength="6" oninput="checkStrength()">
+					<div class="password-strength"><div id="strengthBar" class="password-strength-bar"></div></div>
+					<span class="password-hint" id="strengthLabel">Au moins 6 caractères — combinez majuscules, chiffres et symboles pour plus de sécurité.</span>
 				</div>
 				<div class="form-group">
 					<label for="confirmPassword">Confirmer le mot de passe</label>
-					<input type="password" id="confirmPassword" placeholder="Retapez votre mot de passe" required>
+					<input type="password" id="confirmPassword" placeholder="Retapez votre mot de passe" required oninput="checkMatch()">
+					<span class="password-match-feedback" id="matchFeedback"></span>
 				</div>
-				<button type="submit" class="btn btn-primary">Créer mon compte</button>
+
+				<div class="cgu-row">
+					<input type="checkbox" id="acceptCgu" required>
+					<label for="acceptCgu">
+						J'ai lu et j'accepte les <a href="cgu.html" target="_blank">Conditions Générales d'Utilisation</a>
+						ainsi que la <a href="confidentialite.html" target="_blank">Politique de Confidentialité</a> d'Ayora.
+					</label>
+				</div>
+
+				<button type="submit" class="btn btn-primary" id="submitBtn">Créer mon compte</button>
 			</form>
 
 			<p class="link-text">
@@ -59,8 +131,60 @@
 		</div>
 	</div>
 
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora — Tous droits réservés</div>
+		</div>
+	</footer>
+
 	<script src="js/api.js"></script>
 	<script>
+		function checkStrength() {
+			var p = document.getElementById('password').value;
+			var bar = document.getElementById('strengthBar');
+			var label = document.getElementById('strengthLabel');
+			var score = 0;
+			if (p.length >= 6) score++;
+			if (p.length >= 10) score++;
+			if (/[A-Z]/.test(p)) score++;
+			if (/[0-9]/.test(p)) score++;
+			if (/[^A-Za-z0-9]/.test(p)) score++;
+
+			var width = (score / 5) * 100;
+			bar.style.width = width + '%';
+			if (score <= 1) {
+				bar.style.background = '#C04A3F';
+				label.textContent = 'Mot de passe faible.';
+			} else if (score <= 3) {
+				bar.style.background = '#C67200';
+				label.textContent = 'Mot de passe moyen.';
+			} else {
+				bar.style.background = '#3D8B5E';
+				label.textContent = 'Mot de passe fort.';
+			}
+		}
+
+		function checkMatch() {
+			var a = document.getElementById('password').value;
+			var b = document.getElementById('confirmPassword').value;
+			var fb = document.getElementById('matchFeedback');
+			if (!b) { fb.className = 'password-match-feedback'; fb.textContent = ''; return; }
+			if (a === b) {
+				fb.className = 'password-match-feedback match';
+				fb.textContent = '✓ Les mots de passe correspondent';
+			} else {
+				fb.className = 'password-match-feedback no-match';
+				fb.textContent = '✗ Les mots de passe ne correspondent pas';
+			}
+		}
+
 		function handleRegister(event) {
 			event.preventDefault();
 			var errorMsg = document.getElementById('errorMsg');
@@ -71,6 +195,12 @@
 
 			if (password !== confirmPassword) {
 				errorMsg.textContent = 'Les mots de passe ne correspondent pas';
+				errorMsg.style.display = 'block';
+				return;
+			}
+
+			if (!document.getElementById('acceptCgu').checked) {
+				errorMsg.textContent = 'Vous devez accepter les CGU et la Politique de Confidentialité pour continuer';
 				errorMsg.style.display = 'block';
 				return;
 			}
