@@ -428,3 +428,26 @@ body.ax-body .site-footer { margin-top: 60px; }
 }
 .ax-kpi-breakdown {
 	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px 14px;
+	padding-top: 16px;
+	margin-top: 16px;
+	border-top: 1px dashed var(--ax-gold-200);
+}
+.ax-kpi-breakdown .ax-bd { line-height: 1.2; }
+.ax-kpi-breakdown .ax-bd-v { font-size: 14px; font-weight: 700; color: var(--ax-text); font-family: var(--ax-serif); }
+.ax-kpi-breakdown .ax-bd-l { font-size: 10.5px; color: var(--ax-text-mute); letter-spacing: .6px; text-transform: uppercase; }
+.ax-kpi-cta {
+	margin-top: 18px;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 1.2px;
+	text-transform: uppercase;
+	color: var(--ax-burgundy-700);
+	display: inline-flex; align-items: center; gap: 6px;
+	cursor: pointer;
+}
+.ax-kpi-cta:hover { color: var(--ax-gold-500); }
+.ax-kpi-cta::after { content: '→'; font-size: 14px; transition: transform .2s; }
+.ax-kpi-cta:hover::after { transform: translateX(3px); }
+
