@@ -66,3 +66,15 @@ Chaque section liste : nom de la colonne, type, contraintes, sémantique, et où
 | `note` | TEXT | note libre |
 | `statut` | ENUM('EN_ATTENTE','CONFIRME','ANNULE') | statut admin |
 | `created_at` | DATETIME | tri timeline |
+
+## `questionnaire_answers`
+
+| Colonne | Type | Sémantique |
+|---|---|---|
+| `user_id` | FK users.id | propriétaire |
+| `step` | INT | étape du questionnaire |
+| `key` | VARCHAR | clé de réponse |
+| `value` | TEXT | valeur |
+| `created_at` | DATETIME | dernière mise à jour |
+
+Utilisé pour calculer `questionnaire.complete` / `questionnaire.incomplete` dans `/api/admin/stats`.
