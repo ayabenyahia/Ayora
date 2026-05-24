@@ -803,3 +803,43 @@ body.ax-body .site-footer { margin-top: 60px; }
 .adm-filters .clear-btn:hover { border-color: var(--ax-burgundy-300); color: var(--ax-burgundy-300); }
 .adm-filters .export-btn { padding: 9px 14px; background: var(--ax-burgundy-700); border: 1.5px solid var(--ax-burgundy-700); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
 .adm-filters .export-btn:hover { background: var(--ax-burgundy-900); border-color: var(--ax-burgundy-900); }
+
+.adm-table-wrap { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid var(--ax-line); box-shadow: var(--ax-shadow-1); }
+.adm-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.adm-table thead { background: var(--ax-ivory-100); }
+.adm-table th { text-align: left; padding: 14px 18px; font-weight: 700; color: var(--ax-burgundy-700); font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; border-bottom: 1.5px solid var(--ax-line); }
+.adm-table td { padding: 13px 18px; border-bottom: 1px solid var(--ax-ivory-200); color: var(--ax-text); }
+.adm-table tr:hover td { background: var(--ax-ivory-100); }
+.adm-table tr:last-child td { border-bottom: none; }
+.adm-table .name-cell { display: flex; align-items: center; gap: 10px; }
+.adm-table .name-cell .av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--ax-amber-soft), #F5D0BC); color: var(--ax-burgundy-300); font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.adm-table .name-cell .name-info { min-width: 0; }
+.adm-table .name-cell .name-info strong { display: block; font-weight: 600; }
+.adm-table .name-cell .name-info span { font-size: 11.5px; color: var(--ax-text-mute); }
+
+.b-badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; }
+.b-role-CLIENT      { background: var(--ax-blue-soft);   color: var(--ax-blue); }
+.b-role-PRESTATAIRE { background: #FFF1D6;               color: var(--ax-gold-700); }
+.b-role-ADMIN       { background: var(--ax-burgundy-700);color: #fff; }
+.b-plan-FREE        { background: var(--ax-ivory-200);   color: var(--ax-text-mute); }
+.b-plan-PRO         { background: linear-gradient(135deg, #2C1810, var(--ax-burgundy-700)); color: var(--ax-gold-400); }
+.b-plan-PREMIUM     { background: linear-gradient(135deg, var(--ax-gold-400), var(--ax-gold-500)); color: #fff; }
+.b-status-active    { background: var(--ax-sage-soft);   color: var(--ax-sage); }
+.b-status-suspended { background: var(--ax-red-soft);    color: var(--ax-red); }
+.b-status-pending   { background: var(--ax-amber-soft);  color: var(--ax-amber); }
+.b-cat              { background: var(--ax-amber-soft);  color: var(--ax-burgundy-300); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+
+.completeness { display: flex; align-items: center; gap: 8px; min-width: 110px; }
+.completeness .bar { flex: 1; height: 6px; background: var(--ax-ivory-200); border-radius: 3px; overflow: hidden; }
+.completeness .bar > div { height: 100%; transition: width .3s; }
+.completeness .bar > div.high { background: linear-gradient(90deg, var(--ax-sage), #4FB87E); }
+.completeness .bar > div.med  { background: linear-gradient(90deg, var(--ax-gold-400), #FFD58A); }
+.completeness .bar > div.low  { background: linear-gradient(90deg, var(--ax-amber), #E48555); }
+.completeness .pct { font-size: 11.5px; font-weight: 700; color: var(--ax-text); min-width: 32px; text-align: right; }
+
+.row-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.row-actions button { padding: 6px 11px; font-size: 11px; font-weight: 600; background: transparent; border: 1px solid var(--ax-line); color: var(--ax-text-mute); border-radius: 6px; cursor: pointer; transition: all .15s; text-transform: uppercase; letter-spacing: .5px; }
+.row-actions button:hover { border-color: var(--ax-burgundy-300); color: var(--ax-burgundy-300); background: var(--ax-amber-soft); }
+.row-actions button.danger:hover { border-color: var(--ax-red); color: var(--ax-red); background: var(--ax-red-soft); }
+.row-actions button.primary { border-color: var(--ax-burgundy-300); color: var(--ax-burgundy-300); background: var(--ax-amber-soft); }
+
