@@ -1,11 +1,6 @@
 package com.ayora.servlet;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,27 +8,25 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.UserDao;
-import com.ayora.dao.SubscriptionDao;
-import com.ayora.dao.VendorDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
+import com.ayora.model.Devis;
+import com.ayora.model.RendezVous;
+import com.ayora.model.Subscription;
 import com.ayora.model.User;
 import com.ayora.model.Vendor;
-import com.ayora.model.Subscription;
-import com.ayora.util.DatabaseConnection;
 import com.ayora.util.JsonUtil;
 
 @WebServlet("/api/auth/*")
 public class AuthServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private UserDao userDao;
-	private SubscriptionDao subscriptionDao;
-	private VendorDao vendorDao;
+	// Pattern Servlet -> Metier -> DAO -> Database.
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		userDao = new UserDao();
-		subscriptionDao = new SubscriptionDao();
-		vendorDao = new VendorDao();
+		this.metier = AppWiring.getMetier();
 	}
 
 	// ============================================================
@@ -66,6 +59,135 @@ public class AuthServlet extends HttpServlet {
 		else { JsonUtil.sendError(response, 404, "Route non trouvee"); }
 	}
 
+	/**
+	 * Self-service account management:
+	 *   PUT /api/auth/profile  — update firstName / lastName / phone / city of the logged-in user
+	 *   PUT /api/auth/password — change own password (verifies current first)
+	 * Both routes require an authenticated session and operate on
+	 * session.userId only — the front-end cannot pass an arbitrary id.
+	 */
+	@Override
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String path = request.getPathInfo();
+		if ("/profile".equals(path)) { handleUpdateProfile(request, response); }
+		else if ("/password".equals(path)) { handleUpdatePassword(request, response); }
+		else { JsonUtil.sendError(response, 404, "Route non trouvee"); }
+	}
+
+	// ------------------------------------------------------------------
+	// Account management handlers (self-service)
+	// ------------------------------------------------------------------
+
+	private void handleUpdateProfile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HttpSession session = request.getSession(false);
+		if (session == null || session.getAttribute("userId") == null) {
+			JsonUtil.sendError(response, 401, "Non authentifie"); return;
+		}
+		int userId = (int) session.getAttribute("userId");
+		User current = metier.getUserById(userId);
+		if (current == null) { JsonUtil.sendError(response, 404, "Utilisateur non trouve"); return; }
+
+		String body = JsonUtil.readRequestBody(request);
+		String firstName = JsonUtil.getStringValue(body, "firstName");
+		String lastName  = JsonUtil.getStringValue(body, "lastName");
+		String phone     = JsonUtil.getStringValue(body, "phone");
+		String city      = JsonUtil.getStringValue(body, "city");
+
+		if (firstName == null || firstName.trim().isEmpty()) {
+			JsonUtil.sendError(response, 400, "Le prenom est obligatoire."); return;
+		}
+		if (lastName == null || lastName.trim().isEmpty()) {
+			JsonUtil.sendError(response, 400, "Le nom est obligatoire."); return;
+		}
+		// Defensive length caps — DB columns are VARCHAR(255).
+		if (firstName.length() > 100 || lastName.length() > 100
+				|| (phone != null && phone.length() > 40)
+				|| (city != null && city.length() > 100)) {
+			JsonUtil.sendError(response, 400, "Une des informations est trop longue."); return;
+		}
+		// Light phone validation: tolerant of +212 / 0 / 00212 / international.
+		if (phone != null && !phone.isEmpty()) {
+			String compact = phone.replaceAll("[\\s\\-\\.]", "");
+			if (!compact.matches("^\\+?\\d{8,15}$")) {
+				JsonUtil.sendError(response, 400, "Numero de telephone invalide."); return;
+			}
+			phone = compact;
+		}
+		String cleanCity = (city == null || city.trim().isEmpty()) ? current.getCity() : city.trim();
+
+		// Email is *never* taken from the request — login identifier, kept readonly.
+		boolean ok = metier.updateUser(
+			userId,
+			firstName.trim(),
+			lastName.trim(),
+			current.getEmail(),  // unchanged
+			phone == null ? current.getPhone() : phone,
+			cleanCity
+		);
+		if (!ok) {
+			JsonUtil.sendError(response, 500, "Impossible de mettre a jour vos informations pour le moment."); return;
+		}
+
+		// Refresh the cached User in session so other pages see the change immediately.
+		User refreshed = metier.getUserById(userId);
+		if (refreshed != null) session.setAttribute("user", refreshed);
+
+		String json = "{\"success\":true,\"message\":\"Vos informations ont ete mises a jour avec succes.\""
+			+ ",\"user\":{"
+			+ "\"id\":" + refreshed.getId()
+			+ ",\"firstName\":\"" + JsonUtil.escapeJson(refreshed.getFirstName()) + "\""
+			+ ",\"lastName\":\""  + JsonUtil.escapeJson(refreshed.getLastName())  + "\""
+			+ ",\"email\":\""     + JsonUtil.escapeJson(refreshed.getEmail())     + "\""
+			+ ",\"phone\":\""     + JsonUtil.escapeJson(refreshed.getPhone() == null ? "" : refreshed.getPhone()) + "\""
+			+ ",\"city\":\""      + JsonUtil.escapeJson(refreshed.getCity()  == null ? "" : refreshed.getCity())  + "\""
+			+ "}}";
+		JsonUtil.sendJson(response, json);
+	}
+
+	private void handleUpdatePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HttpSession session = request.getSession(false);
+		if (session == null || session.getAttribute("userId") == null) {
+			JsonUtil.sendError(response, 401, "Non authentifie"); return;
+		}
+		int userId = (int) session.getAttribute("userId");
+		String body = JsonUtil.readRequestBody(request);
+		String currentPwd = JsonUtil.getStringValue(body, "currentPassword");
+		String newPwd     = JsonUtil.getStringValue(body, "newPassword");
+		String confirmPwd = JsonUtil.getStringValue(body, "confirmPassword");
+
+		if (currentPwd == null || newPwd == null || confirmPwd == null) {
+			JsonUtil.sendError(response, 400, "Tous les champs sont obligatoires."); return;
+		}
+		if (!newPwd.equals(confirmPwd)) {
+			JsonUtil.sendError(response, 400, "Les deux mots de passe ne correspondent pas."); return;
+		}
+		if (newPwd.length() < 8) {
+			JsonUtil.sendError(response, 400, "Le nouveau mot de passe doit contenir au moins 8 caracteres."); return;
+		}
+		if (newPwd.equals(currentPwd)) {
+			JsonUtil.sendError(response, 400, "Le nouveau mot de passe doit etre different de l'actuel."); return;
+		}
+
+		String result = metier.updateUserPassword(userId, currentPwd, newPwd);
+		switch (result) {
+			case "OK":
+				JsonUtil.sendJson(response,
+					"{\"success\":true,\"message\":\"Votre mot de passe a ete modifie avec succes.\"}");
+				return;
+			case "WRONG_CURRENT":
+				JsonUtil.sendError(response, 400, "Le mot de passe actuel est incorrect.");
+				return;
+			case "TOO_SHORT":
+				JsonUtil.sendError(response, 400, "Le nouveau mot de passe est trop court.");
+				return;
+			case "USER_NOT_FOUND":
+				JsonUtil.sendError(response, 404, "Utilisateur introuvable.");
+				return;
+			default:
+				JsonUtil.sendError(response, 500, "Impossible de modifier le mot de passe pour le moment.");
+		}
+	}
+
 	// ============================================================
 	// AUTH ENDPOINTS (login, register, logout, me)
 	// ============================================================
@@ -76,7 +198,7 @@ public class AuthServlet extends HttpServlet {
 		String password = JsonUtil.getStringValue(body, "password");
 		if (email == null || password == null) { JsonUtil.sendError(response, 400, "Email et mot de passe requis"); return; }
 
-		User user = userDao.authenticate(email, password);
+		User user = metier.authenticate(email, password);
 		if (user == null) { JsonUtil.sendError(response, 401, "Email ou mot de passe incorrect"); return; }
 
 		HttpSession session = request.getSession();
@@ -107,7 +229,7 @@ public class AuthServlet extends HttpServlet {
 		if (email == null || password == null || firstName == null || lastName == null) {
 			JsonUtil.sendError(response, 400, "Champs obligatoires manquants"); return;
 		}
-		if (userDao.findByEmail(email) != null) { JsonUtil.sendError(response, 409, "Cet email est deja utilise"); return; }
+		if (metier.getUserByEmail(email) != null) { JsonUtil.sendError(response, 409, "Cet email est deja utilise"); return; }
 
 		// Regle metier : tout email se terminant par @ayora.ma est un compte
 		// interne (equipe Ayora) et passe directement en PREMIUM.
@@ -119,28 +241,17 @@ public class AuthServlet extends HttpServlet {
 		user.setFirstName(firstName); user.setLastName(lastName);
 		user.setPhone(phone); user.setCity("Fes");
 		user.setSubscriptionType(plan);
-		int userId = userDao.create(user);
+		int userId = metier.createUser(user);
 		if (userId == -1) { JsonUtil.sendError(response, 500, "Erreur creation"); return; }
 
 		Subscription sub = new Subscription(); sub.setUserId(userId); sub.setPlan(plan);
-		subscriptionDao.create(sub); user.setId(userId);
+		metier.addSubscription(sub); user.setId(userId);
 
 		// Le DAO peut ne pas avoir tenu compte du subscription_type passe en
 		// objet User (selon implementation). On force ici la valeur en base
 		// pour garantir le PREMIUM des comptes internes Ayora.
 		if (isAyoraStaff) {
-			Connection conn = null;
-			try {
-				conn = DatabaseConnection.getConnection();
-				PreparedStatement ps = conn.prepareStatement(
-						"UPDATE users SET subscription_type = 'PREMIUM' WHERE id = ?");
-				ps.setInt(1, userId);
-				ps.executeUpdate();
-			} catch (SQLException e) {
-				System.out.println("## Erreur upgrade auto Premium ayora.ma : " + e.getMessage());
-			} finally {
-				DatabaseConnection.closeConnection(conn);
-			}
+			metier.changeSubscription(userId, "PREMIUM");
 		}
 
 		HttpSession session = request.getSession();
@@ -165,9 +276,9 @@ public class AuthServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userId") == null) { JsonUtil.sendError(response, 401, "Non authentifie"); return; }
 		int userId = (int) session.getAttribute("userId");
-		User user = userDao.findById(userId);
+		User user = metier.getUserById(userId);
 		if (user == null) { JsonUtil.sendError(response, 404, "Utilisateur non trouve"); return; }
-		Subscription sub = subscriptionDao.findByUserId(userId);
+		Subscription sub = metier.getSubscription(userId);
 
 		String json = "{\"user\":{"
 				+ "\"id\":" + user.getId()
@@ -195,29 +306,19 @@ public class AuthServlet extends HttpServlet {
 	private boolean checkAdmin(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		HttpSession s = req.getSession(false);
 		if (s == null || s.getAttribute("userId") == null) { JsonUtil.sendError(res, 401, "Non authentifie"); return false; }
-		User u = userDao.findById((int) s.getAttribute("userId"));
+		User u = metier.getUserById((int) s.getAttribute("userId"));
 		if (u == null || !"ADMIN".equals(u.getRole())) { JsonUtil.sendError(res, 403, "Acces refuse"); return false; }
 		return true;
 	}
 
 	private void handleAdminStats(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (!checkAdmin(request, response)) return;
-		int totalUsers = userDao.countAll();
-		int totalClients = userDao.countByRole("CLIENT");
-		int totalPrestataires = userDao.countByRole("PRESTATAIRE");
-		int totalVendors = vendorDao.findAll().size();
-
-		// Count devis and rdv
-		int totalDevis = 0; int totalRdv = 0;
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			ResultSet rs1 = conn.prepareStatement("SELECT COUNT(*) FROM demandes_devis").executeQuery();
-			if (rs1.next()) totalDevis = rs1.getInt(1);
-			ResultSet rs2 = conn.prepareStatement("SELECT COUNT(*) FROM rendez_vous").executeQuery();
-			if (rs2.next()) totalRdv = rs2.getInt(1);
-		} catch (SQLException e) { System.out.println("## Stats error: " + e.getMessage()); }
-		finally { DatabaseConnection.closeConnection(conn); }
+		int totalUsers = metier.countUsers();
+		int totalClients = metier.countUsersByRole("CLIENT");
+		int totalPrestataires = metier.countUsersByRole("PRESTATAIRE");
+		int totalVendors = metier.getAllVendors().size();
+		int totalDevis = metier.countDevis();
+		int totalRdv = metier.countRendezVous();
 
 		String json = "{\"totalUsers\":" + totalUsers + ",\"totalClients\":" + totalClients
 				+ ",\"totalPrestataires\":" + totalPrestataires + ",\"totalVendors\":" + totalVendors
@@ -227,7 +328,7 @@ public class AuthServlet extends HttpServlet {
 
 	private void handleAdminUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (!checkAdmin(request, response)) return;
-		List<User> users = userDao.findAll();
+		List<User> users = metier.getAllUsers();
 		StringBuilder json = new StringBuilder("[");
 		for (int i = 0; i < users.size(); i++) {
 			User u = users.get(i);
@@ -248,7 +349,7 @@ public class AuthServlet extends HttpServlet {
 
 	private void handleAdminVendors(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (!checkAdmin(request, response)) return;
-		List<Vendor> vendors = vendorDao.findAll();
+		List<Vendor> vendors = metier.getAllVendors();
 		StringBuilder json = new StringBuilder("[");
 		for (int i = 0; i < vendors.size(); i++) {
 			Vendor v = vendors.get(i);
@@ -287,91 +388,48 @@ public class AuthServlet extends HttpServlet {
 
 		if (vendorIdStr == null) { JsonUtil.sendError(response, 400, "vendorId requis"); return; }
 
-		Connection conn = null;
 		try {
-			conn = DatabaseConnection.getConnection();
-			String sql = "INSERT INTO demandes_devis (client_id, vendor_id, budget_min, budget_max, message, date_mariage, nb_invites) VALUES (?,?,?,?,?,?,?)";
-			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, clientId);
-			ps.setInt(2, Integer.parseInt(vendorIdStr));
-			ps.setDouble(3, budgetMinStr != null ? Double.parseDouble(budgetMinStr) : 0);
-			ps.setDouble(4, budgetMaxStr != null ? Double.parseDouble(budgetMaxStr) : 0);
-			ps.setString(5, message != null ? message : "");
-			ps.setString(6, dateMariage != null ? dateMariage : "");
-			ps.setInt(7, nbInvitesStr != null ? Integer.parseInt(nbInvitesStr) : 0);
-			ps.executeUpdate();
-			ResultSet keys = ps.getGeneratedKeys();
-			int id = keys.next() ? keys.getInt(1) : 0;
+			Devis d = new Devis();
+			d.setClientId(clientId);
+			d.setVendorId(Integer.parseInt(vendorIdStr));
+			d.setBudgetMin(budgetMinStr != null ? Double.parseDouble(budgetMinStr) : 0);
+			d.setBudgetMax(budgetMaxStr != null ? Double.parseDouble(budgetMaxStr) : 0);
+			d.setMessage(message);
+			d.setDateMariage(dateMariage);
+			d.setNbInvites(nbInvitesStr != null ? Integer.parseInt(nbInvitesStr) : 0);
+
+			int id = metier.addDevis(d);
+			if (id <= 0) { JsonUtil.sendError(response, 500, "Erreur creation devis"); return; }
 			JsonUtil.sendJson(response, "{\"success\":true,\"id\":" + id + "}");
-		} catch (Exception e) {
-			System.out.println("## Erreur devis create: " + e.getMessage());
-			JsonUtil.sendError(response, 500, "Erreur creation devis");
-		} finally { DatabaseConnection.closeConnection(conn); }
+		} catch (NumberFormatException e) {
+			JsonUtil.sendError(response, 400, "Format numerique invalide");
+		}
 	}
 
 	private void handleDevisList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userId") == null) { JsonUtil.sendError(response, 401, "Non authentifie"); return; }
 		int userId = (int) session.getAttribute("userId");
-		User currentUser = userDao.findById(userId);
+		User currentUser = metier.getUserById(userId);
 		if (currentUser == null) { JsonUtil.sendError(response, 404, "User not found"); return; }
 
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			String sql = "SELECT d.*, u.first_name AS client_fn, u.last_name AS client_ln, u.email AS client_email, u.phone AS client_phone, "
-					+ "v.name AS vendor_name, vc.name_fr AS vendor_cat "
-					+ "FROM demandes_devis d "
-					+ "JOIN users u ON d.client_id = u.id "
-					+ "JOIN vendors v ON d.vendor_id = v.id "
-					+ "JOIN vendor_categories vc ON v.category_id = vc.id ";
+		List<Devis> devis;
+		String role = currentUser.getRole();
+		if ("CLIENT".equals(role)) {
+			devis = metier.getDevisByClient(userId);
+		} else if ("PRESTATAIRE".equals(role) && currentUser.getVendorId() > 0) {
+			devis = metier.getDevisByVendor(currentUser.getVendorId());
+		} else {
+			devis = metier.getAllDevis();
+		}
 
-			String role = currentUser.getRole();
-			if ("CLIENT".equals(role)) {
-				sql += "WHERE d.client_id = ? ";
-			} else if ("PRESTATAIRE".equals(role) && currentUser.getVendorId() > 0) {
-				sql += "WHERE d.vendor_id = ? ";
-			}
-			// ADMIN sees all
-			sql += "ORDER BY d.created_at DESC";
-
-			PreparedStatement ps = conn.prepareStatement(sql);
-			if ("CLIENT".equals(role)) {
-				ps.setInt(1, userId);
-			} else if ("PRESTATAIRE".equals(role) && currentUser.getVendorId() > 0) {
-				ps.setInt(1, currentUser.getVendorId());
-			}
-
-			ResultSet rs = ps.executeQuery();
-			StringBuilder json = new StringBuilder("[");
-			boolean first = true;
-			while (rs.next()) {
-				if (!first) json.append(",");
-				first = false;
-				json.append("{\"id\":").append(rs.getInt("id"))
-					.append(",\"clientId\":").append(rs.getInt("client_id"))
-					.append(",\"vendorId\":").append(rs.getInt("vendor_id"))
-					.append(",\"clientName\":\"").append(JsonUtil.escapeJson(rs.getString("client_fn") + " " + rs.getString("client_ln"))).append("\"")
-					.append(",\"clientEmail\":\"").append(JsonUtil.escapeJson(rs.getString("client_email") != null ? rs.getString("client_email") : "")).append("\"")
-					.append(",\"clientPhone\":\"").append(JsonUtil.escapeJson(rs.getString("client_phone") != null ? rs.getString("client_phone") : "")).append("\"")
-					.append(",\"vendorName\":\"").append(JsonUtil.escapeJson(rs.getString("vendor_name"))).append("\"")
-					.append(",\"vendorCat\":\"").append(JsonUtil.escapeJson(rs.getString("vendor_cat"))).append("\"")
-					.append(",\"budgetMin\":").append(rs.getDouble("budget_min"))
-					.append(",\"budgetMax\":").append(rs.getDouble("budget_max"))
-					.append(",\"message\":\"").append(JsonUtil.escapeJson(rs.getString("message") != null ? rs.getString("message") : "")).append("\"")
-					.append(",\"dateMariage\":\"").append(JsonUtil.escapeJson(rs.getString("date_mariage") != null ? rs.getString("date_mariage") : "")).append("\"")
-					.append(",\"nbInvites\":").append(rs.getInt("nb_invites"))
-					.append(",\"statut\":\"").append(rs.getString("statut")).append("\"")
-					.append(",\"reponse\":\"").append(JsonUtil.escapeJson(rs.getString("reponse_prestataire") != null ? rs.getString("reponse_prestataire") : "")).append("\"")
-					.append(",\"createdAt\":\"").append(rs.getString("created_at")).append("\"")
-					.append("}");
-			}
-			json.append("]");
-			JsonUtil.sendJson(response, json.toString());
-		} catch (SQLException e) {
-			System.out.println("## Erreur devis list: " + e.getMessage());
-			JsonUtil.sendJson(response, "[]");
-		} finally { DatabaseConnection.closeConnection(conn); }
+		StringBuilder json = new StringBuilder("[");
+		for (int i = 0; i < devis.size(); i++) {
+			if (i > 0) json.append(",");
+			json.append(buildDevisJson(devis.get(i)));
+		}
+		json.append("]");
+		JsonUtil.sendJson(response, json.toString());
 	}
 
 	private void handleDevisUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -384,20 +442,13 @@ public class AuthServlet extends HttpServlet {
 		String reponse = JsonUtil.getStringValue(body, "reponse");
 		if (idStr == null || statut == null) { JsonUtil.sendError(response, 400, "id et statut requis"); return; }
 
-		Connection conn = null;
 		try {
-			conn = DatabaseConnection.getConnection();
-			String sql = "UPDATE demandes_devis SET statut = ?, reponse_prestataire = ? WHERE id = ?";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, statut);
-			ps.setString(2, reponse != null ? reponse : "");
-			ps.setInt(3, Integer.parseInt(idStr));
-			ps.executeUpdate();
-			JsonUtil.sendJson(response, "{\"success\":true}");
-		} catch (Exception e) {
-			System.out.println("## Erreur devis update: " + e.getMessage());
-			JsonUtil.sendError(response, 500, "Erreur mise a jour");
-		} finally { DatabaseConnection.closeConnection(conn); }
+			boolean ok = metier.updateDevisStatutAndReponse(Integer.parseInt(idStr), statut, reponse);
+			if (ok) JsonUtil.sendJson(response, "{\"success\":true}");
+			else JsonUtil.sendError(response, 500, "Erreur mise a jour");
+		} catch (NumberFormatException e) {
+			JsonUtil.sendError(response, 400, "id invalide");
+		}
 	}
 
 	// ============================================================
@@ -417,77 +468,46 @@ public class AuthServlet extends HttpServlet {
 		String note = JsonUtil.getStringValue(body, "note");
 		if (vendorIdStr == null || dateRdv == null) { JsonUtil.sendError(response, 400, "vendorId et dateRdv requis"); return; }
 
-		Connection conn = null;
 		try {
-			conn = DatabaseConnection.getConnection();
-			String sql = "INSERT INTO rendez_vous (client_id, vendor_id, date_rdv, heure_rdv, lieu, note) VALUES (?,?,?,?,?,?)";
-			PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, clientId);
-			ps.setInt(2, Integer.parseInt(vendorIdStr));
-			ps.setString(3, dateRdv);
-			ps.setString(4, heureRdv != null ? heureRdv : "");
-			ps.setString(5, lieu != null ? lieu : "A definir");
-			ps.setString(6, note != null ? note : "");
-			ps.executeUpdate();
-			ResultSet keys = ps.getGeneratedKeys();
-			int id = keys.next() ? keys.getInt(1) : 0;
+			RendezVous r = new RendezVous();
+			r.setClientId(clientId);
+			r.setVendorId(Integer.parseInt(vendorIdStr));
+			r.setDateRdv(dateRdv);
+			r.setHeureRdv(heureRdv);
+			r.setLieu(lieu);
+			r.setNote(note);
+			int id = metier.addRendezVous(r);
+			if (id <= 0) { JsonUtil.sendError(response, 500, "Erreur creation rdv"); return; }
 			JsonUtil.sendJson(response, "{\"success\":true,\"id\":" + id + "}");
-		} catch (Exception e) {
-			System.out.println("## Erreur rdv create: " + e.getMessage());
-			JsonUtil.sendError(response, 500, "Erreur creation rdv");
-		} finally { DatabaseConnection.closeConnection(conn); }
+		} catch (NumberFormatException e) {
+			JsonUtil.sendError(response, 400, "Format numerique invalide");
+		}
 	}
 
 	private void handleRdvList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userId") == null) { JsonUtil.sendError(response, 401, "Non authentifie"); return; }
 		int userId = (int) session.getAttribute("userId");
-		User currentUser = userDao.findById(userId);
+		User currentUser = metier.getUserById(userId);
 		if (currentUser == null) { JsonUtil.sendError(response, 404, "User not found"); return; }
 
-		Connection conn = null;
-		try {
-			conn = DatabaseConnection.getConnection();
-			String sql = "SELECT r.*, u.first_name AS client_fn, u.last_name AS client_ln, u.phone AS client_phone, "
-					+ "v.name AS vendor_name FROM rendez_vous r "
-					+ "JOIN users u ON r.client_id = u.id "
-					+ "JOIN vendors v ON r.vendor_id = v.id ";
+		List<RendezVous> rdvs;
+		String role = currentUser.getRole();
+		if ("CLIENT".equals(role)) {
+			rdvs = metier.getRendezVousByClient(userId);
+		} else if ("PRESTATAIRE".equals(role) && currentUser.getVendorId() > 0) {
+			rdvs = metier.getRendezVousByVendor(currentUser.getVendorId());
+		} else {
+			rdvs = metier.getAllRendezVous();
+		}
 
-			String role = currentUser.getRole();
-			if ("CLIENT".equals(role)) { sql += "WHERE r.client_id = ? "; }
-			else if ("PRESTATAIRE".equals(role) && currentUser.getVendorId() > 0) { sql += "WHERE r.vendor_id = ? "; }
-			sql += "ORDER BY r.date_rdv ASC";
-
-			PreparedStatement ps = conn.prepareStatement(sql);
-			if ("CLIENT".equals(role)) { ps.setInt(1, userId); }
-			else if ("PRESTATAIRE".equals(role) && currentUser.getVendorId() > 0) { ps.setInt(1, currentUser.getVendorId()); }
-
-			ResultSet rs = ps.executeQuery();
-			StringBuilder json = new StringBuilder("[");
-			boolean first = true;
-			while (rs.next()) {
-				if (!first) json.append(",");
-				first = false;
-				json.append("{\"id\":").append(rs.getInt("id"))
-					.append(",\"clientId\":").append(rs.getInt("client_id"))
-					.append(",\"vendorId\":").append(rs.getInt("vendor_id"))
-					.append(",\"clientName\":\"").append(JsonUtil.escapeJson(rs.getString("client_fn") + " " + rs.getString("client_ln"))).append("\"")
-					.append(",\"clientPhone\":\"").append(JsonUtil.escapeJson(rs.getString("client_phone") != null ? rs.getString("client_phone") : "")).append("\"")
-					.append(",\"vendorName\":\"").append(JsonUtil.escapeJson(rs.getString("vendor_name"))).append("\"")
-					.append(",\"dateRdv\":\"").append(rs.getString("date_rdv")).append("\"")
-					.append(",\"heureRdv\":\"").append(JsonUtil.escapeJson(rs.getString("heure_rdv") != null ? rs.getString("heure_rdv") : "")).append("\"")
-					.append(",\"lieu\":\"").append(JsonUtil.escapeJson(rs.getString("lieu") != null ? rs.getString("lieu") : "")).append("\"")
-					.append(",\"note\":\"").append(JsonUtil.escapeJson(rs.getString("note") != null ? rs.getString("note") : "")).append("\"")
-					.append(",\"statut\":\"").append(rs.getString("statut")).append("\"")
-					.append(",\"createdAt\":\"").append(rs.getString("created_at")).append("\"")
-					.append("}");
-			}
-			json.append("]");
-			JsonUtil.sendJson(response, json.toString());
-		} catch (SQLException e) {
-			System.out.println("## Erreur rdv list: " + e.getMessage());
-			JsonUtil.sendJson(response, "[]");
-		} finally { DatabaseConnection.closeConnection(conn); }
+		StringBuilder json = new StringBuilder("[");
+		for (int i = 0; i < rdvs.size(); i++) {
+			if (i > 0) json.append(",");
+			json.append(buildRdvJson(rdvs.get(i)));
+		}
+		json.append("]");
+		JsonUtil.sendJson(response, json.toString());
 	}
 
 	private void handleRdvUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -499,18 +519,13 @@ public class AuthServlet extends HttpServlet {
 		String statut = JsonUtil.getStringValue(body, "statut");
 		if (idStr == null || statut == null) { JsonUtil.sendError(response, 400, "id et statut requis"); return; }
 
-		Connection conn = null;
 		try {
-			conn = DatabaseConnection.getConnection();
-			PreparedStatement ps = conn.prepareStatement("UPDATE rendez_vous SET statut = ? WHERE id = ?");
-			ps.setString(1, statut);
-			ps.setInt(2, Integer.parseInt(idStr));
-			ps.executeUpdate();
-			JsonUtil.sendJson(response, "{\"success\":true}");
-		} catch (Exception e) {
-			System.out.println("## Erreur rdv update: " + e.getMessage());
-			JsonUtil.sendError(response, 500, "Erreur mise a jour");
-		} finally { DatabaseConnection.closeConnection(conn); }
+			boolean ok = metier.updateRendezVousStatut(Integer.parseInt(idStr), statut);
+			if (ok) JsonUtil.sendJson(response, "{\"success\":true}");
+			else JsonUtil.sendError(response, 500, "Erreur mise a jour");
+		} catch (NumberFormatException e) {
+			JsonUtil.sendError(response, 400, "id invalide");
+		}
 	}
 
 	// ============================================================
@@ -521,12 +536,12 @@ public class AuthServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("userId") == null) { JsonUtil.sendError(response, 401, "Non authentifie"); return; }
 		int userId = (int) session.getAttribute("userId");
-		User user = userDao.findById(userId);
+		User user = metier.getUserById(userId);
 		if (user == null || !"PRESTATAIRE".equals(user.getRole())) { JsonUtil.sendError(response, 403, "Acces refuse"); return; }
 
 		int vendorId = user.getVendorId();
 		if (vendorId <= 0) { JsonUtil.sendJson(response, "{\"vendor\":null}"); return; }
-		Vendor vendor = vendorDao.findById(vendorId);
+		Vendor vendor = metier.getVendor(vendorId);
 		if (vendor == null) { JsonUtil.sendJson(response, "{\"vendor\":null}"); return; }
 
 		StringBuilder json = new StringBuilder();
@@ -544,4 +559,45 @@ public class AuthServlet extends HttpServlet {
 			.append("}}");
 		JsonUtil.sendJson(response, json.toString());
 	}
+
+	// ============================================================
+	// JSON BUILDERS
+	// ============================================================
+
+	private String buildDevisJson(Devis d) {
+		return "{\"id\":" + d.getId()
+			+ ",\"clientId\":" + d.getClientId()
+			+ ",\"vendorId\":" + d.getVendorId()
+			+ ",\"clientName\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getClientFirstName()) + " " + JsonUtil.safe(d.getClientLastName())) + "\""
+			+ ",\"clientEmail\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getClientEmail())) + "\""
+			+ ",\"clientPhone\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getClientPhone())) + "\""
+			+ ",\"vendorName\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getVendorName())) + "\""
+			+ ",\"vendorCat\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getVendorCategory())) + "\""
+			+ ",\"budgetMin\":" + d.getBudgetMin()
+			+ ",\"budgetMax\":" + d.getBudgetMax()
+			+ ",\"message\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getMessage())) + "\""
+			+ ",\"dateMariage\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getDateMariage())) + "\""
+			+ ",\"nbInvites\":" + d.getNbInvites()
+			+ ",\"statut\":\"" + JsonUtil.safe(d.getStatut()) + "\""
+			+ ",\"reponse\":\"" + JsonUtil.escapeJson(JsonUtil.safe(d.getReponsePrestataire())) + "\""
+			+ ",\"createdAt\":\"" + JsonUtil.safe(d.getCreatedAt()) + "\""
+			+ "}";
+	}
+
+	private String buildRdvJson(RendezVous r) {
+		return "{\"id\":" + r.getId()
+			+ ",\"clientId\":" + r.getClientId()
+			+ ",\"vendorId\":" + r.getVendorId()
+			+ ",\"clientName\":\"" + JsonUtil.escapeJson(JsonUtil.safe(r.getClientFirstName()) + " " + JsonUtil.safe(r.getClientLastName())) + "\""
+			+ ",\"clientPhone\":\"" + JsonUtil.escapeJson(JsonUtil.safe(r.getClientPhone())) + "\""
+			+ ",\"vendorName\":\"" + JsonUtil.escapeJson(JsonUtil.safe(r.getVendorName())) + "\""
+			+ ",\"dateRdv\":\"" + JsonUtil.safe(r.getDateRdv()) + "\""
+			+ ",\"heureRdv\":\"" + JsonUtil.escapeJson(JsonUtil.safe(r.getHeureRdv())) + "\""
+			+ ",\"lieu\":\"" + JsonUtil.escapeJson(JsonUtil.safe(r.getLieu())) + "\""
+			+ ",\"note\":\"" + JsonUtil.escapeJson(JsonUtil.safe(r.getNote())) + "\""
+			+ ",\"statut\":\"" + JsonUtil.safe(r.getStatut()) + "\""
+			+ ",\"createdAt\":\"" + JsonUtil.safe(r.getCreatedAt()) + "\""
+			+ "}";
+	}
+
 }
