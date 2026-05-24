@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ayora — Assistante AYORA</title>
+	<link rel="stylesheet" href="css/styles.css?v=30">
+	<link rel="stylesheet" href="css/account.css?v=1">
+	<link rel="stylesheet" href="css/assistant.css?v=4">
+</head>
+<body>
+
+	<!-- NAVIGATION -->
+		<div class="menu-bar">
+		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
+		<nav>
+			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
+			<span onclick="location.href='recommendations.html'">Recommandations</span>
+			<span onclick="location.href='mychoices.html'">Mes choix</span>
+			<span onclick="location.href='vendors.html'">Prestataires</span>
+			<span onclick="location.href='guests.html'">Invités</span>
+			<span onclick="location.href='invitations.html'">Invitations</span>
+			<span class="active" onclick="location.href='assistant.html'">Assistante AYORA</span>
+		</nav>
+		<div class="user-info">
+			<span id="userName"></span>
+			<span onclick="logout()" style="cursor:pointer;">Déconnexion</span>
+			<span id="userBadge" class="badge-free">FREE</span>
+		</div>
+	</div>
+
+	<div class="assistant-shell">
+
+		<!-- SIDEBAR : profile snapshot + quick prompts -->
+		<aside class="assistant-sidebar">
+			<span class="acc">Ton mariage</span>
+			<h3>Profil en un coup d'œil</h3>
+
+			<div class="assistant-profile" id="profileSummary">
+				<div class="row empty">
+					<div class="ic">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round">
+							<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+							<circle cx="12" cy="10" r="3"/>
+						</svg>
+					</div>
+					<div class="meta">
+						<span class="label">Lieu</span>
+						<span class="value">Chargement…</span>
+					</div>
+				</div>
+			</div>
+
+			<p class="chips-title">Démarrer une conversation</p>
+			<div class="assistant-chips" id="quickPrompts">
+				<button class="assistant-chip" type="button">Comment répartir mon budget ?</button>
+				<button class="assistant-chip" type="button">Que préparer 3 mois avant ?</button>
+				<button class="assistant-chip" type="button">Aide-moi à choisir une salle</button>
+				<button class="assistant-chip" type="button">Comparer deux prestataires</button>
+				<button class="assistant-chip" type="button">Je suis stressée, par où commencer ?</button>
+				<button class="assistant-chip" type="button" lang="ar" dir="rtl">بغيت ندير عرس بميزانية 60000 درهم</button>
+				<button class="assistant-chip" type="button">Chno khasni nwjed 3 mois 9bel l3ers ?</button>
+			</div>
+		</aside>
+
+		<!-- MAIN : conversation -->
+		<section class="assistant-main">
+			<header class="assistant-header">
+				<div class="assistant-avatar">A</div>
+				<div class="title-block">
+					<h2>Assistante AYORA</h2>
+					<div class="subtitle">Ton accompagnatrice intelligente pour organiser un mariage harmonieux à Fès.</div>
+				</div>
+				<button type="button" id="newConversationBtn" class="suggested-chip" style="margin-right:10px;"
+						title="Effacer la conversation actuelle et recommencer">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;vertical-align:-2px;margin-right:5px;">
+						<polyline points="1 4 1 10 7 10"/>
+						<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+					</svg>Nouvelle conversation
+				</button>
+				<span class="demo-badge" id="providerStatusBadge"
+						title="Sera remplacé par le modèle Gemma fine-tuné dès qu'il sera déployé.">
+					Mode démo
+				</span>
+			</header>
+
+			<div class="assistant-stream" id="chatStream" aria-live="polite"></div>
+
+			<form class="assistant-composer" id="chatForm">
+				<div class="composer-row">
+					<textarea id="chatInput" rows="1"
+						placeholder="Écris en français, en darija, ou en mélange — je m'adapte…"></textarea>
+					<button type="submit" class="composer-send" aria-label="Envoyer">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="22" y1="2" x2="11" y2="13"/>
+							<polygon points="22 2 15 22 11 13 2 9 22 2"/>
+						</svg>
+					</button>
+				</div>
+				<div class="composer-hint">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+						stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+					</svg>
+					AYORA ne propose jamais un nom de prestataire, un tarif ou une disponibilité sans données réelles d'AYORA.
+				</div>
+			</form>
+		</section>
+	</div>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
+
+	<script src="js/api.js"></script>
+	<script src="js/format.js"></script>
+	<script src="js/ayora-ui.js"></script>
+	<script src="js/assistant.js?v=2"></script>
+
+	<script>
+	(function() {
+		'use strict';
+
+		var user = checkAuth();
+		if (!user) return;
+		applyAccountHeader(user);
+
+		var stream = document.getElementById('chatStream');
+		var input = document.getElementById('chatInput');
+		var form = document.getElementById('chatForm');
+		var summaryEl = document.getElementById('profileSummary');
+		var chipsBox = document.getElementById('quickPrompts');
+
+		// 1) Greet the user.
+		AyoraAssistant.greet(stream, user.firstName);
+
+		// New conversation button — clears the session history server-side
+		// and resets the visible stream.
+		var newConvBtn = document.getElementById('newConversationBtn');
+		if (newConvBtn) {
+			newConvBtn.addEventListener('click', function() {
+				AyoraAssistant.resetConversation(stream).then(function() {
+					AyoraAssistant.greet(stream, user.firstName);
+				});
+			});
+		}
+
+		// Update provider status badge ("Mode démo" stays only while no real LLM is configured).
+		api.get('/api/assistant/health').then(function(d) {
+			var badge = document.getElementById('providerStatusBadge');
+			if (!badge) return;
+			if (d && d.fallbackMode === false) {
+				badge.textContent = 'Assistante connectée';
+				badge.title = 'Fournisseur actif : ' + (d.providers || 'inconnu');
+			} else {
+				badge.textContent = 'Mode démo';
+				badge.title = 'Aucun fournisseur IA configuré — fallback hors-ligne';
+			}
+		}).catch(function() {});
+
+		// 2) Pull the profile snapshot from the recommendations endpoint (already
+		//    returns a complete UserProfile-derived payload). If the questionnaire
+		//    is not done, prompt the user to complete it.
+		api.get('/api/recommendations').then(function(data) {
+			if (!data || data._nonJson) return;
+			if (!data.completed) {
+				renderProfileEmpty(summaryEl);
+				return;
+			}
+			renderProfile(summaryEl, data.profile);
+		}).catch(function() { renderProfileEmpty(summaryEl); });
+
+		// 3) Quick-prompt chips: clicking submits directly.
+		Array.prototype.forEach.call(chipsBox.querySelectorAll('.assistant-chip'), function(btn) {
+			btn.addEventListener('click', function() {
+				submitMessage(btn.textContent);
+			});
+		});
+
+		// 4) Composer behaviour.
+		form.addEventListener('submit', function(ev) {
+			ev.preventDefault();
+			var msg = input.value.trim();
+			if (!msg) return;
+			input.value = '';
+			autoResize();
+			submitMessage(msg);
+		});
+
+		input.addEventListener('keydown', function(ev) {
+			if (ev.key === 'Enter' && !ev.shiftKey) {
+				ev.preventDefault();
+				form.dispatchEvent(new Event('submit'));
+			}
+		});
+
+		input.addEventListener('input', autoResize);
+
+		function submitMessage(text) {
+			AyoraAssistant.send({
+				message: text,
+				streamEl: stream,
+				currentPage: 'assistant'
+			});
+		}
+
+		function autoResize() {
+			input.style.height = 'auto';
+			input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+		}
+
+		// ---- Profile sidebar rendering ----------------------------------
+
+		function renderProfile(target, p) {
+			target.innerHTML = '';
+			append(target, iconMap, 'Ville', p.userCity || 'Fès');
+			append(target, iconUsers, 'Invités', p.nbInvites > 0 ? p.nbInvites : 'à préciser');
+			append(target, iconWallet, 'Budget', p.budgetTotal > 0 ? formatPrice(p.budgetTotal) : 'à préciser');
+			append(target, iconStar, 'Style', capitalize(p.style || p.ambiance || '—'));
+			if (p.budgetTier) append(target, iconBadge, 'Confort budgétaire', tierLabel(p.budgetTier));
+		}
+
+		function renderProfileEmpty(target) {
+			target.innerHTML =
+				'<div class="row empty">' +
+					'<div class="ic">' + iconClipboard + '</div>' +
+					'<div class="meta">' +
+						'<span class="label">Questionnaire</span>' +
+						'<span class="value">À remplir pour personnaliser</span>' +
+					'</div>' +
+				'</div>';
+		}
+
+		function append(target, icon, label, value) {
+			var row = document.createElement('div');
+			row.className = 'row';
+			row.innerHTML =
+				'<div class="ic">' + icon + '</div>' +
+				'<div class="meta">' +
+					'<span class="label">' + label + '</span>' +
+					'<span class="value">' + (value == null ? '—' : value) + '</span>' +
+				'</div>';
+			target.appendChild(row);
+		}
+
+		function capitalize(s) {
+			if (!s) return '—';
+			s = s.toString().toLowerCase().replace(/_/g, ' ');
+			return s.charAt(0).toUpperCase() + s.slice(1);
+		}
+
+		function tierLabel(tier) {
+			var m = {
+				'SERRE': 'Serré',
+				'CONFORTABLE': 'Confortable',
+				'GENEREUX': 'Généreux',
+				'ILLIMITE': 'Sans limite'
+			};
+			return m[tier] || capitalize(tier);
+		}
+
+		// ---- Inline icons ------------------------------------------------
+
+		var iconMap = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+		var iconUsers = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+		var iconWallet = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 12h.01"/></svg>';
+		var iconStar = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+		var iconBadge = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>';
+		var iconClipboard = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>';
+	})();
+	</script>
+	<script src="js/account-menu.js?v=1"></script>
+</body>
+</html>
