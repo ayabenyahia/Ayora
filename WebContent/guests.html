@@ -2,13 +2,148 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Invités</title>
-	<link rel="stylesheet" href="css/styles.css?v=26">
+	<link rel="stylesheet" href="css/styles.css?v=44">
+	<link rel="stylesheet" href="css/assistant.css?v=4">
+	<link rel="stylesheet" href="css/account.css?v=1">
+	<style>
+		.guests-toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			align-items: center;
+			margin-bottom: 18px;
+		}
+		.guests-toolbar input[type="text"] {
+			flex: 1;
+			min-width: 220px;
+			padding: 9px 14px;
+			border: 1px solid #DCC9B6;
+			border-radius: 10px;
+			font-family: inherit;
+			font-size: 14px;
+		}
+		.guests-toolbar input[type="text"]:focus { outline:none; border-color: #8B1A2B; }
+		.guests-stats {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+			gap: 10px;
+			margin-bottom: 18px;
+		}
+		.gst-card {
+			background: linear-gradient(135deg, #FDF7F2 0%, #F2DFCF 100%);
+			border-radius: 10px;
+			padding: 12px 14px;
+			border: 1px solid #EAE0D5;
+		}
+		.gst-card .v {
+			font-family: 'Cormorant Garamond', serif;
+			font-size: 22px;
+			font-weight: 700;
+			color: #8B1A2B;
+			line-height: 1;
+		}
+		.gst-card .l {
+			font-size: 11px;
+			color: #8B7A6E;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-top: 4px;
+		}
+
+		/* Modal CSV import */
+		.csv-modal-body { padding: 20px 26px; }
+		.csv-step { display:none; }
+		.csv-step.active { display:block; }
+		.csv-drop-zone {
+			border: 2px dashed #DCC9B6;
+			border-radius: 14px;
+			padding: 40px 20px;
+			text-align: center;
+			cursor: pointer;
+			transition: all 0.2s;
+			background: #FDFAF6;
+		}
+		.csv-drop-zone:hover { border-color: #8B1A2B; background: #FDF7F2; }
+		.csv-drop-zone.drag-over { border-color: #8B1A2B; background: #FDF7F2; }
+		.csv-drop-zone svg { color: #8B1A2B; margin-bottom: 10px; }
+		.csv-drop-zone p { margin: 6px 0; color: #5a4a3e; }
+		.csv-drop-zone .hint { font-size: 12px; color: #8B7A6E; }
+		.csv-drop-zone input[type="file"] { display:none; }
+
+		.csv-template-link {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 14px;
+			padding: 10px 16px;
+			background: #fff;
+			border: 1px solid #DCC9B6;
+			border-radius: 50px;
+			color: #5C0E1B;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+		}
+		.csv-template-link:hover { background: #FDF7F2; border-color: #8B1A2B; }
+
+		.csv-preview-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 14px;
+			font-size: 13px;
+		}
+		.csv-preview-table th, .csv-preview-table td {
+			padding: 8px 10px;
+			border-bottom: 1px solid #EAE0D5;
+			text-align: left;
+		}
+		.csv-preview-table th {
+			background: #FDF7F2;
+			color: #8B1A2B;
+			font-weight: 600;
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+		.csv-preview-table tr.skip { color: #C04A3F; opacity: 0.7; }
+		.csv-preview-table tr.skip::after { content: ''; }
+
+		.csv-summary {
+			background: linear-gradient(135deg, #FDF7F2, #FFF8E8);
+			border-radius: 10px;
+			padding: 14px 18px;
+			margin: 14px 0;
+			font-size: 14px;
+			color: #5a4a3e;
+			border-left: 3px solid #D4A853;
+		}
+		.csv-summary strong { color: #8B1A2B; }
+		.csv-progress-bar {
+			background: #F5EEE5;
+			height: 8px;
+			border-radius: 50px;
+			overflow: hidden;
+			margin: 10px 0;
+		}
+		.csv-progress-fill {
+			background: linear-gradient(90deg, #D4A853, #B8922F);
+			height: 100%;
+			width: 0%;
+			transition: width 0.3s;
+		}
+	</style>
 </head>
 <body>
 
-	<div class="menu-bar">
+		<div class="menu-bar">
 		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
 		<nav>
 			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
@@ -17,6 +152,7 @@
 			<span onclick="location.href='vendors.html'">Prestataires</span>
 			<span class="active" onclick="location.href='guests.html'">Invités</span>
 			<span onclick="location.href='invitations.html'">Invitations</span>
+			<span onclick="location.href='assistant.html'">Assistante AYORA</span>
 		</nav>
 		<div class="user-info">
 			<span id="userName"></span>
@@ -29,9 +165,26 @@
 	<div class="panel" style="margin:20px;">
 		<header>Liste des invités <span id="guestCount" class="text-muted" style="font-weight:normal;font-size:14px;"></span></header>
 		<div class="content">
-			<div class="button-panel">
-				<button class="btn btn-primary" onclick="openAddModal()">Ajouter un invité</button>
+
+			<!-- Toolbar : ajout + import + export + recherche -->
+			<div class="guests-toolbar">
+				<button class="btn btn-primary" onclick="openAddModal()">+ Ajouter un invité</button>
+				<button class="btn btn-secondary" onclick="openImportModal()">📥 Importer CSV</button>
+				<button class="btn btn-secondary" onclick="exportCSV()">📤 Exporter CSV</button>
+				<input type="text" id="searchGuests" placeholder="Rechercher un invité (nom, prénom, téléphone)..." oninput="renderGuests(ALL_GUESTS)">
+				<select id="filterGroupe" onchange="renderGuests(ALL_GUESTS)" style="padding:9px 14px;border:1px solid #DCC9B6;border-radius:10px;font-family:inherit;font-size:14px;">
+					<option value="">Tous les groupes</option>
+					<option value="FAMILLE_MARIEE">Famille mariée</option>
+					<option value="FAMILLE_MARIE">Famille marié</option>
+					<option value="AMIS_MARIEE">Amis mariée</option>
+					<option value="AMIS_MARIE">Amis marié</option>
+					<option value="COLLEGUES">Collègues</option>
+					<option value="AUTRES">Autres</option>
+				</select>
 			</div>
+
+			<!-- Stats compactes par groupe -->
+			<div id="guestStats" class="guests-stats" style="display:none;"></div>
 
 			<!-- TABLE -->
 			<div id="guestTableContainer">
@@ -52,18 +205,18 @@
 					<input type="hidden" id="guestId" value="">
 					<div class="form-row">
 						<div class="form-group">
-							<label for="guestFirstName">Prénom</label>
+							<label for="guestFirstName">Prénom *</label>
 							<input type="text" id="guestFirstName" required>
 						</div>
 						<div class="form-group">
-							<label for="guestLastName">Nom</label>
+							<label for="guestLastName">Nom *</label>
 							<input type="text" id="guestLastName" required>
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-group">
 							<label for="guestPhone">Téléphone</label>
-							<input type="tel" id="guestPhone">
+							<input type="tel" id="guestPhone" placeholder="0612345678">
 						</div>
 						<div class="form-group">
 							<label for="guestEmail">E-mail</label>
@@ -100,33 +253,160 @@
 		</div>
 	</div>
 
-	<footer>
-		<p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p>
-	</footer>
+	<!-- IMPORT CSV MODAL -->
+	<div class="modal-overlay" id="importModal">
+		<div class="modal" style="max-width:680px;">
+			<header>
+				<span>Importer une liste d'invités</span>
+				<button class="close-btn" onclick="closeImportModal()">&times;</button>
+			</header>
+			<div class="csv-modal-body">
+
+				<!-- ÉTAPE 1 : Upload -->
+				<div class="csv-step active" id="csvStep1">
+					<p style="margin:0 0 14px;color:#5a4a3e;font-size:14px;line-height:1.55;">
+						Importez votre liste d'invités depuis un fichier CSV. Idéal pour ajouter 50, 100 ou 300 invités en quelques secondes.
+					</p>
+					<label class="csv-drop-zone" id="dropZone">
+						<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+							<polyline points="17,8 12,3 7,8"/>
+							<line x1="12" y1="3" x2="12" y2="15"/>
+						</svg>
+						<p><strong>Cliquez pour choisir un fichier</strong> ou glissez-déposez ici</p>
+						<p class="hint">Format CSV uniquement, encodage UTF-8 recommandé. Taille max ~2 Mo.</p>
+						<input type="file" id="csvFileInput" accept=".csv,text/csv" onchange="handleCsvFile(event)">
+					</label>
+
+					<div style="text-align:center;margin-top:18px;">
+						<a class="csv-template-link" href="#" onclick="downloadTemplate(); return false;">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+							Télécharger le modèle CSV
+						</a>
+					</div>
+
+					<div style="margin-top:18px;padding:14px 18px;background:#FDFAF6;border-radius:10px;font-size:13px;color:#6a5a4e;line-height:1.5;">
+						<strong>Colonnes attendues</strong> (avec en-tête en première ligne, séparateur <code>,</code> ou <code>;</code>) :
+						<ul style="margin:8px 0 0 18px;padding:0;">
+							<li><strong>prenom</strong>* — obligatoire</li>
+							<li><strong>nom</strong>* — obligatoire</li>
+							<li><strong>telephone</strong> — optionnel</li>
+							<li><strong>email</strong> — optionnel</li>
+							<li><strong>groupe</strong> — optionnel (FAMILLE_MARIEE / FAMILLE_MARIE / AMIS_MARIEE / AMIS_MARIE / COLLEGUES / AUTRES)</li>
+							<li><strong>nb_personnes</strong> — optionnel (défaut 1)</li>
+							<li><strong>note</strong> — optionnel</li>
+						</ul>
+					</div>
+				</div>
+
+				<!-- ÉTAPE 2 : Prévisualisation -->
+				<div class="csv-step" id="csvStep2">
+					<div class="csv-summary" id="csvSummary"></div>
+					<p style="margin:0 0 8px;font-size:13px;color:#5a4a3e;"><strong>Aperçu des 5 premières lignes valides :</strong></p>
+					<div style="max-height:280px;overflow-y:auto;border:1px solid #EAE0D5;border-radius:10px;">
+						<table class="csv-preview-table" id="csvPreviewTable"></table>
+					</div>
+					<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+						<button type="button" class="btn btn-secondary" onclick="csvBackToStep1()">← Choisir un autre fichier</button>
+						<button type="button" class="btn btn-primary" id="csvConfirmBtn" onclick="importCsvData()">Importer les invités</button>
+					</div>
+				</div>
+
+				<!-- ÉTAPE 3 : Progression -->
+				<div class="csv-step" id="csvStep3">
+					<p style="text-align:center;margin:20px 0 12px;color:#5a4a3e;">
+						<strong id="csvProgressText">Import en cours…</strong>
+					</p>
+					<div class="csv-progress-bar"><div class="csv-progress-fill" id="csvProgressFill"></div></div>
+					<p style="text-align:center;font-size:12px;color:#8B7A6E;" id="csvProgressDetail">0 / 0 invités ajoutés</p>
+				</div>
+
+				<!-- ÉTAPE 4 : Résultat -->
+				<div class="csv-step" id="csvStep4">
+					<div style="text-align:center;padding:20px 0;">
+						<svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#3D8B5E" stroke-width="2" style="margin-bottom:14px;"><circle cx="12" cy="12" r="10"/><polyline points="9,12 11,14 15,10"/></svg>
+						<h3 style="margin:0 0 8px;color:#3D8B5E;font-family:'Cormorant Garamond',serif;">Import terminé !</h3>
+						<p id="csvResultMsg" style="color:#5a4a3e;font-size:14px;"></p>
+					</div>
+					<div id="csvErrorsBox" style="display:none;"></div>
+					<div style="display:flex;justify-content:flex-end;margin-top:18px;">
+						<button type="button" class="btn btn-primary" onclick="closeImportModal()">Voir ma liste</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<script src="js/api.js"></script>
+	<script src="js/format.js"></script>
+	<script src="js/ayora-ui.js"></script>
 	<script>
 		var user = checkAuth(); if (user) applyAccountHeader(user);
-		if (user) {
-			document.getElementById('userName').textContent = user.firstName;
-		}
+		if (user) { document.getElementById('userName').textContent = user.firstName; }
+
+		var ALL_GUESTS = [];
+		var GROUPE_LABELS = {
+			'FAMILLE_MARIEE': 'Famille mariée',
+			'FAMILLE_MARIE': 'Famille marié',
+			'AMIS_MARIEE': 'Amis mariée',
+			'AMIS_MARIE': 'Amis marié',
+			'COLLEGUES': 'Collègues',
+			'AUTRES': 'Autres'
+		};
 
 		loadGuests();
 
 		function loadGuests() {
 			api.get('/api/guests').then(function(guests) {
-				renderGuests(guests);
+				ALL_GUESTS = guests || [];
+				renderGuests(ALL_GUESTS);
+				renderStats(ALL_GUESTS);
 			}).catch(function() {
 				document.getElementById('guestTableContainer').innerHTML = '<p class="text-muted">Erreur de chargement</p>';
 			});
 		}
 
+		function getGroupeLabel(g) { return GROUPE_LABELS[g] || g; }
+
+		function renderStats(guests) {
+			var statsBox = document.getElementById('guestStats');
+			if (!guests || guests.length === 0) { statsBox.style.display = 'none'; return; }
+			statsBox.style.display = 'grid';
+			var byGroup = {};
+			var totalPersonnes = 0;
+			guests.forEach(function(g) {
+				byGroup[g.groupe] = (byGroup[g.groupe] || 0) + 1;
+				totalPersonnes += g.nbPersonnes || 1;
+			});
+			var html = '<div class="gst-card"><div class="v">' + guests.length + '</div><div class="l">Invités</div></div>';
+			html += '<div class="gst-card"><div class="v">' + totalPersonnes + '</div><div class="l">Personnes</div></div>';
+			Object.keys(byGroup).forEach(function(g) {
+				html += '<div class="gst-card"><div class="v">' + byGroup[g] + '</div><div class="l">' + getGroupeLabel(g) + '</div></div>';
+			});
+			statsBox.innerHTML = html;
+		}
+
 		function renderGuests(guests) {
 			var container = document.getElementById('guestTableContainer');
-			document.getElementById('guestCount').textContent = '(' + guests.length + ' invités)';
+			document.getElementById('guestCount').textContent = '(' + (guests ? guests.length : 0) + ' invités)';
 
 			if (!guests || guests.length === 0) {
-				container.innerHTML = '<p class="text-muted text-center p-20">Aucun invité pour le moment. Cliquez sur "Ajouter un invité" pour commencer.</p>';
+				container.innerHTML = '<div style="text-align:center;padding:50px 20px;color:#8B7A6E;"><p style="font-family:\'Cormorant Garamond\',serif;font-size:20px;color:#8B1A2B;margin-bottom:8px;">Aucun invité pour le moment</p><p style="margin-bottom:14px;">Ajoutez vos invités un par un ou importez votre liste CSV.</p><button class="btn btn-primary" onclick="openImportModal()">Importer ma liste CSV</button></div>';
+				return;
+			}
+
+			// Filtres : recherche + groupe
+			var search = (document.getElementById('searchGuests').value || '').toLowerCase().trim();
+			var filterG = document.getElementById('filterGroupe').value;
+			var filtered = guests.filter(function(g) {
+				if (filterG && g.groupe !== filterG) return false;
+				if (!search) return true;
+				var hay = ((g.firstName||'') + ' ' + (g.lastName||'') + ' ' + (g.phone||'') + ' ' + (g.email||'')).toLowerCase();
+				return hay.indexOf(search) !== -1;
+			});
+
+			if (filtered.length === 0) {
+				container.innerHTML = '<p class="text-muted text-center p-20">Aucun invité ne correspond aux filtres.</p>';
 				return;
 			}
 
@@ -134,13 +414,13 @@
 			var html = '<table class="data-table">';
 			html += '<thead><tr><th>Nom</th><th>Groupe</th><th>Personnes</th><th>Téléphone</th><th>E-mail</th><th>Actions</th></tr></thead>';
 			html += '<tbody>';
-			for (var i = 0; i < guests.length; i++) {
-				var g = guests[i];
-				totalPersonnes += g.nbPersonnes;
+			for (var i = 0; i < filtered.length; i++) {
+				var g = filtered[i];
+				totalPersonnes += g.nbPersonnes || 1;
 				html += '<tr>';
-				html += '<td><strong>' + g.firstName + ' ' + g.lastName + '</strong></td>';
+				html += '<td><strong>' + (g.firstName||'') + ' ' + (g.lastName||'') + '</strong></td>';
 				html += '<td>' + getGroupeLabel(g.groupe) + '</td>';
-				html += '<td>' + g.nbPersonnes + '</td>';
+				html += '<td>' + (g.nbPersonnes || 1) + '</td>';
 				html += '<td>' + (g.phone || '-') + '</td>';
 				html += '<td>' + (g.email || '-') + '</td>';
 				html += '<td class="actions">';
@@ -150,7 +430,7 @@
 				html += '</tr>';
 			}
 			html += '</tbody></table>';
-			html += '<p class="text-muted mt-10">Total : ' + totalPersonnes + ' personnes</p>';
+			html += '<p class="text-muted mt-10">Affichage : ' + filtered.length + ' / ' + guests.length + ' invité(s) — Total : ' + totalPersonnes + ' personnes</p>';
 			container.innerHTML = html;
 		}
 
@@ -158,28 +438,27 @@
 			document.getElementById('modalTitle').textContent = 'Ajouter un invité';
 			document.getElementById('guestId').value = '';
 			document.getElementById('guestForm').reset();
+			document.getElementById('guestNbPersonnes').value = 1;
 			document.getElementById('guestModal').classList.add('active');
 		}
 
 		function editGuest(id) {
-			api.get('/api/guests').then(function(guests) {
-				for (var i = 0; i < guests.length; i++) {
-					if (guests[i].id === id) {
-						var g = guests[i];
-						document.getElementById('modalTitle').textContent = 'Modifier l\'invité';
-						document.getElementById('guestId').value = g.id;
-						document.getElementById('guestFirstName').value = g.firstName;
-						document.getElementById('guestLastName').value = g.lastName;
-						document.getElementById('guestPhone').value = g.phone || '';
-						document.getElementById('guestEmail').value = g.email || '';
-						document.getElementById('guestGroupe').value = g.groupe;
-						document.getElementById('guestNbPersonnes').value = g.nbPersonnes;
-						document.getElementById('guestNote').value = g.note || '';
-						document.getElementById('guestModal').classList.add('active');
-						break;
-					}
+			for (var i = 0; i < ALL_GUESTS.length; i++) {
+				if (ALL_GUESTS[i].id === id) {
+					var g = ALL_GUESTS[i];
+					document.getElementById('modalTitle').textContent = 'Modifier l\'invité';
+					document.getElementById('guestId').value = g.id;
+					document.getElementById('guestFirstName').value = g.firstName;
+					document.getElementById('guestLastName').value = g.lastName;
+					document.getElementById('guestPhone').value = g.phone || '';
+					document.getElementById('guestEmail').value = g.email || '';
+					document.getElementById('guestGroupe').value = g.groupe;
+					document.getElementById('guestNbPersonnes').value = g.nbPersonnes;
+					document.getElementById('guestNote').value = g.note || '';
+					document.getElementById('guestModal').classList.add('active');
+					break;
 				}
-			});
+			}
 		}
 
 		function handleSaveGuest(event) {
@@ -195,40 +474,336 @@
 				note: document.getElementById('guestNote').value
 			};
 
-			var promise;
-			if (id) {
-				promise = api.put('/api/guests/' + id, data);
-			} else {
-				promise = api.post('/api/guests', data);
-			}
-
+			var promise = id ? api.put('/api/guests/' + id, data) : api.post('/api/guests', data);
 			promise.then(function(result) {
 				if (result.success || result.guest) {
 					closeModal();
 					loadGuests();
+					AyoraUI.success(id ? 'Invité mis à jour' : 'Invité ajouté');
 				} else {
-					alert(result.error || 'Erreur');
+					AyoraUI.error(result.error || 'Erreur');
 				}
 			}).catch(function(err) {
-				alert('Erreur : ' + err.message);
+				AyoraUI.error('Erreur : ' + err.message);
 			});
 		}
 
 		function deleteGuest(id) {
-			if (confirm('Supprimer cet invité ?')) {
-				api.del('/api/guests/' + id).then(function(result) {
-					if (result.success) {
-						loadGuests();
-					} else {
-						alert(result.error || 'Erreur');
-					}
-				});
-			}
+			AyoraUI.confirm({
+				title: 'Supprimer cet invité ?',
+				message: 'Cette action est irréversible. L\'invité ne pourra plus recevoir d\'invitation.',
+				confirmLabel: 'Supprimer',
+				cancelLabel: 'Annuler',
+				danger: true,
+				onConfirm: function() {
+					api.del('/api/guests/' + id).then(function(result) {
+						if (result.success) {
+							loadGuests();
+							AyoraUI.success('Invité supprimé');
+						} else {
+							AyoraUI.error(result.error || 'Erreur');
+						}
+					}).catch(function() { AyoraUI.error('Erreur réseau'); });
+				}
+			});
 		}
 
 		function closeModal() {
 			document.getElementById('guestModal').classList.remove('active');
 		}
+
+		// ============================================================
+		// IMPORT CSV
+		// ============================================================
+		var CSV_PARSED = { valid: [], skipped: [] };
+
+		function openImportModal() {
+			document.getElementById('importModal').classList.add('active');
+			csvBackToStep1();
+		}
+		function closeImportModal() {
+			document.getElementById('importModal').classList.remove('active');
+		}
+		function csvBackToStep1() {
+			document.querySelectorAll('.csv-step').forEach(function(s){ s.classList.remove('active'); });
+			document.getElementById('csvStep1').classList.add('active');
+			document.getElementById('csvFileInput').value = '';
+			CSV_PARSED = { valid: [], skipped: [] };
+		}
+
+		// Drag and drop
+		var dropZone = document.getElementById('dropZone');
+		dropZone.addEventListener('dragover', function(e){ e.preventDefault(); dropZone.classList.add('drag-over'); });
+		dropZone.addEventListener('dragleave', function(){ dropZone.classList.remove('drag-over'); });
+		dropZone.addEventListener('drop', function(e) {
+			e.preventDefault();
+			dropZone.classList.remove('drag-over');
+			if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+				processCsvFile(e.dataTransfer.files[0]);
+			}
+		});
+
+		function handleCsvFile(event) {
+			var file = event.target.files[0];
+			if (file) processCsvFile(file);
+		}
+
+		function processCsvFile(file) {
+			if (file.size > 2 * 1024 * 1024) {
+				AyoraUI.error('Fichier trop volumineux (max 2 Mo).');
+				return;
+			}
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var text = e.target.result;
+				parseCsv(text);
+			};
+			reader.onerror = function() { AyoraUI.error('Erreur de lecture du fichier.'); };
+			reader.readAsText(file, 'UTF-8');
+		}
+
+		function parseCsv(text) {
+			// Détecter le séparateur (, ou ;)
+			var firstLine = text.split('\n')[0] || '';
+			var sep = (firstLine.indexOf(';') >= 0 && firstLine.indexOf(';') < firstLine.indexOf(',') || firstLine.indexOf(',') === -1) ? ';' : ',';
+			var lines = text.split(/\r?\n/).filter(function(l){ return l.trim().length > 0; });
+			if (lines.length < 2) {
+				AyoraUI.error('Fichier vide ou sans données.');
+				return;
+			}
+			// Parse en-têtes (normalisés)
+			var headers = parseCsvLine(lines[0], sep).map(function(h){ return normalizeHeader(h); });
+			var idx = {
+				prenom: headers.indexOf('prenom'),
+				nom: headers.indexOf('nom'),
+				telephone: headers.indexOf('telephone'),
+				email: headers.indexOf('email'),
+				groupe: headers.indexOf('groupe'),
+				nbPersonnes: headers.indexOf('nbpersonnes'),
+				note: headers.indexOf('note')
+			};
+
+			if (idx.prenom === -1 || idx.nom === -1) {
+				AyoraUI.error('Le fichier doit contenir au minimum les colonnes "prenom" et "nom".', 6000);
+				return;
+			}
+
+			var valid = [];
+			var skipped = [];
+			var validGroupes = ['FAMILLE_MARIEE','FAMILLE_MARIE','AMIS_MARIEE','AMIS_MARIE','COLLEGUES','AUTRES'];
+
+			for (var i = 1; i < lines.length; i++) {
+				var cols = parseCsvLine(lines[i], sep);
+				var prenom = (cols[idx.prenom] || '').trim();
+				var nom = (cols[idx.nom] || '').trim();
+				if (!prenom || !nom) {
+					skipped.push({ line: i+1, reason: 'Prénom ou nom manquant', raw: cols.join(' / ') });
+					continue;
+				}
+				// Doublon contre la liste actuelle ?
+				var dup = ALL_GUESTS.some(function(g){
+					return ((g.firstName||'').toLowerCase() === prenom.toLowerCase()) &&
+					       ((g.lastName||'').toLowerCase() === nom.toLowerCase());
+				});
+				if (dup) {
+					skipped.push({ line: i+1, reason: 'Doublon (' + prenom + ' ' + nom + ' existe déjà)', raw: cols.join(' / ') });
+					continue;
+				}
+				var grpRaw = ((idx.groupe >= 0 ? cols[idx.groupe] : '') || '').trim().toUpperCase();
+				var grp = validGroupes.indexOf(grpRaw) >= 0 ? grpRaw : 'AUTRES';
+				var nbP = parseInt((idx.nbPersonnes >= 0 ? cols[idx.nbPersonnes] : '1'), 10);
+				if (!nbP || nbP < 1) nbP = 1;
+				if (nbP > 20) nbP = 20;
+				valid.push({
+					firstName: prenom,
+					lastName: nom,
+					phone: (idx.telephone >= 0 ? cols[idx.telephone] : '').trim(),
+					email: (idx.email >= 0 ? cols[idx.email] : '').trim(),
+					groupe: grp,
+					nbPersonnes: nbP,
+					note: (idx.note >= 0 ? cols[idx.note] : '').trim()
+				});
+			}
+
+			CSV_PARSED = { valid: valid, skipped: skipped };
+			showCsvPreview();
+		}
+
+		function parseCsvLine(line, sep) {
+			// Parser CSV simple supportant guillemets
+			var result = [];
+			var current = '';
+			var inQuote = false;
+			for (var i = 0; i < line.length; i++) {
+				var c = line[i];
+				if (c === '"') {
+					if (inQuote && line[i+1] === '"') { current += '"'; i++; }
+					else inQuote = !inQuote;
+				} else if (c === sep && !inQuote) {
+					result.push(current);
+					current = '';
+				} else {
+					current += c;
+				}
+			}
+			result.push(current);
+			return result;
+		}
+
+		function normalizeHeader(h) {
+			return (h || '').toString().toLowerCase().trim()
+				.replace(/[éèêë]/g, 'e').replace(/[àâä]/g, 'a').replace(/[îï]/g, 'i').replace(/[ôö]/g, 'o').replace(/[ûü]/g, 'u')
+				.replace(/[_\-\s]/g, '');
+		}
+
+		function showCsvPreview() {
+			document.querySelectorAll('.csv-step').forEach(function(s){ s.classList.remove('active'); });
+			document.getElementById('csvStep2').classList.add('active');
+
+			var summary = document.getElementById('csvSummary');
+			summary.innerHTML = '<strong>' + CSV_PARSED.valid.length + '</strong> invité(s) prêt(s) à être ajouté(s)';
+			if (CSV_PARSED.skipped.length > 0) {
+				summary.innerHTML += ' · <strong style="color:#C04A3F;">' + CSV_PARSED.skipped.length + '</strong> ligne(s) ignorée(s)';
+			}
+
+			var btn = document.getElementById('csvConfirmBtn');
+			btn.disabled = CSV_PARSED.valid.length === 0;
+			btn.textContent = 'Importer ' + CSV_PARSED.valid.length + ' invité(s)';
+
+			var table = document.getElementById('csvPreviewTable');
+			var html = '<thead><tr><th>Prénom</th><th>Nom</th><th>Téléphone</th><th>Email</th><th>Groupe</th><th>Pers.</th></tr></thead><tbody>';
+			var sample = CSV_PARSED.valid.slice(0, 5);
+			sample.forEach(function(g){
+				html += '<tr><td>' + escapeHtml(g.firstName) + '</td><td>' + escapeHtml(g.lastName) + '</td><td>' + escapeHtml(g.phone) + '</td><td>' + escapeHtml(g.email) + '</td><td>' + getGroupeLabel(g.groupe) + '</td><td>' + g.nbPersonnes + '</td></tr>';
+			});
+			if (CSV_PARSED.valid.length > 5) {
+				html += '<tr><td colspan="6" style="text-align:center;font-style:italic;color:#8B7A6E;">… et ' + (CSV_PARSED.valid.length - 5) + ' autre(s)</td></tr>';
+			}
+			html += '</tbody>';
+			table.innerHTML = html;
+		}
+
+		function escapeHtml(s) {
+			return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+		}
+
+		function importCsvData() {
+			if (CSV_PARSED.valid.length === 0) return;
+			document.querySelectorAll('.csv-step').forEach(function(s){ s.classList.remove('active'); });
+			document.getElementById('csvStep3').classList.add('active');
+
+			var total = CSV_PARSED.valid.length;
+			var done = 0;
+			var added = 0;
+			var failed = [];
+
+			function nextOne(i) {
+				if (i >= total) {
+					finishImport(added, failed);
+					return;
+				}
+				var g = CSV_PARSED.valid[i];
+				api.post('/api/guests', g).then(function(r) {
+					if (r && (r.success || r.guest)) added++;
+					else failed.push({ name: g.firstName + ' ' + g.lastName, reason: r.error || 'Erreur serveur' });
+				}).catch(function() {
+					failed.push({ name: g.firstName + ' ' + g.lastName, reason: 'Erreur réseau' });
+				}).then(function() {
+					done++;
+					var pct = Math.round(done / total * 100);
+					document.getElementById('csvProgressFill').style.width = pct + '%';
+					document.getElementById('csvProgressDetail').textContent = done + ' / ' + total + ' invités traités';
+					// Petit délai pour éviter de saturer le serveur
+					setTimeout(function(){ nextOne(i + 1); }, 30);
+				});
+			}
+			nextOne(0);
+		}
+
+		function finishImport(added, failed) {
+			document.querySelectorAll('.csv-step').forEach(function(s){ s.classList.remove('active'); });
+			document.getElementById('csvStep4').classList.add('active');
+
+			var msg = added + ' invité' + (added > 1 ? 's' : '') + ' ajouté' + (added > 1 ? 's' : '') + ' avec succès.';
+			if (CSV_PARSED.skipped.length > 0) {
+				msg += ' ' + CSV_PARSED.skipped.length + ' ligne(s) ignorée(s) au parsing.';
+			}
+			document.getElementById('csvResultMsg').textContent = msg;
+
+			var errorsBox = document.getElementById('csvErrorsBox');
+			var allErrors = CSV_PARSED.skipped.concat(failed.map(function(f){ return { line: '?', reason: f.reason + ' — ' + f.name }; }));
+			if (allErrors.length > 0) {
+				var eh = '<details style="background:#FEE8EC;border-radius:8px;padding:10px 14px;margin-top:14px;"><summary style="cursor:pointer;color:#8B1A2B;font-weight:600;">Voir les ' + allErrors.length + ' ligne(s) ignorée(s)</summary><ul style="margin:10px 0 0 18px;font-size:13px;color:#5a4a3e;">';
+				allErrors.slice(0, 20).forEach(function(e){
+					eh += '<li>Ligne ' + e.line + ' : ' + e.reason + '</li>';
+				});
+				if (allErrors.length > 20) eh += '<li><em>… et ' + (allErrors.length - 20) + ' autre(s)</em></li>';
+				eh += '</ul></details>';
+				errorsBox.innerHTML = eh;
+				errorsBox.style.display = 'block';
+			}
+			loadGuests();
+		}
+
+		function downloadTemplate() {
+			var csv = 'prenom,nom,telephone,email,groupe,nb_personnes,note\n' +
+			          'Salma,Bennani,0612345678,salma@example.com,FAMILLE_MARIEE,2,Tante côté mariée\n' +
+			          'Yassine,Alami,,yassine@example.com,FAMILLE_MARIE,1,\n' +
+			          'Karim,El Idrissi,0633445566,,AMIS_MARIE,2,Ami d\'enfance\n';
+			var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+			var url = URL.createObjectURL(blob);
+			var a = document.createElement('a');
+			a.href = url;
+			a.download = 'modele-invites-ayora.csv';
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		}
+
+		function exportCSV() {
+			if (!ALL_GUESTS || ALL_GUESTS.length === 0) {
+				AyoraUI.warning('Aucun invité à exporter.');
+				return;
+			}
+			var csv = 'prenom,nom,telephone,email,groupe,nb_personnes,note\n';
+			ALL_GUESTS.forEach(function(g) {
+				var fields = [g.firstName, g.lastName, g.phone, g.email, g.groupe, g.nbPersonnes, g.note].map(function(v){
+					var s = (v == null ? '' : String(v));
+					if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+						return '"' + s.replace(/"/g, '""') + '"';
+					}
+					return s;
+				});
+				csv += fields.join(',') + '\n';
+			});
+			var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+			var url = URL.createObjectURL(blob);
+			var a = document.createElement('a');
+			a.href = url;
+			a.download = 'invites-ayora-' + new Date().toISOString().substring(0,10) + '.csv';
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+			AyoraUI.success(ALL_GUESTS.length + ' invité(s) exporté(s)');
+		}
 	</script>
-</body>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
+	<script src="js/account-menu.js?v=1"></script>
+	<script src="js/assistant.js?v=2"></script>
+	<script src="js/assistant-floating.js?v=2" data-ayora-page="guests"></script>
+
 </html>
