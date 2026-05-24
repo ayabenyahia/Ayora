@@ -33,5 +33,23 @@
 			<span>Alertes</span>
 			<span class="ax-alert-dot" id="axAlertCount">0</span>
 		</button>
+		<div style="position:relative;">
+			<button class="ax-topbar-user" id="axUserBtn" type="button" aria-haspopup="true" aria-expanded="false">
+				<span class="ax-avatar" id="adminAvatar">A</span>
+				<span class="ax-user-info">
+					<strong id="adminName">Administrateur</strong>
+					<span>Supervision</span>
+				</span>
+				<svg class="ax-caret" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<div class="ax-topbar-menu" id="axUserMenu" role="menu">
+				<a onclick="axScrollTop()">Tableau de bord</a>
+				<a onclick="switchTab('users')">Gérer les utilisateurs</a>
+				<a onclick="switchTab('vendors')">Gérer les prestataires</a>
+				<hr>
+				<a class="danger" onclick="logout()">Se déconnecter</a>
+			</div>
+		</div>
+	</header>
 </body>
 </html>
