@@ -80,3 +80,43 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-topbar-label {
 	font-size: 10px;
 	letter-spacing: 2.5px;
+	text-transform: uppercase;
+	color: var(--ax-gold-700);
+	font-weight: 700;
+	padding: 4px 10px;
+	border: 1px solid var(--ax-gold-200);
+	border-radius: 50px;
+	background: var(--ax-ivory-100);
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+.ax-topbar-nav {
+	display: flex; gap: 2px;
+	margin-left: 4px;
+	align-items: center;
+	min-width: 0;
+	flex-shrink: 1;
+}
+.ax-topbar-nav a {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--ax-text-mute);
+	padding: 8px 14px;
+	border-radius: 50px;
+	text-decoration: none;
+	cursor: pointer;
+	transition: all .18s ease;
+	letter-spacing: .2px;
+	white-space: nowrap;
+	line-height: 1.2;
+	display: inline-flex;
+	align-items: center;
+}
+.ax-topbar-nav a:hover { color: var(--ax-burgundy-700); background: var(--ax-ivory-100); }
+.ax-topbar-nav a.is-active {
+	background: linear-gradient(135deg, var(--ax-burgundy-700), var(--ax-burgundy-300));
+	color: #fff;
+	font-weight: 600;
+	box-shadow: 0 4px 10px rgba(74,20,36,.18);
+	border-radius: 50px;
+}
