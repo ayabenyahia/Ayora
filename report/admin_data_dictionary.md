@@ -110,3 +110,14 @@ Synchronisée automatiquement par `metier.syncSubscriptionPlan(userId, plan)` lo
 | `slug` | VARCHAR | identifiant URL |
 
 Catégories utilisées : Salle de fête, Traiteur, Neggafa, Maquillage & coiffure, Photographe, Cake designer, Issawa, Orchestre, Décoration, Myadi / Tyafer, DJ, Hennaya.
+
+## `recommendations`
+
+| Colonne | Type | Sémantique |
+|---|---|---|
+| `user_id` | FK users.id | client à qui on recommande |
+| `vendor_id` | FK vendors.id | prestataire recommandé |
+| `score` | DECIMAL | score IA / matching |
+| `created_at` | DATETIME | date de calcul |
+
+Utilisé pour le compteur *Recos* dans le drawer prestataire (visibilité de la couverture du moteur de reco).
