@@ -10,3 +10,13 @@ Compte de démonstration : `admin@ayora.ma`, mot de passe `[fourni en annexe tec
 2. Email admin + mot de passe → bouton *Connexion*.
 3. Le serveur valide les identifiants (hash PBKDF2) et place `role=ADMIN` en session.
 4. Redirection automatique vers `admin.html`.
+
+## 0:10 → 0:25 — Centre de pilotage
+
+*"L'administrateur arrive sur un hero qui résume immédiatement l'état de la plateforme."*
+
+Mettre en avant :
+
+- Le titre serif *Centre de pilotage AYORA*
+- Le bloc d'état dynamique : *N éléments nécessitent votre attention…*
+- Les 3 CTAs : *Traiter les alertes*, *Gérer les prestataires*, *Consulter l'activité*
