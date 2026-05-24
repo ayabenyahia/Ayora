@@ -27,3 +27,11 @@ Le bloc *Priorités administratives* du dashboard liste 4 types d'éléments à 
 - Rendez-vous en attente (priorité HIGH)
 
 Cliquer un chip filtre la liste par catégorie. Le bouton *Examiner* ouvre la fiche détaillée correspondante.
+
+## Validation d'un profil prestataire incomplet
+
+1. Filtrer les priorités sur *Prestataires* ou cliquer le KPI *Prestataires actifs*.
+2. Cliquer *Examiner* → le drawer affiche la fiche complète + score de complétude.
+3. Compléter les champs manquants (description, téléphone, Instagram, etc.).
+4. Cliquer *Enregistrer* → appel `PUT /api/admin/vendors/{id}`.
+5. Le score de complétude se met à jour automatiquement.
