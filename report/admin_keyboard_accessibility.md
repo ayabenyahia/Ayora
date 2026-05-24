@@ -11,3 +11,12 @@ La touche `Escape` :
 - ferme le dropdown du profil administrateur si ouvert.
 
 Implémentation : `document.addEventListener('keydown', ...)` dans `admin.html`.
+
+## ARIA du dropdown profil
+
+Le bouton `#axUserBtn` porte :
+
+- `aria-haspopup="true"`
+- `aria-expanded` mis à jour à chaque ouverture/fermeture
+
+Le menu `#axUserMenu` porte `role="menu"`. Chaque entrée est cliquable au clic souris et au focus clavier.
