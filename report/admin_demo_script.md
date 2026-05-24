@@ -72,3 +72,12 @@ Toutes les données viennent de `/api/admin/analytics`.
 2. Cliquer *Détail* sur une ligne → drawer d'édition.
 3. Démontrer le changement de plan FREE → PREMIUM (3 appels REST enchaînés).
 4. Toast de succès, dashboard rafraîchi.
+
+## 1:40 → 1:55 — Gestion des prestataires
+
+*"Score de complétude visible directement dans le tableau."*
+
+1. Filtrer par catégorie *Photographe* + gamme *Premium*.
+2. Sélectionner un profil incomplet → drawer → compléter description + téléphone.
+3. *Enregistrer* → le score de complétude saute à 100%.
+4. La barre *Profils prestataires complets* du dashboard se met à jour.
