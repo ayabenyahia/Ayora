@@ -36,3 +36,9 @@
 	--ax-radius-lg: 22px;
 	--ax-serif: 'Cormorant Garamond', 'Times New Roman', serif;
 }
+
+/* === Reset / context limité à .ax-body === */
+body.ax-body { background: var(--ax-ivory-50); color: var(--ax-text); }
+body.ax-body .menu-bar { display: none !important; }
+body.ax-body .site-footer { margin-top: 60px; }
+
