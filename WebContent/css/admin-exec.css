@@ -747,3 +747,10 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-donut-legend .row .pct { font-size: 11px; color: var(--ax-text-mute); }
 
 /* Vertical bar list (vendors by category) */
+.ax-vbar-list { display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto; padding-right: 6px; }
+.ax-vbar-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+.ax-vbar-row .name { width: 130px; color: var(--ax-text); flex-shrink: 0; }
+.ax-vbar-row .track { flex: 1; height: 7px; background: var(--ax-ivory-200); border-radius: 50px; overflow: hidden; }
+.ax-vbar-row .track > div { height: 100%; background: linear-gradient(90deg, var(--ax-burgundy-700), var(--ax-gold-500)); border-radius: 50px; transition: width .5s; }
+.ax-vbar-row .val { font-family: var(--ax-serif); font-size: 14px; font-weight: 600; color: var(--ax-burgundy-700); min-width: 24px; text-align: right; }
+
