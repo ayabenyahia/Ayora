@@ -718,3 +718,538 @@
 
 	// ============ ANALYTICS ============
 	function renderSignupsChart(data) {
+		var box = document.getElementById('axChartSignups');
+		if (!data.length) { box.innerHTML = '<p style="color:#7A6B74;font-size:12px;padding:20px;">Aucune donnée d\'inscription disponible.</p>'; return; }
+		var max = Math.max.apply(null, data.map(function(d){ return d.count; }));
+		box.innerHTML = data.map(function(d){
+			var h = max > 0 ? (d.count / max) * 100 : 0;
+			var lbl = d.month.replace('-', '/').slice(2);
+			return '<div class="ax-chart-col">'
+				+ '<span class="ax-bar-val">'+d.count+'</span>'
+				+ '<div class="ax-bar" style="height:'+h+'%;"></div>'
+				+ '<span class="ax-bar-lab">'+lbl+'</span>'
+			+ '</div>';
+		}).join('');
+	}
+	function renderPlansDonut(data) {
+		var total = data.reduce(function(s,d){ return s+d.count; }, 0);
+		var colors = { FREE: '#7A8FA3', PRO: '#2C1810', PREMIUM: '#D4A853' };
+		var labels = { FREE: 'Free', PRO: 'Pro', PREMIUM: 'Premium' };
+		var c = 2*Math.PI*45, off = 0;
+		var segs = data.map(function(d){
+			var pct = total > 0 ? d.count/total : 0; var len = c * pct;
+			var seg = '<circle cx="60" cy="60" r="45" fill="none" stroke="'+(colors[d.plan]||'#888')+'" stroke-width="14" stroke-dasharray="'+len+' '+(c-len)+'" stroke-dashoffset="'+(-off)+'"/>';
+			off += len; return seg;
+		}).join('');
+		var legend = data.map(function(d){
+			var p = total > 0 ? Math.round(d.count*100/total) : 0;
+			return '<div class="row">'
+				+ '<span class="dot" style="background:'+(colors[d.plan]||'#888')+';"></span>'
+				+ '<span class="name">'+(labels[d.plan]||d.plan)+'</span>'
+				+ '<span class="val">'+d.count+'</span>'
+				+ '<span class="pct">'+p+'%</span>'
+			+ '</div>';
+		}).join('');
+		document.getElementById('axDonutPlans').innerHTML =
+			'<div class="ax-donut"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="45" fill="none" stroke="#F0E6D8" stroke-width="14"/>'+segs+'</svg>'
+			+ '<div class="ax-donut-center"><div class="v">'+total+'</div><div class="l">Total</div></div></div>'
+			+ '<div class="ax-donut-legend">'+legend+'</div>';
+	}
+	function renderVendorsByCategory(data) {
+		var box = document.getElementById('axVbarVendors');
+		if (!data.length) { box.innerHTML = '<p style="color:#7A6B74;font-size:12px;">Aucune donnée.</p>'; return; }
+		var max = Math.max.apply(null, data.map(function(d){ return d.count; }));
+		data.sort(function(a,b){ return b.count - a.count; });
+		box.innerHTML = data.map(function(d){
+			var pct = max > 0 ? (d.count/max) * 100 : 0;
+			return '<div class="ax-vbar-row">'
+				+ '<span class="name">'+escapeHtml(d.category||'(autre)')+'</span>'
+				+ '<div class="track"><div style="width:'+pct+'%;"></div></div>'
+				+ '<span class="val">'+d.count+'</span>'
+			+ '</div>';
+		}).join('');
+	}
+
+	// ============ ACTIVITÉ COMPACTE EN BAS ============
+	function renderActivityCompact(items) {
+		var box = document.getElementById('axActivityList');
+		if (!items || items.length === 0) {
+			box.innerHTML = '<div class="ax-empty"><div class="ax-empty-icon">'+ICO.clock+'</div><h4>Aucune activité récente</h4><p>L\'historique se remplira au fil des actions des utilisateurs.</p></div>';
+			return;
+		}
+		items.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+		items = items.slice(0, 8);
+		var icoMap = { USER_REGISTER:'register', DEVIS:'mail', RDV:'calendar', QUESTIONNAIRE:'quest' };
+		box.innerHTML = items.map(function(it){
+			return '<div class="ax-tl-item" data-type="'+it.type+'">'
+				+ '<div class="ax-tl-icon">'+ICO[icoMap[it.type]||'clock']+'</div>'
+				+ '<div class="ax-tl-body">'
+					+ '<span class="ax-tl-label">'+escapeHtml(it.label)+'</span>'
+					+ '<strong>'+escapeHtml(it.who)+'</strong>'
+					+ '<span class="ax-tl-meta">'+escapeHtml(it.meta||'')+'</span>'
+				+ '</div>'
+				+ '<span class="ax-tl-time">'+fmtRelative(it.date)+'</span>'
+			+ '</div>';
+		}).join('');
+	}
+
+	// ============ USERS ============
+	var usersPage = 1, usersPerPage = 20, usersDebounce;
+	function debouncedReloadUsers() { clearTimeout(usersDebounce); usersDebounce = setTimeout(reloadUsers, 350); }
+	function clearUsersFilters() {
+		['usrQ','usrRole','usrPlan','usrQuest','usrActive'].forEach(function(id){ document.getElementById(id).value=''; });
+		usersPage = 1; reloadUsers();
+	}
+	function reloadUsers() {
+		var q = document.getElementById('usrQ').value;
+		var role = document.getElementById('usrRole').value;
+		var plan = document.getElementById('usrPlan').value;
+		var qc = document.getElementById('usrQuest').value;
+		var act = document.getElementById('usrActive').value;
+		var url = '/api/admin/users?page='+usersPage+'&perPage='+usersPerPage;
+		if (q) url += '&q='+encodeURIComponent(q);
+		if (role) url += '&role='+role;
+		if (plan) url += '&plan='+plan;
+		if (qc !== '') url += '&questionnaire='+qc;
+		if (act !== '') url += '&active='+act;
+		document.getElementById('usersTableWrap').innerHTML = '<div class="adm-loading"><div class="spinner"></div>Chargement…</div>';
+		api.get(url).then(function(r) { renderUsersTable(r); }).catch(function(e){
+			document.getElementById('usersTableWrap').innerHTML = '<div class="adm-empty"><div class="ico">'+ICO.alert+'</div><h4>Erreur</h4><p>'+escapeHtml(e.message||'')+'</p></div>';
+		});
+	}
+	function renderUsersTable(r) {
+		var box = document.getElementById('usersTableWrap');
+		if (!r.items || r.items.length === 0) {
+			box.innerHTML = '<div class="adm-empty"><div class="ico">'+ICO.empty+'</div><h4>Aucun utilisateur</h4><p>Modifie les filtres pour élargir la recherche.</p></div>';
+			return;
+		}
+		var rows = r.items.map(function(u) {
+			return '<tr>' +
+				'<td><div class="name-cell"><div class="av">'+initials(u.firstName, u.lastName)+'</div><div class="name-info"><strong>'+escapeHtml(u.firstName+' '+u.lastName)+'</strong><span>'+escapeHtml(u.email)+'</span></div></div></td>' +
+				'<td>'+(u.phone ? escapeHtml(u.phone) : '<span style="color:#B89035;">—</span>')+'</td>' +
+				'<td>'+(u.city ? escapeHtml(u.city) : '<span style="color:#B89035;">—</span>')+'</td>' +
+				'<td><span class="b-badge b-role-'+u.role+'">'+u.role+'</span></td>' +
+				'<td><span class="b-badge b-plan-'+u.plan+'">'+u.plan+'</span></td>' +
+				'<td>' + (u.questionnaireCompleted ? '<span class="b-badge b-status-active">Complété</span>' : '<span class="b-badge b-status-pending">À compléter</span>') + '</td>' +
+				'<td>' + (u.active ? '<span class="b-badge b-status-active">Actif</span>' : '<span class="b-badge b-status-suspended">Suspendu</span>') + '</td>' +
+				'<td><span style="color:#7A6B74;font-size:12px;">'+fmtDate(u.createdAt)+'</span></td>' +
+				'<td class="row-actions"><button onclick="openUserDetail('+u.id+')">Détail</button></td>' +
+				'</tr>';
+		}).join('');
+		var pager = renderPager(r, 'usersPage', 'reloadUsers');
+		box.innerHTML =
+			'<table class="adm-table"><thead><tr>' +
+			'<th>Utilisateur</th><th>Téléphone</th><th>Ville</th><th>Rôle</th><th>Plan</th><th>Questionnaire</th><th>Statut</th><th>Inscrit</th><th></th>' +
+			'</tr></thead><tbody>'+rows+'</tbody></table>' + pager;
+	}
+
+	function renderPager(r, pageVar, reloadFn) {
+		if (r.pages <= 1) return '<div class="adm-pager"><span>'+r.total+' résultat'+(r.total>1?'s':'')+'</span></div>';
+		var pages = [];
+		for (var i = 1; i <= r.pages; i++) {
+			if (i === 1 || i === r.pages || Math.abs(i - r.page) <= 2) {
+				pages.push('<button class="'+(i===r.page?'active':'')+'" onclick="'+pageVar+'='+i+';'+reloadFn+'()">'+i+'</button>');
+			} else if (Math.abs(i - r.page) === 3) {
+				pages.push('<span style="padding:0 4px;color:#B89035;">…</span>');
+			}
+		}
+		return '<div class="adm-pager"><span>'+((r.page-1)*r.perPage+1)+'-'+Math.min(r.page*r.perPage, r.total)+' sur '+r.total+'</span><div class="pages">' +
+			'<button '+(r.page<=1?'disabled':'')+' onclick="'+pageVar+'='+(r.page-1)+';'+reloadFn+'()">‹</button>' +
+			pages.join('') +
+			'<button '+(r.page>=r.pages?'disabled':'')+' onclick="'+pageVar+'='+(r.page+1)+';'+reloadFn+'()">›</button>' +
+			'</div></div>';
+	}
+
+	function openUserDetail(id) {
+		api.get('/api/admin/users/' + id).then(function(d) {
+			var u = d.user, c = d.counts;
+			var compClass = d.completeness >= 80 ? 'high' : (d.completeness >= 50 ? 'med' : 'low');
+			var body =
+				'<div class="drawer-section"><h4>Identité</h4>' +
+				'<div class="drawer-fields">' +
+				'<div class="f"><label>Prénom</label><input id="d_first" value="'+escapeHtml(u.firstName)+'"></div>' +
+				'<div class="f"><label>Nom</label><input id="d_last" value="'+escapeHtml(u.lastName)+'"></div>' +
+				'<div class="f"><label>Email</label><input id="d_email" value="'+escapeHtml(u.email)+'"></div>' +
+				'<div class="f"><label>Téléphone</label><input id="d_phone" value="'+escapeHtml(u.phone||'')+'"></div>' +
+				'<div class="f"><label>Ville</label><input id="d_city" value="'+escapeHtml(u.city||'')+'"></div>' +
+				'<div class="f"><label>Inscrit le</label><input value="'+fmtDate(u.createdAt)+'" readonly></div>' +
+				'</div></div>' +
+				'<div class="drawer-section"><h4>Rôle &amp; abonnement</h4>' +
+				'<div class="drawer-fields">' +
+				'<div class="f"><label>Rôle</label><select id="d_role">' +
+				['CLIENT','PRESTATAIRE','ADMIN'].map(function(r){ return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r+'</option>'; }).join('') +
+				'</select></div>' +
+				'<div class="f"><label>Plan</label><select id="d_plan">' +
+				['FREE','PRO','PREMIUM'].map(function(p){ return '<option value="'+p+'"'+(u.plan===p?' selected':'')+'>'+p+'</option>'; }).join('') +
+				'</select></div>' +
+				'<div class="f full"><label>Score de complétude</label>' +
+				'<div class="completeness"><div class="bar"><div class="'+compClass+'" style="width:'+d.completeness+'%;"></div></div><span class="pct">'+d.completeness+'%</span></div>' +
+				'</div></div></div>' +
+				'<div class="drawer-section"><h4>Activité</h4>' +
+				'<div class="drawer-stats">' +
+				'<div class="ds"><div class="v">'+(c.hasQuestionnaire?'Oui':'Non')+'</div><div class="l">Questionnaire</div></div>' +
+				'<div class="ds"><div class="v">'+c.picks+'</div><div class="l">Picks</div></div>' +
+				'<div class="ds"><div class="v">'+c.devis+'</div><div class="l">Devis</div></div>' +
+				'<div class="ds"><div class="v">'+c.rdv+'</div><div class="l">RDV</div></div>' +
+				'</div></div>';
+			var actions =
+				(u.active
+					? '<button class="btn-suspend" onclick="suspendUser('+u.id+')">Suspendre</button>'
+					: '<button class="btn-activate" onclick="activateUser('+u.id+')">Réactiver</button>') +
+				'<button class="btn-delete" onclick="deleteUser('+u.id+')">Supprimer</button>' +
+				'<button class="btn-save" onclick="saveUser('+u.id+')">Enregistrer</button>';
+			openDrawer(u.firstName + ' ' + u.lastName, u.email + ' · ID #' + u.id, body, actions);
+		}).catch(function(e){ showToast('Erreur : '+(e.message||''), 'error'); });
+	}
+	function saveUser(id) {
+		var data = {
+			firstName: document.getElementById('d_first').value,
+			lastName:  document.getElementById('d_last').value,
+			email:     document.getElementById('d_email').value,
+			phone:     document.getElementById('d_phone').value,
+			city:      document.getElementById('d_city').value
+		};
+		var role = document.getElementById('d_role').value;
+		var plan = document.getElementById('d_plan').value;
+		api.put('/api/admin/users/'+id, data).then(function(){
+			return api.post('/api/admin/users/'+id+'/role', {role:role});
+		}).then(function(){
+			return api.post('/api/admin/users/'+id+'/plan', {plan:plan});
+		}).then(function(){
+			showToast('Utilisateur enregistré', 'success');
+			closeDrawer(); reloadUsers(); loadDashboard();
+		}).catch(function(e){ showToast('Erreur: '+(e.message||''), 'error'); });
+	}
+	function suspendUser(id) {
+		askConfirm('Suspendre ce compte ?', 'Le compte sera désactivé. Il pourra être réactivé plus tard.', function(){
+			api.post('/api/admin/users/'+id+'/active', {active:'false'}).then(function(){
+				showToast('Compte suspendu', 'success'); closeDrawer(); reloadUsers(); loadDashboard();
+			});
+		});
+	}
+	function activateUser(id) {
+		api.post('/api/admin/users/'+id+'/active', {active:'true'}).then(function(){
+			showToast('Compte réactivé', 'success'); closeDrawer(); reloadUsers(); loadDashboard();
+		});
+	}
+	function deleteUser(id) {
+		askConfirm('Supprimer définitivement ?', 'Cette action est irréversible. Toutes les données associées (questionnaire, picks, devis, RDV…) seront effacées.', function(){
+			api.del('/api/admin/users/'+id).then(function(r){
+				if (r && r.error) { showToast('Erreur : '+r.error, 'error'); return; }
+				showToast('Compte supprimé', 'success'); closeDrawer(); reloadUsers(); loadDashboard();
+			});
+		});
+	}
+
+	// ============ VENDORS ============
+	var vendorsPage = 1, vendorsPerPage = 20, vendorsDebounce;
+	function debouncedReloadVendors() { clearTimeout(vendorsDebounce); vendorsDebounce = setTimeout(reloadVendors, 350); }
+	function clearVendorsFilters() {
+		['vndQ','vndCat','vndGamme','vndActive'].forEach(function(id){ document.getElementById(id).value=''; });
+		vendorsPage = 1; reloadVendors();
+	}
+	function reloadVendors() {
+		var q = document.getElementById('vndQ').value;
+		var cat = document.getElementById('vndCat').value;
+		var gamme = document.getElementById('vndGamme').value;
+		var act = document.getElementById('vndActive').value;
+		var url = '/api/admin/vendors?page='+vendorsPage+'&perPage='+vendorsPerPage;
+		if (q) url += '&q='+encodeURIComponent(q);
+		if (cat) url += '&cat='+cat;
+		if (gamme) url += '&gamme='+gamme;
+		if (act !== '') url += '&active='+act;
+		document.getElementById('vendorsTableWrap').innerHTML = '<div class="adm-loading"><div class="spinner"></div>Chargement…</div>';
+		api.get(url).then(function(r) { renderVendorsTable(r); });
+	}
+	function renderVendorsTable(r) {
+		var box = document.getElementById('vendorsTableWrap');
+		if (!r.items || r.items.length === 0) {
+			box.innerHTML = '<div class="adm-empty"><div class="ico">'+ICO.empty+'</div><h4>Aucun prestataire</h4><p>Modifie les filtres.</p></div>';
+			return;
+		}
+		var rows = r.items.map(function(v) {
+			var compClass = v.completeness >= 80 ? 'high' : (v.completeness >= 50 ? 'med' : 'low');
+			var planMap = v.gamme==='PREMIUM' ? 'PREMIUM' : (v.gamme==='MOYEN' ? 'PRO' : 'FREE');
+			return '<tr>' +
+				'<td><strong>'+escapeHtml(v.name)+'</strong></td>' +
+				'<td><span class="b-cat">'+escapeHtml(v.category)+'</span></td>' +
+				'<td>'+escapeHtml(v.city||'-')+'</td>' +
+				'<td><span class="b-badge b-plan-'+planMap+'">'+v.gamme+'</span></td>' +
+				'<td>'+(v.prixMin>0?(Math.round(v.prixMin)+' DHS'):'-')+'</td>' +
+				'<td>'+(v.rating>0?(v.rating+' / 5'):'-')+'</td>' +
+				'<td><div class="completeness"><div class="bar"><div class="'+compClass+'" style="width:'+v.completeness+'%;"></div></div><span class="pct">'+v.completeness+'%</span></div></td>' +
+				'<td>' + (v.active ? '<span class="b-badge b-status-active">Actif</span>' : '<span class="b-badge b-status-suspended">Inactif</span>') + '</td>' +
+				'<td class="row-actions"><button onclick="openVendorDetail('+v.id+')">Détail</button></td>' +
+				'</tr>';
+		}).join('');
+		var pager = renderPager(r, 'vendorsPage', 'reloadVendors');
+		box.innerHTML =
+			'<table class="adm-table"><thead><tr>' +
+			'<th>Nom</th><th>Catégorie</th><th>Ville</th><th>Gamme</th><th>À partir de</th><th>Note</th><th>Complétude</th><th>Statut</th><th></th>' +
+			'</tr></thead><tbody>'+rows+'</tbody></table>' + pager;
+	}
+
+	function openVendorDetail(id) {
+		api.get('/api/admin/vendors/'+id).then(function(d) {
+			var v = d.vendor, c = d.counts;
+			var compClass = v.completeness >= 80 ? 'high' : (v.completeness >= 50 ? 'med' : 'low');
+			var body =
+				'<div class="drawer-section"><h4>Identité du prestataire</h4>' +
+				'<div class="drawer-fields">' +
+				'<div class="f full"><label>Nom</label><input id="v_name" value="'+escapeHtml(v.name)+'"></div>' +
+				'<div class="f"><label>Catégorie</label><input value="'+escapeHtml(v.category)+'" readonly></div>' +
+				'<div class="f"><label>Ville</label><input id="v_city" value="'+escapeHtml(v.city||'')+'"></div>' +
+				'<div class="f"><label>Gamme</label><select id="v_gamme">' +
+				['ECONOMIQUE','MOYEN','PREMIUM'].map(function(g){ return '<option value="'+g+'"'+(v.gamme===g?' selected':'')+'>'+g+'</option>'; }).join('') +
+				'</select></div>' +
+				'<div class="f"><label>Prix min (DHS)</label><input id="v_pmin" type="number" value="'+v.prixMin+'"></div>' +
+				'<div class="f"><label>Prix max (DHS)</label><input id="v_pmax" type="number" value="'+v.prixMax+'"></div>' +
+				'<div class="f"><label>Téléphone</label><input id="v_phone" value="'+escapeHtml(v.phone||'')+'"></div>' +
+				'<div class="f"><label>Instagram</label><input id="v_ig" value="'+escapeHtml(v.instagram||'')+'"></div>' +
+				'<div class="f full"><label>Adresse</label><input id="v_addr" value="'+escapeHtml(v.address||'')+'"></div>' +
+				'<div class="f full"><label>Description</label><textarea id="v_desc" rows="3">'+escapeHtml(v.description||'')+'</textarea></div>' +
+				'<div class="f full"><label>Tags (CSV)</label><input id="v_tags" value="'+escapeHtml(v.tags||'')+'"></div>' +
+				'<div class="f full"><label>Score de complétude</label>' +
+				'<div class="completeness"><div class="bar"><div class="'+compClass+'" style="width:'+v.completeness+'%;"></div></div><span class="pct">'+v.completeness+'%</span></div>' +
+				'</div></div></div>' +
+				'<div class="drawer-section"><h4>Activité</h4>' +
+				'<div class="drawer-stats">' +
+				'<div class="ds"><div class="v">'+c.recos+'</div><div class="l">Recos</div></div>' +
+				'<div class="ds"><div class="v">'+c.picks+'</div><div class="l">Choisi</div></div>' +
+				'<div class="ds"><div class="v">'+c.devis+'</div><div class="l">Devis</div></div>' +
+				'<div class="ds"><div class="v">'+c.rdv+'</div><div class="l">RDV</div></div>' +
+				'</div></div>';
+			var actions =
+				(v.active
+					? '<button class="btn-suspend" onclick="toggleVendor('+v.id+',false)">Désactiver</button>'
+					: '<button class="btn-activate" onclick="toggleVendor('+v.id+',true)">Réactiver</button>') +
+				'<button class="btn-delete" onclick="deleteVendor('+v.id+')">Supprimer</button>' +
+				'<button class="btn-save" onclick="saveVendor('+v.id+')">Enregistrer</button>';
+			openDrawer(v.name, v.category + ' · #' + v.id, body, actions);
+		});
+	}
+	function saveVendor(id) {
+		var data = {
+			name: document.getElementById('v_name').value,
+			city: document.getElementById('v_city').value,
+			description: document.getElementById('v_desc').value,
+			prixMin: document.getElementById('v_pmin').value,
+			prixMax: document.getElementById('v_pmax').value,
+			gamme: document.getElementById('v_gamme').value,
+			phone: document.getElementById('v_phone').value,
+			instagram: document.getElementById('v_ig').value,
+			address: document.getElementById('v_addr').value,
+			tags: document.getElementById('v_tags').value
+		};
+		api.put('/api/admin/vendors/'+id, data).then(function(){
+			showToast('Prestataire enregistré', 'success');
+			closeDrawer(); reloadVendors(); loadDashboard();
+		}).catch(function(e){ showToast('Erreur : '+(e.message||''), 'error'); });
+	}
+	function toggleVendor(id, active) {
+		api.post('/api/admin/vendors/'+id+'/active', {active: active?'true':'false'}).then(function(){
+			showToast(active ? 'Réactivé' : 'Désactivé', 'success');
+			closeDrawer(); reloadVendors(); loadDashboard();
+		});
+	}
+	function deleteVendor(id) {
+		askConfirm('Supprimer ce prestataire ?', 'Cette action est irréversible. Toutes les recommandations et picks associés seront effacés.', function(){
+			api.del('/api/admin/vendors/'+id).then(function(){
+				showToast('Prestataire supprimé', 'success'); closeDrawer(); reloadVendors(); loadDashboard();
+			});
+		});
+	}
+
+	// ============ DEVIS & RDV ============
+	function reloadDevis() {
+		var status = document.getElementById('devisStatus').value;
+		var url = '/api/admin/devis' + (status ? ('?status=' + status) : '');
+		document.getElementById('devisTableWrap').innerHTML = '<div class="adm-loading"><div class="spinner"></div>Chargement…</div>';
+		api.get(url).then(function(items) {
+			if (!items || items.length === 0) {
+				document.getElementById('devisTableWrap').innerHTML = '<div class="adm-empty"><div class="ico">'+ICO.mail+'</div><h4>Aucune demande</h4><p>Aucune demande de devis ne correspond aux filtres.</p></div>';
+				return;
+			}
+			var rows = items.map(function(d) {
+				var statusClass = d.statut==='ACCEPTE' ? 'b-status-active' : (d.statut==='REFUSE' ? 'b-status-suspended' : 'b-status-pending');
+				return '<tr>' +
+					'<td><strong>'+escapeHtml(d.clientName)+'</strong><br><span style="font-size:11px;color:#7A6B74;">'+escapeHtml(d.clientEmail)+'</span></td>' +
+					'<td>'+escapeHtml(d.vendorName)+'<br><span class="b-cat">'+escapeHtml(d.vendorCat)+'</span></td>' +
+					'<td>'+(d.budgetMin>0 ? Math.round(d.budgetMin)+' - '+Math.round(d.budgetMax)+' DHS' : '-')+'</td>' +
+					'<td>'+escapeHtml(d.dateMariage||'-')+'</td>' +
+					'<td>'+d.nbInvites+'</td>' +
+					'<td><span class="b-badge '+statusClass+'">'+d.statut.replace('_',' ')+'</span></td>' +
+					'<td><span style="font-size:11.5px;color:#7A6B74;">'+fmtRelative(d.createdAt)+'</span></td>' +
+					'<td class="row-actions">' +
+						'<button class="primary" onclick="changeDevisStatus('+d.id+',\'ACCEPTE\')">Accepter</button>' +
+						'<button onclick="changeDevisStatus('+d.id+',\'REFUSE\')">Refuser</button>' +
+					'</td></tr>';
+			}).join('');
+			document.getElementById('devisTableWrap').innerHTML =
+				'<table class="adm-table"><thead><tr><th>Client</th><th>Prestataire</th><th>Budget</th><th>Date</th><th>Invités</th><th>Statut</th><th>Demandée</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+		});
+	}
+	function changeDevisStatus(id, status) {
+		api.put('/api/admin/devis/'+id+'/status', {status: status}).then(function(){
+			showToast('Statut mis à jour', 'success'); reloadDevis(); loadDashboard();
+		});
+	}
+	function reloadRdv() {
+		var status = document.getElementById('rdvStatus').value;
+		var url = '/api/admin/rdv' + (status ? ('?status=' + status) : '');
+		document.getElementById('devisTableWrap').innerHTML = '<div class="adm-loading"><div class="spinner"></div>Chargement…</div>';
+		api.get(url).then(function(items) {
+			if (!items || items.length === 0) {
+				document.getElementById('devisTableWrap').innerHTML = '<div class="adm-empty"><div class="ico">'+ICO.calendar+'</div><h4>Aucun rendez-vous</h4><p>Aucun RDV pour les filtres choisis.</p></div>';
+				return;
+			}
+			var rows = items.map(function(r) {
+				var statusClass = r.statut==='CONFIRME' ? 'b-status-active' : (r.statut==='ANNULE' ? 'b-status-suspended' : 'b-status-pending');
+				return '<tr>' +
+					'<td><strong>'+escapeHtml(r.clientName)+'</strong><br><span style="font-size:11px;color:#7A6B74;">'+escapeHtml(r.clientPhone||'')+'</span></td>' +
+					'<td>'+escapeHtml(r.vendorName)+'</td>' +
+					'<td>'+escapeHtml(r.dateRdv)+' '+escapeHtml(r.heureRdv||'')+'</td>' +
+					'<td>'+escapeHtml(r.lieu||'-')+'</td>' +
+					'<td><span class="b-badge '+statusClass+'">'+r.statut.replace('_',' ')+'</span></td>' +
+					'<td><span style="font-size:11.5px;color:#7A6B74;">'+fmtRelative(r.createdAt)+'</span></td>' +
+					'<td class="row-actions">' +
+						'<button class="primary" onclick="changeRdvStatus('+r.id+',\'CONFIRME\')">Confirmer</button>' +
+						'<button onclick="changeRdvStatus('+r.id+',\'ANNULE\')">Annuler</button>' +
+					'</td></tr>';
+			}).join('');
+			document.getElementById('devisTableWrap').innerHTML =
+				'<table class="adm-table"><thead><tr><th>Client</th><th>Prestataire</th><th>Date / heure</th><th>Lieu</th><th>Statut</th><th>Créé</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+		});
+	}
+	function changeRdvStatus(id, status) {
+		api.put('/api/admin/rdv/'+id+'/status', {status: status}).then(function(){
+			showToast('Statut mis à jour', 'success'); reloadRdv(); loadDashboard();
+		});
+	}
+
+	// ============ ACTIVITÉ DÉTAILLÉE ============
+	function reloadActivity() {
+		api.get('/api/admin/activity?limit=40').then(function(items) {
+			var box = document.getElementById('timelineList');
+			if (!items || items.length === 0) {
+				box.innerHTML = '<div class="ax-empty"><div class="ax-empty-icon">'+ICO.clock+'</div><h4>Aucune activité récente</h4><p>L\'historique se remplira au fil des actions des utilisateurs.</p></div>';
+				return;
+			}
+			items.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+			items = items.slice(0, 40);
+			var icoMap = { USER_REGISTER:'register', DEVIS:'mail', RDV:'calendar', QUESTIONNAIRE:'quest' };
+			box.innerHTML = items.map(function(it){
+				return '<div class="ax-tl-item" data-type="'+it.type+'">'
+					+ '<div class="ax-tl-icon">'+ICO[icoMap[it.type]||'clock']+'</div>'
+					+ '<div class="ax-tl-body">'
+						+ '<span class="ax-tl-label">'+escapeHtml(it.label)+'</span>'
+						+ '<strong>'+escapeHtml(it.who)+'</strong>'
+						+ '<span class="ax-tl-meta">'+escapeHtml(it.meta||'')+'</span>'
+					+ '</div>'
+					+ '<span class="ax-tl-time">'+fmtRelative(it.date)+'</span>'
+				+ '</div>';
+			}).join('');
+		});
+	}
+
+	// ============ EXPORT CSV ============
+	function csvEscape(v) {
+		var s = (v == null ? '' : String(v));
+		if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) return '"' + s.replace(/"/g, '""') + '"';
+		return s;
+	}
+	function downloadCsv(filename, csv) {
+		var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+		var url = URL.createObjectURL(blob);
+		var a = document.createElement('a');
+		a.href = url; a.download = filename;
+		document.body.appendChild(a); a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+	function exportUsersCSV() {
+		var q = document.getElementById('usrQ').value;
+		var role = document.getElementById('usrRole').value;
+		var plan = document.getElementById('usrPlan').value;
+		var qc = document.getElementById('usrQuest').value;
+		var act = document.getElementById('usrActive').value;
+		var params = [];
+		if (q) params.push('q=' + encodeURIComponent(q));
+		if (role) params.push('role=' + role);
+		if (plan) params.push('plan=' + plan);
+		if (qc !== '') params.push('questionnaire=' + qc);
+		if (act !== '') params.push('active=' + act);
+		params.push('page=1'); params.push('perPage=10000');
+		var url = '/api/admin/users?' + params.join('&');
+		showToast('Export en préparation…');
+		api.get(url).then(function(data) {
+			var users = (data && data.items) ? data.items : [];
+			if (users.length === 0) { showToast('Aucun utilisateur à exporter', 'error'); return; }
+			var csv = 'id,prenom,nom,email,telephone,ville,role,plan,questionnaire_complete,actif,date_creation\n';
+			users.forEach(function(u) {
+				csv += [u.id, csvEscape(u.firstName), csvEscape(u.lastName), csvEscape(u.email),
+					csvEscape(u.phone), csvEscape(u.city), u.role, u.plan,
+					u.questionnaireCompleted ? 'oui' : 'non',
+					u.active ? 'actif' : 'suspendu',
+					csvEscape(u.createdAt)].join(',') + '\n';
+			});
+			downloadCsv('ayora-utilisateurs-' + new Date().toISOString().substring(0,10) + '.csv', csv);
+			showToast(users.length + ' utilisateur(s) exporté(s)', 'success');
+		}).catch(function() { showToast('Erreur lors de l\'export', 'error'); });
+	}
+	function exportVendorsCSV() {
+		var q = document.getElementById('vndQ').value;
+		var cat = document.getElementById('vndCat').value;
+		var gamme = document.getElementById('vndGamme').value;
+		var act = document.getElementById('vndActive').value;
+		var params = [];
+		if (q) params.push('q=' + encodeURIComponent(q));
+		if (cat) params.push('cat=' + cat);
+		if (gamme) params.push('gamme=' + gamme);
+		if (act !== '') params.push('active=' + act);
+		params.push('page=1'); params.push('perPage=10000');
+		var url = '/api/admin/vendors?' + params.join('&');
+		showToast('Export en préparation…');
+		api.get(url).then(function(data) {
+			var vendors = (data && data.items) ? data.items : [];
+			if (vendors.length === 0) { showToast('Aucun prestataire à exporter', 'error'); return; }
+			var csv = 'id,nom,categorie,ville,gamme,prix_min,prix_max,telephone,email,instagram,rating,nb_avis,actif,completude\n';
+			vendors.forEach(function(v) {
+				csv += [v.id, csvEscape(v.name), csvEscape(v.category), csvEscape(v.city), v.gamme,
+					v.prixMin, v.prixMax, csvEscape(v.phone), csvEscape(v.email),
+					csvEscape(v.instagram), v.rating, v.nbAvis,
+					v.active ? 'actif' : 'inactif', v.completeness].join(',') + '\n';
+			});
+			downloadCsv('ayora-prestataires-' + new Date().toISOString().substring(0,10) + '.csv', csv);
+			showToast(vendors.length + ' prestataire(s) exporté(s)', 'success');
+		}).catch(function() { showToast('Erreur lors de l\'export', 'error'); });
+	}
+	function logout() {
+		if (window.api && typeof window.api.post === 'function') {
+			window.api.post('/api/auth/logout', {}).catch(function(){}).then(function(){
+				try{ localStorage.removeItem('user'); }catch(e){}
+				location.href = 'login.html';
+			});
+		} else {
+			try{ localStorage.removeItem('user'); }catch(e){}
+			location.href = 'login.html';
+		}
+	}
+	</script>
+
+	<script src="js/ayora-ui.js"></script>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
+</body>
+</html>
