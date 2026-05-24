@@ -481,3 +481,39 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-mini-card .ax-mc-v { font-family: var(--ax-serif); font-size: 1.45rem; font-weight: 600; color: var(--ax-text); }
 .ax-mini-card .ax-mc-l { font-size: 11px; color: var(--ax-text-mute); letter-spacing: .8px; text-transform: uppercase; font-weight: 600; }
 
+/* ===========================================================
+ * 4. SPLIT — Priorités + Santé
+ * =========================================================== */
+.ax-split {
+	display: grid;
+	grid-template-columns: 1.4fr 1fr;
+	gap: 20px;
+	margin-bottom: 28px;
+}
+
+.ax-card {
+	background: #fff;
+	border: 1px solid var(--ax-line);
+	border-radius: var(--ax-radius);
+	box-shadow: var(--ax-shadow-1);
+}
+.ax-card-head {
+	padding: 20px 24px 14px;
+	border-bottom: 1px solid var(--ax-ivory-200);
+	display: flex; align-items: center; justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+.ax-card-head h2 {
+	font-family: var(--ax-serif);
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: var(--ax-burgundy-700);
+	margin: 0;
+	line-height: 1.15;
+}
+.ax-card-head .ax-card-sub {
+	font-size: 12.5px;
+	color: var(--ax-text-mute);
+	margin-top: 2px;
+	line-height: 1.4;
