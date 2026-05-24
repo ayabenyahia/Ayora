@@ -42,3 +42,10 @@ body.ax-body { background: var(--ax-ivory-50); color: var(--ax-text); }
 body.ax-body .menu-bar { display: none !important; }
 body.ax-body .site-footer { margin-top: 60px; }
 
+/* === Shell === */
+.ax-shell {
+	max-width: 1440px;
+	margin: 0 auto;
+	padding: 24px 32px 80px;
+}
+
