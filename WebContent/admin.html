@@ -15,5 +15,17 @@
 <body class="ax-body">
 
 	<!-- ============ HEADER ADMIN EXÉCUTIF ============ -->
+	<header class="ax-topbar">
+		<a class="ax-topbar-logo" href="admin.html">
+			<span class="ax-logo-text">Ayora<span>.ma</span></span>
+		</a>
+		<span class="ax-topbar-label">Administration</span>
+		<nav class="ax-topbar-nav" id="axNav">
+			<a class="is-active" data-anchor="dashboard"  onclick="axScrollTop()">Tableau de bord</a>
+			<a data-anchor="users"      onclick="switchTab('users')">Utilisateurs</a>
+			<a data-anchor="vendors"    onclick="switchTab('vendors')">Prestataires</a>
+			<a data-anchor="devis"      onclick="switchTab('devis')">Devis &amp; RDV</a>
+			<a data-anchor="activity"   onclick="switchTab('activity')">Activité</a>
+		</nav>
 </body>
 </html>
