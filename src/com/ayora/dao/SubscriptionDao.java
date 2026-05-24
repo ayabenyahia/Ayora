@@ -1,89 +1,42 @@
 package com.ayora.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import com.ayora.model.Subscription;
-import com.ayora.util.DatabaseConnection;
+import com.ayora.util.Database;
 
-public class SubscriptionDao {
+/** DAO de l'entite Subscription. */
+public class SubscriptionDao implements IDao {
 
-	public SubscriptionDao() {
+	private final Database db;
+
+	public SubscriptionDao(Database db) {
+		this.db = db;
 	}
 
 	public Subscription findByUserId(int userId) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "SELECT * FROM subscriptions WHERE user_id = ?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				return mapSubscription(rs);
-			}
-		} catch (SQLException e) {
-			System.out.println("## Erreur findByUserId subscription : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return null;
+		return db.queryOne(
+			"SELECT * FROM subscriptions WHERE user_id = ?",
+			this::mapSubscription, userId);
 	}
 
 	public boolean create(Subscription sub) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "INSERT INTO subscriptions (user_id, plan, invitations_sent) VALUES (?, ?, ?)";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, sub.getUserId());
-			ps.setString(2, sub.getPlan());
-			ps.setInt(3, sub.getInvitationsSent());
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur create subscription : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return false;
-	}
-
-	public boolean upgradeToPremium(int userId) {
-		return updatePlan(userId, "PREMIUM");
+		return db.executeUpdate(
+			"INSERT INTO subscriptions (user_id, plan, invitations_sent) VALUES (?, ?, ?)",
+			sub.getUserId(), sub.getPlan(), sub.getInvitationsSent()) > 0;
 	}
 
 	public boolean updatePlan(int userId, String plan) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "UPDATE subscriptions SET plan = ? WHERE user_id = ?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setString(1, plan);
-			ps.setInt(2, userId);
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur updatePlan : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return false;
+		return db.executeUpdate(
+			"UPDATE subscriptions SET plan = ? WHERE user_id = ?",
+			plan, userId) > 0;
 	}
 
 	public boolean incrementInvitationsSent(int userId) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "UPDATE subscriptions SET invitations_sent = invitations_sent + 1 WHERE user_id = ?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur incrementInvitationsSent : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return false;
+		return db.executeUpdate(
+			"UPDATE subscriptions SET invitations_sent = invitations_sent + 1 WHERE user_id = ?",
+			userId) > 0;
 	}
 
 	private Subscription mapSubscription(ResultSet rs) throws SQLException {
