@@ -81,3 +81,15 @@ Toutes les données viennent de `/api/admin/analytics`.
 2. Sélectionner un profil incomplet → drawer → compléter description + téléphone.
 3. *Enregistrer* → le score de complétude saute à 100%.
 4. La barre *Profils prestataires complets* du dashboard se met à jour.
+
+## 1:55 → 2:00 — Export CSV pour audit
+
+*"L'export CSV permet de partager les données avec l'équipe support."*
+
+1. Filtrer le tableau utilisateurs.
+2. Cliquer *Exporter CSV*.
+3. Téléchargement instantané — fichier UTF-8 avec BOM (compatible Excel).
+
+Idem disponible pour les prestataires.
+
+**Fin du parcours.** L'admin peut maintenant superviser sereinement la plateforme.
