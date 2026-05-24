@@ -43,3 +43,15 @@ Empêche le verrouillage total de la plateforme par suppression accidentelle du 
 - [x] La méthode `userJson()` du servlet ne sérialise PAS `password_hash`.
 - [x] Le drawer admin ne lit ni n'écrit le hash — modification de mot de passe = flux séparé via `AuthServlet`.
 - [x] Aucune réponse `/api/admin/*` ne contient de champ commençant par `password*`.
+
+## Validation stricte des valeurs sensibles
+
+Toutes les enum sont validées par regex côté serveur :
+
+```java
+if (role == null || !role.matches("CLIENT|ADMIN|PRESTATAIRE")) { 400 }
+if (plan == null || !plan.matches("FREE|PRO|PREMIUM"))         { 400 }
+if (status == null || !status.matches("EN_ATTENTE|ACCEPTE|REFUSE")) { 400 }
+```
+
+Empêche injection de valeurs hors-périmètre via la requête.
