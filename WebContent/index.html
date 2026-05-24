@@ -2,18 +2,116 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Planification de Mariage</title>
-	<link rel="stylesheet" href="css/styles.css?v=26">
+	<link rel="stylesheet" href="css/styles.css?v=27">
 	<style>
-	/* ====== PRICING — design refondu full-stack ====== */
+	/* ====== AYORA — landing redesign v27 ====== */
 	*,*::before,*::after{box-sizing:border-box}
-	.pricing-section{padding:60px 40px 90px;max-width:1240px;margin:0 auto;position:relative;z-index:1}
-	.pricing-subtitle{text-align:center;font-size:12px;text-transform:uppercase;letter-spacing:4px;color:#B8922F;margin-bottom:10px;font-weight:500}
-	.pricing-title{text-align:center;font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:600;color:#1A0A10;margin-bottom:55px;line-height:1}
 
-	/* Grid : 3 cartes parfaitement alignées (grid-auto-rows: 1fr force MEME hauteur) */
-	.pricing-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:22px;align-items:stretch}
+	/* === FEATURES — Layout éditorial alterné (magazine de mariage) === */
+	.experience-section{padding:100px 40px 60px;max-width:1180px;margin:0 auto;position:relative;z-index:1}
+	.section-eyebrow{text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:5px;color:#B8922F;font-weight:500;margin-bottom:18px}
+	.section-eyebrow::before,.section-eyebrow::after{content:'';display:inline-block;vertical-align:middle;width:44px;height:1px;background:linear-gradient(to right,transparent,#D4A853 50%,transparent);margin:0 18px;opacity:.7}
+	.section-eyebrow::before{background:linear-gradient(to left,transparent,#D4A853 50%,transparent)}
+	.section-title{text-align:center;font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:500;color:#1A0A10;margin:0 0 18px;line-height:1.1;letter-spacing:-.5px}
+	.section-title em{font-style:italic;color:#8B1A2B;font-weight:500}
+	.section-lead{text-align:center;font-size:15.5px;color:#7A6B74;max-width:620px;margin:0 auto 30px;line-height:1.7}
+
+	/* Ornement central avant la liste des stories */
+	.ornament-top{display:flex;align-items:center;justify-content:center;gap:14px;margin:50px auto 70px;color:#D4A853}
+	.ornament-top span{width:72px;height:1px;background:linear-gradient(to right,transparent,#D4A853,transparent)}
+	.ornament-top svg{width:18px;height:18px;opacity:.85}
+
+	.feature-stories{display:flex;flex-direction:column;gap:0}
+
+	.story{display:grid;grid-template-columns:140px 1fr 280px;gap:48px;align-items:center;padding:54px 0;position:relative}
+	.story + .story{border-top:1px solid #F0E4DB}
+	.story-num{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:400;line-height:1;color:#D4A853;letter-spacing:-1px;font-style:italic;text-align:center;position:relative}
+	.story-num::after{content:'';display:block;width:34px;height:1px;background:#D4A853;margin:14px auto 0;opacity:.5}
+	.story-content{padding:0 4px}
+	.story-content h3{font-family:'Cormorant Garamond',serif;font-size:2.05rem;font-weight:500;color:#1A0A10;margin:0 0 14px;line-height:1.15;letter-spacing:-.3px}
+	.story-content h3 em{font-style:italic;color:#8B1A2B}
+	.story-content p{font-size:15px;line-height:1.75;color:#3D2232;margin:0;max-width:560px}
+	.story-content .story-meta{display:inline-block;margin-top:18px;padding:5px 14px;border-radius:30px;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:#B8922F;background:#FFF8E6;font-weight:600}
+
+	.story-art{display:flex;align-items:center;justify-content:center;height:160px;position:relative}
+	.story-art-bg{width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FDF4F2,#F8E8E0);display:flex;align-items:center;justify-content:center;position:relative}
+	.story-art-bg::before{content:'';position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(184,146,47,.2)}
+	.story-art-bg::after{content:'';position:absolute;inset:-24px;border-radius:50%;border:1px solid rgba(184,146,47,.1)}
+	.story-art-bg svg{width:54px;height:54px;stroke-width:1.4;fill:none;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1}
+
+	/* Couleurs des médaillons */
+	.story-art-rose .story-art-bg{background:radial-gradient(circle at 30% 30%,#FDF4F2,#F5D4DD)}
+	.story-art-rose .story-art-bg svg{stroke:#8B1A2B}
+	.story-art-gold .story-art-bg{background:radial-gradient(circle at 30% 30%,#FFF8E6,#F0D590)}
+	.story-art-gold .story-art-bg svg{stroke:#B8922F}
+	.story-art-burgundy .story-art-bg{background:radial-gradient(circle at 30% 30%,#3D1822,#1A0A10)}
+	.story-art-burgundy .story-art-bg svg{stroke:#D4A853}
+	.story-art-green .story-art-bg{background:radial-gradient(circle at 30% 30%,#E8F4ED,#B5E0CA)}
+	.story-art-green .story-art-bg svg{stroke:#3D8B5E}
+	.story-art-pink .story-art-bg{background:radial-gradient(circle at 30% 30%,#FFEDF1,#F5C8D4)}
+	.story-art-pink .story-art-bg svg{stroke:#B83B5E}
+
+	/* Alternance — sur le second, le médaillon passe à gauche, le numero à droite */
+	.story-reverse{grid-template-columns:280px 1fr 140px}
+	.story-reverse .story-art{order:0}
+	.story-reverse .story-content{order:1;text-align:right}
+	.story-reverse .story-content p{margin-left:auto}
+	.story-reverse .story-num{order:2}
+
+	@media(max-width:920px){
+	  .story,.story-reverse{grid-template-columns:80px 1fr;gap:24px;padding:40px 0}
+	  .story-num{font-size:3.4rem}
+	  .story-art{display:none}
+	  .story-reverse .story-content{order:0;text-align:left}
+	  .story-reverse .story-content p{margin-left:0}
+	  .story-reverse .story-num{order:1}
+	}
+	@media(max-width:560px){
+	  .section-title{font-size:2.2rem}
+	  .story,.story-reverse{grid-template-columns:1fr;gap:14px}
+	  .story-num{text-align:left;font-size:2.8rem}
+	  .story-num::after{margin-left:0}
+	}
+
+	/* === PRICING — refondu : 3 plans à identité forte === */
+	.pricing-section{padding:60px 40px 90px;max-width:1240px;margin:0 auto;position:relative;z-index:1}
+	.pricing-subtitle{text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:5px;color:#B8922F;margin-bottom:14px;font-weight:500}
+	.pricing-subtitle::before,.pricing-subtitle::after{content:'';display:inline-block;vertical-align:middle;width:36px;height:1px;background:linear-gradient(to right,transparent,#D4A853 50%,transparent);margin:0 16px;opacity:.7}
+	.pricing-title{text-align:center;font-family:'Cormorant Garamond',serif;font-size:2.7rem;font-weight:500;color:#1A0A10;margin-bottom:12px;line-height:1.1;letter-spacing:-.5px}
+	.pricing-title em{font-style:italic;color:#8B1A2B;font-weight:500}
+	.pricing-lead{text-align:center;font-size:15px;color:#7A6B74;max-width:560px;margin:0 auto 50px;line-height:1.65}
+
+	/* Grid 3 cartes — hauteur uniforme */
+	.pricing-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:24px;align-items:stretch}
+
+	/* Plan identity strip — chaque carte a son sous-titre/tag persona */
+	.plan-persona{display:block;font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:#B8922F;font-weight:600;margin:-4px 0 14px;opacity:.85}
+	.pricing-pro .plan-persona{color:#B83B5E}
+	.pricing-premium .plan-persona{color:#D4A853}
+
+	/* Feature groups inside each card */
+	.feat-group{margin:0 0 14px}
+	.feat-group-title{font-size:10.5px;letter-spacing:1.8px;text-transform:uppercase;color:#A38B95;font-weight:600;padding:0 0 6px;margin:14px 0 2px;border-bottom:1px solid #F3ECE6}
+	.pricing-premium .feat-group-title{color:#8B7642;border-bottom-color:rgba(212,168,83,.22)}
+	.feat-num{display:inline-block;float:right;min-width:48px;text-align:right;font-weight:700;color:#1A0A10;font-size:13px;letter-spacing:.3px}
+	.pricing-pro .feat-num{color:#8B1A2B}
+	.pricing-premium .feat-num{color:#D4A853}
+	.pricing-features li .feat-num{margin-left:8px}
+
+	/* Reassurance line under pricing */
+	.pricing-foot{text-align:center;font-size:13px;color:#A38B95;margin:46px auto 0;max-width:680px;line-height:1.6;letter-spacing:.2px}
+	.pricing-foot::before{content:'';display:block;width:60px;height:1px;background:linear-gradient(to right,transparent,#D4A853,transparent);margin:0 auto 22px}
+
+	/* On premium dark card, soften the feat-off color so check/cross stays readable */
+	.pricing-premium .pricing-features li{color:#3D2232}
+	.pricing-premium .feat-group-title{color:#8B7642}
 
 	/* Carte de base : exactement les mêmes dimensions partout */
 	.pricing-card{
@@ -54,7 +152,7 @@
 	.pricing-amount{display:flex;align-items:baseline;justify-content:center;gap:6px;margin:4px 0 0}
 	.pricing-value{font-family:'Cormorant Garamond',serif;font-size:3.3rem;font-weight:700;line-height:1;color:#1A0A10}
 	.pricing-currency{font-size:1rem;font-weight:600;color:#7A6B74;letter-spacing:1px}
-	.pricing-period{display:block;font-size:12.5px;color:#AEA0A8;letter-spacing:.5px;margin-top:2px}
+	.pricing-period{display:block;font-size:12.5px;color:#7A6B74;letter-spacing:.5px;margin-top:2px}
 
 	/* Body : prend tout l'espace restant pour aligner les footers */
 	.pricing-card-body{padding:18px 24px 14px;flex:1;display:flex;flex-direction:column;justify-content:flex-start}
@@ -150,110 +248,189 @@
 		</div>
 	</section>
 
-	<!-- FEATURES -->
-	<section>
-		<div class="features-grid">
-			<div class="feature-card">
-				<div class="icon icon-questionnaire"></div>
-				<h3>Questionnaire personnalisé</h3>
-				<p>Répondez à notre questionnaire détaillé et recevez des recommandations sur mesure pour votre mariage.</p>
-			</div>
-			<div class="feature-card">
-				<div class="icon icon-vendors"></div>
-				<h3>Prestataires de qualite</h3>
-				<p>Découvrez les meilleurs prestataires : neggafa, photographes, salles, traiteurs et plus encore.</p>
-			</div>
-			<div class="feature-card">
-				<div class="icon icon-ai"></div>
-				<h3>Recommandations intelligentes</h3>
-				<p>Notre système analyse vos préférences et votre budget pour vous proposer les meilleurs choix.</p>
-			</div>
-			<div class="feature-card">
-				<div class="icon icon-invitations"></div>
-				<h3>Invitations élégantes</h3>
-				<p>Créez et envoyez des invitations personnalisées à vos proches. 10 invitations offertes.</p>
-			</div>
-			<div class="feature-card">
-				<div class="icon icon-budget"></div>
-				<h3>Gestion du budget</h3>
-				<p>Suivez votre budget en temps réel et optimisez vos dépenses pour un mariage serein.</p>
-			</div>
-			<div class="feature-card">
-				<div class="icon icon-premium"></div>
-				<h3>Expérience Premium</h3>
-				<p>Passez en Premium pour des invitations illimitées, des recommandations avancées et un accompagnement VIP.</p>
-			</div>
+	<!-- EXPERIENCE — Layout éditorial alterné -->
+	<section class="experience-section">
+		<p class="section-eyebrow">L'expérience AYORA</p>
+		<h2 class="section-title">Tout ce qu'il faut pour un mariage <em>serein</em></h2>
+		<p class="section-lead">Du premier rêve à la dernière danse — AYORA accompagne chaque décision, chaque détail, chaque émotion.</p>
+
+		<div class="ornament-top" aria-hidden="true">
+			<span></span>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 6.82L21 9.6l-5.18 4.49L17.5 21 12 17.27 6.5 21l1.68-6.91L3 9.6l6.61-.78L12 2z"/></svg>
+			<span></span>
+		</div>
+
+		<div class="feature-stories">
+
+			<!-- 01 -->
+			<article class="story">
+				<span class="story-num">I</span>
+				<div class="story-content">
+					<h3>Une assistante <em>intelligente</em>, pas un formulaire de plus.</h3>
+					<p>AYORA comprend votre budget, vos invités, votre style — et vous suggère les prochaines étapes au bon moment. En français, en darija ou les deux. Comme une amie qui connaît Fès par cœur.</p>
+					<span class="story-meta">Assistante AYORA · disponible 24/7</span>
+				</div>
+				<div class="story-art story-art-burgundy">
+					<div class="story-art-bg">
+						<svg viewBox="0 0 24 24"><path d="M12 2l2.39 6.82L21 9.6l-5.18 4.49L17.5 21 12 17.27 6.5 21l1.68-6.91L3 9.6l6.61-.78L12 2z"/></svg>
+					</div>
+				</div>
+			</article>
+
+			<!-- 02 -->
+			<article class="story story-reverse">
+				<div class="story-art story-art-rose">
+					<div class="story-art-bg">
+						<svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+					</div>
+				</div>
+				<div class="story-content">
+					<h3>Votre profil de <em>mariée</em>.</h3>
+					<p>Un questionnaire qui se vit comme une conversation. Style, ambiance, priorités, budget — votre vision posée en quinze minutes. AYORA s'en sert pour tout personnaliser, sans jamais vous redemander deux fois la même chose.</p>
+					<span class="story-meta">Quinze minutes · cinquante questions</span>
+				</div>
+				<span class="story-num">II</span>
+			</article>
+
+			<!-- 03 -->
+			<article class="story">
+				<span class="story-num">III</span>
+				<div class="story-content">
+					<h3>Prestataires <em>vérifiés</em>.</h3>
+					<p>Salles, neggafas, traiteurs, photographes, henneya — sélectionnés à Fès et au-delà. Fiches détaillées, fourchettes de tarifs affichées, comparateur intégré pour décider sereinement, sans devoir téléphoner à dix personnes.</p>
+					<span class="story-meta">Vendors à Fès · prix affichés</span>
+				</div>
+				<div class="story-art story-art-gold">
+					<div class="story-art-bg">
+						<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-5a3 3 0 0 1 6 0v5"/></svg>
+					</div>
+				</div>
+			</article>
+
+			<!-- 04 -->
+			<article class="story story-reverse">
+				<div class="story-art story-art-pink">
+					<div class="story-art-bg">
+						<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 8l10 6 10-6"/></svg>
+					</div>
+				</div>
+				<div class="story-content">
+					<h3>Invitations <em>élégantes</em>.</h3>
+					<p>Des modèles signés AYORA, déclinables aux couleurs et au style de votre mariage. Envoi direct par email à vos invités, suivi des réponses, ajustements en temps réel. Pour celles qui veulent du papier, l'export PDF reste disponible.</p>
+					<span class="story-meta">Modèles signés · personnalisables</span>
+				</div>
+				<span class="story-num">IV</span>
+			</article>
+
+			<!-- 05 -->
+			<article class="story">
+				<span class="story-num">V</span>
+				<div class="story-content">
+					<h3>Budget <em>vivant</em>.</h3>
+					<p>Suivez vos enveloppes en temps réel — repas, salle, neggafa, photo, décoration. Alertes de dépassement avant qu'il ne soit trop tard, répartition automatique selon vos priorités, ajustements proposés par AYORA quand un poste s'envole.</p>
+					<span class="story-meta">Suivi vivant · répartition intelligente</span>
+				</div>
+				<div class="story-art story-art-green">
+					<div class="story-art-bg">
+						<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 3.5 0 0 0-5 0 2.5 2.5 0 0 0 0 3c.6.6 1.5 1 2.5 1s1.9.4 2.5 1a2.5 2.5 0 0 1 0 3 3.5 3.5 0 0 1-5 0"/><path d="M12 3v2M12 19v2"/></svg>
+					</div>
+				</div>
+			</article>
+
 		</div>
 	</section>
 
 	<!-- PRICING -->
 	<section class="pricing-section">
-		<p class="pricing-subtitle">Choisissez le plan qui vous convient</p>
-		<h2 class="pricing-title">Nos offres</h2>
+		<p class="pricing-subtitle">Nos formules</p>
+		<h2 class="pricing-title">Trois manières d'organiser votre <em>jour J</em></h2>
+		<p class="pricing-lead">Du premier essai gratuit à l'accompagnement VIP — chaque formule a sa raison d'être. Aucun engagement, vous pouvez changer à tout moment.</p>
+
 		<div class="pricing-cards">
-			<!-- GRATUIT -->
+
+			<!-- ====== GRATUIT — Découverte ====== -->
 			<article class="pricing-card pricing-free">
 				<div class="pricing-card-header">
-					<span class="pricing-plan-name">Gratuit</span>
+					<span class="pricing-plan-name">Découverte</span>
 					<div class="pricing-amount">
 						<span class="pricing-value">0</span>
 						<span class="pricing-currency">DHS</span>
 					</div>
-					<span class="pricing-period">Pour toujours</span>
+					<span class="pricing-period">Pour toujours, sans engagement</span>
 				</div>
 				<div class="pricing-card-body">
+					<span class="plan-persona">Pour explorer AYORA</span>
+
+					<div class="feat-group-title">Votre profil</div>
 					<ul class="pricing-features">
-						<li>Questionnaire de base (6 questions)</li>
-						<li>10 prestataires visibles</li>
-						<li>10 invitations / mois</li>
-						<li>3 modeles d'invitations simples</li>
-						<li>Liste d'invites basique</li>
-						<li class="feat-off">Envoi des invitations par email</li>
-						<li class="feat-off">Modeles Pro et Premium verrouilles</li>
-						<li class="feat-off">Modeles video exclusifs</li>
-						<li class="feat-off">Personnalisation avancee</li>
-						<li class="feat-off">Recommandations IA & VIP</li>
+						<li>Questionnaire express <span class="feat-num">10 q.</span></li>
+						<li>Catalogue limité <span class="feat-num">10 prest.</span></li>
+					</ul>
+
+					<div class="feat-group-title">Invitations</div>
+					<ul class="pricing-features">
+						<li>Envoi mensuel <span class="feat-num">10 / mois</span></li>
+						<li>Modèles classiques <span class="feat-num">3</span></li>
+						<li class="feat-off">Envoi par email aux invités</li>
+						<li class="feat-off">Personnalisation des couleurs</li>
+					</ul>
+
+					<div class="feat-group-title">Assistante AYORA</div>
+					<ul class="pricing-features">
+						<li class="feat-off">Conseils contextualisés</li>
+						<li class="feat-off">Comparateur de prestataires</li>
 					</ul>
 				</div>
 				<div class="pricing-card-footer">
-					<button class="btn btn-secondary btn-pricing" onclick="location.href='register.html'">S'inscrire</button>
+					<button class="btn btn-secondary btn-pricing" onclick="location.href='register.html'">Créer mon compte</button>
 				</div>
 			</article>
 
-			<!-- PRO - mis en avant -->
+			<!-- ====== PRO — Planification ====== -->
 			<article class="pricing-card pricing-pro">
-				<div class="pricing-badge">Recommande</div>
+				<div class="pricing-badge">Recommandé</div>
 				<div class="pricing-card-header">
 					<span class="pricing-plan-name">Pro</span>
 					<div class="pricing-amount">
 						<span class="pricing-value">149</span>
 						<span class="pricing-currency">DHS</span>
 					</div>
-					<span class="pricing-period">par mois</span>
+					<span class="pricing-period">par mois — sans engagement</span>
 				</div>
 				<div class="pricing-card-body">
+					<span class="plan-persona">Pour planifier sérieusement</span>
+
+					<div class="feat-group-title">Votre profil</div>
 					<ul class="pricing-features">
-						<li>Questionnaire detaille (6 sections)</li>
-						<li>Tous les prestataires visibles</li>
-						<li>50 invitations / mois</li>
-						<li>9 modeles elegants debloques</li>
-						<li>Envoi des invitations par email</li>
-						<li>Personnalisation avancee (couleurs, message)</li>
-						<li>Suggestions personnalisees selon budget</li>
-						<li>Suivi statut des invitations</li>
-						<li class="feat-off">Modeles video exclusifs</li>
-						<li class="feat-off">Invitations illimitees & support VIP</li>
+						<li>Questionnaire complet <span class="feat-num">50 q.</span></li>
+						<li>Catalogue complet + filtres <span class="feat-num">tous</span></li>
+					</ul>
+
+					<div class="feat-group-title">Invitations</div>
+					<ul class="pricing-features">
+						<li>Envoi mensuel <span class="feat-num">50 / mois</span></li>
+						<li>Modèles élégants <span class="feat-num">9</span></li>
+						<li>Envoi par email aux invités</li>
+						<li>Personnalisation couleurs &amp; messages</li>
+					</ul>
+
+					<div class="feat-group-title">Assistante AYORA</div>
+					<ul class="pricing-features">
+						<li>Conseils contextualisés <span class="feat-num">100 / mois</span></li>
+						<li>Comparateur de prestataires</li>
+						<li class="feat-off">Modèles vidéo exclusifs</li>
+						<li class="feat-off">Accompagnement humain 24/7</li>
 					</ul>
 				</div>
 				<div class="pricing-card-footer">
 					<button class="btn btn-pricing" onclick="location.href='register.html?plan=pro'">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-						Passer Pro
+						Choisir Pro
 					</button>
 				</div>
 			</article>
 
-			<!-- PREMIUM -->
+			<!-- ====== PREMIUM — VIP ====== -->
 			<article class="pricing-card pricing-premium">
 				<div class="pricing-card-header">
 					<span class="pricing-plan-name">Premium</span>
@@ -261,20 +438,30 @@
 						<span class="pricing-value">299</span>
 						<span class="pricing-currency">DHS</span>
 					</div>
-					<span class="pricing-period">par mois</span>
+					<span class="pricing-period">par mois — sans engagement</span>
 				</div>
 				<div class="pricing-card-body">
+					<span class="plan-persona">Pour un mariage sans soucis</span>
+
+					<div class="feat-group-title">Votre profil</div>
 					<ul class="pricing-features">
 						<li>Tout le plan Pro inclus</li>
-						<li>Tous les modeles d'invitations debloques</li>
-						<li>3 modeles video exclusifs</li>
-						<li>Invitations illimitees</li>
-						<li>Personnalisation complete</li>
-						<li>Suggestions IA les plus detaillees</li>
-						<li>Acces complet aux prestataires</li>
-						<li>Recommandations selon votre profil</li>
-						<li>Support prioritaire VIP 24/7</li>
-						<li>Badge Premium dore</li>
+						<li>Accès anticipé aux nouveaux prestataires</li>
+					</ul>
+
+					<div class="feat-group-title">Invitations</div>
+					<ul class="pricing-features">
+						<li>Envoi <span class="feat-num">illimité</span></li>
+						<li>Tous modèles + vidéo exclusive <span class="feat-num">12+</span></li>
+						<li>Personnalisation complète</li>
+					</ul>
+
+					<div class="feat-group-title">Assistante AYORA</div>
+					<ul class="pricing-features">
+						<li>Conseils <span class="feat-num">illimités</span></li>
+						<li>Recommandations IA détaillées</li>
+						<li>Accompagnement humain 24/7 par WhatsApp</li>
+						<li>Badge Premium doré sur votre profil</li>
 					</ul>
 				</div>
 				<div class="pricing-card-footer">
@@ -286,41 +473,23 @@
 			</article>
 		</div>
 
-		<!-- Upgrade banners -->
-		<div class="upgrade-bar">
-			<div class="upgrade-card upgrade-pro">
-				<div class="ic">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-				</div>
-				<div class="info">
-					<h4>Passez a Pro</h4>
-					<p>Modeles elegants, envoi par email, jusqu'a 50 invitations</p>
-				</div>
-				<button class="go" onclick="location.href='register.html?plan=pro'">
-					Choisir Pro
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-				</button>
-			</div>
-			<div class="upgrade-card upgrade-prem">
-				<div class="ic">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-				</div>
-				<div class="info">
-					<h4>Experience Premium</h4>
-					<p>Modeles video exclusifs, invitations illimitees, accompagnement VIP</p>
-				</div>
-				<button class="go" onclick="location.href='register.html?plan=premium'">
-					Decouvrir
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-				</button>
-			</div>
-		</div>
+		<p class="pricing-foot">Tous les plans incluent la sécurité de vos données, le support écrit et les mises à jour à venir. Annulation en un clic, sans frais.</p>
 	</section>
 
 	<!-- FOOTER -->
-	<footer>
-		<p>&copy; 2026 Ayora.ma - Planification de mariage</p>
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
 	</footer>
 
+	<script src="js/ayora-ui.js"></script>
 </body>
 </html>
