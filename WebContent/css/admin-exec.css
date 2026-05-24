@@ -451,3 +451,33 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-kpi-cta::after { content: '→'; font-size: 14px; transition: transform .2s; }
 .ax-kpi-cta:hover::after { transform: translateX(3px); }
 
+/* === Secondary indicators === */
+.ax-mini-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 12px;
+	margin-bottom: 28px;
+}
+.ax-mini-card {
+	background: #fff;
+	border: 1px solid var(--ax-line);
+	border-radius: 12px;
+	padding: 14px 18px;
+	display: flex; align-items: center; gap: 14px;
+	transition: border-color .18s;
+	cursor: pointer;
+}
+.ax-mini-card:hover { border-color: var(--ax-gold-400); }
+.ax-mini-card .ax-mc-dot {
+	width: 8px; height: 8px; border-radius: 50%;
+	flex-shrink: 0;
+}
+.ax-mini-card.sage  .ax-mc-dot { background: var(--ax-sage); }
+.ax-mini-card.amber .ax-mc-dot { background: var(--ax-amber); }
+.ax-mini-card.red   .ax-mc-dot { background: var(--ax-red); }
+.ax-mini-card.gold  .ax-mc-dot { background: var(--ax-gold-400); }
+.ax-mini-card.mute  .ax-mc-dot { background: var(--ax-text-mute); }
+.ax-mini-card .ax-mc-body { line-height: 1.2; }
+.ax-mini-card .ax-mc-v { font-family: var(--ax-serif); font-size: 1.45rem; font-weight: 600; color: var(--ax-text); }
+.ax-mini-card .ax-mc-l { font-size: 11px; color: var(--ax-text-mute); letter-spacing: .8px; text-transform: uppercase; font-weight: 600; }
+
