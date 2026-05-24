@@ -754,3 +754,34 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-vbar-row .track > div { height: 100%; background: linear-gradient(90deg, var(--ax-burgundy-700), var(--ax-gold-500)); border-radius: 50px; transition: width .5s; }
 .ax-vbar-row .val { font-family: var(--ax-serif); font-size: 14px; font-weight: 600; color: var(--ax-burgundy-700); min-width: 24px; text-align: right; }
 
+/* ===========================================================
+ * 6. ACTIVITY — timeline en bas
+ * =========================================================== */
+.ax-activity { margin-bottom: 28px; }
+.ax-tl { display: flex; flex-direction: column; gap: 0; }
+.ax-tl-item {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	gap: 16px;
+	align-items: center;
+	padding: 14px 0;
+	border-bottom: 1px dashed var(--ax-ivory-200);
+}
+.ax-tl-item:last-child { border-bottom: none; }
+.ax-tl-icon {
+	width: 40px; height: 40px;
+	border-radius: 50%;
+	display: flex; align-items: center; justify-content: center;
+	flex-shrink: 0;
+}
+.ax-tl-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+.ax-tl-item[data-type="USER_REGISTER"] .ax-tl-icon { background: var(--ax-amber-soft); color: var(--ax-burgundy-300); }
+.ax-tl-item[data-type="DEVIS"]         .ax-tl-icon { background: #FFF1D6; color: var(--ax-gold-700); }
+.ax-tl-item[data-type="RDV"]           .ax-tl-icon { background: var(--ax-blue-soft); color: var(--ax-blue); }
+.ax-tl-item[data-type="QUESTIONNAIRE"] .ax-tl-icon { background: var(--ax-sage-soft); color: var(--ax-sage); }
+.ax-tl-body { min-width: 0; }
+.ax-tl-body .ax-tl-label { font-size: 11.5px; color: var(--ax-text-mute); letter-spacing: .8px; text-transform: uppercase; font-weight: 600; }
+.ax-tl-body strong { display: block; font-size: 14px; color: var(--ax-text); margin: 2px 0; font-weight: 600; }
+.ax-tl-body .ax-tl-meta { font-size: 12px; color: var(--ax-gold-700); }
+.ax-tl-time { font-size: 11.5px; color: var(--ax-text-mute); text-align: right; flex-shrink: 0; }
+
