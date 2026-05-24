@@ -2,181 +2,379 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Ayora - Tableau de bord</title>
-	<link rel="stylesheet" href="css/styles.css?v=29">
+	<title>Ayora — Tableau de bord</title>
+	<link rel="stylesheet" href="css/styles.css?v=30">
+	<link rel="stylesheet" href="css/account.css?v=1">
+	<link rel="stylesheet" href="css/assistant.css?v=4">
 	<style>
 	/* ============================================================
-	   DASHBOARD v2 — Refonte premium
+	   DASHBOARD v3 — Refonte UX : hierarchie claire, 3 zones
 	   ============================================================ */
-	.db-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 28px 80px; }
+	.db-wrap { max-width: 1200px; margin: 0 auto; padding: 28px 28px 80px; }
 
-	/* --- Welcome hero --- */
-	.db-hero { background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%); color: var(--white); border-radius: var(--radius-lg); padding: 30px 38px; margin-bottom: 22px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
-	.db-hero::before { content: ""; position: absolute; top: -80px; right: -80px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(212,168,83,0.18), transparent 70%); pointer-events: none; }
-	.db-hero .acc { display: block; font-size: 11px; letter-spacing: 4px; color: var(--gold-light); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
-	.db-hero h1 { color: var(--white); font-size: 2.2rem; margin: 0 0 6px; font-family: 'Cormorant Garamond', serif; font-weight: 600; }
-	.db-hero p { margin: 0; opacity: 0.92; font-size: 14.5px; max-width: 720px; line-height: 1.5; }
-	.db-hero .progress-mini { display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 50px; font-size: 13px; }
-	.db-hero .progress-mini strong { color: var(--gold-light); font-size: 18px; font-family: 'Cormorant Garamond', serif; }
+	/* ---- HERO : grosse zone qui pousse l'action principale ---- */
+	.db-hero {
+		background: linear-gradient(135deg, #5C0E1B 0%, #8B1A2B 60%, #A93757 100%);
+		color: #fff;
+		border-radius: 22px;
+		padding: 40px 44px;
+		margin-bottom: 28px;
+		box-shadow: 0 18px 50px rgba(139,26,43,0.18);
+		position: relative;
+		overflow: hidden;
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 28px;
+		align-items: center;
+	}
+	.db-hero::before {
+		content: "";
+		position: absolute;
+		top: -100px; right: -100px;
+		width: 320px; height: 320px;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(212,168,83,0.22), transparent 70%);
+		pointer-events: none;
+	}
+	.db-hero .acc {
+		display: block;
+		font-size: 11px;
+		letter-spacing: 4px;
+		color: #F0D590;
+		text-transform: uppercase;
+		font-weight: 600;
+		margin-bottom: 10px;
+	}
+	.db-hero h1 {
+		color: #fff;
+		font-size: 2.4rem;
+		margin: 0 0 8px;
+		font-family: 'Cormorant Garamond', serif;
+		font-weight: 600;
+		line-height: 1.1;
+	}
+	.db-hero .next-action-text {
+		margin: 0 0 20px;
+		opacity: 0.93;
+		font-size: 15px;
+		max-width: 540px;
+		line-height: 1.55;
+	}
+	.db-hero .hero-cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		background: #fff;
+		color: #8B1A2B;
+		padding: 14px 28px;
+		border-radius: 50px;
+		font-weight: 700;
+		text-decoration: none;
+		font-size: 14px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+		transition: transform 0.2s, box-shadow 0.2s;
+	}
+	.db-hero .hero-cta:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 14px 36px rgba(0,0,0,0.24);
+	}
+	.db-hero .hero-cta svg { width: 18px; height: 18px; }
+	.db-hero .skip-link {
+		display: inline-block;
+		margin-left: 18px;
+		color: rgba(255,255,255,0.85);
+		font-size: 13px;
+		text-decoration: none;
+		border-bottom: 1px dashed rgba(255,255,255,0.4);
+	}
+	.db-hero .skip-link:hover { color: #fff; border-color: #fff; }
 
-	/* --- Stats cards --- */
-	.db-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 28px; }
-	@media (max-width: 1100px) { .db-stats { grid-template-columns: repeat(3, 1fr); } }
-	@media (max-width: 600px)  { .db-stats { grid-template-columns: repeat(2, 1fr); } }
-	.db-stat { background: var(--white); border-radius: var(--radius-md); padding: 18px 16px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; overflow: hidden; }
-	.db-stat:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--gold-light); }
-	.db-stat .ico { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
-	.db-stat .ico svg, .shortcut .ico svg, .empty-ico svg, .action-item .ico svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-	.shortcut .ico svg { width: 22px; height: 22px; }
-	.action-item .ico { color: var(--primary); }
-	.db-stat.recos .ico { background: var(--primary-soft); color: var(--primary); }
-	.db-stat.picks .ico { background: var(--gold-soft); color: var(--gold-dark); }
-	.db-stat.guests .ico { background: var(--success-light); color: var(--sage-dark); }
-	.db-stat.invites .ico { background: var(--info-light); color: var(--info); }
-	.db-stat.remaining .ico { background: var(--warning-light); color: var(--warning); }
-	.db-stat.progress .ico { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #fff; }
-	.db-stat .v { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; color: var(--text-dark); font-weight: 600; line-height: 1; }
-	.db-stat .l { font-size: 11px; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+	/* Cercle de progression a droite du hero */
+	.progress-ring {
+		position: relative;
+		width: 140px;
+		height: 140px;
+		flex-shrink: 0;
+	}
+	.progress-ring svg {
+		width: 100%;
+		height: 100%;
+		transform: rotate(-90deg);
+	}
+	.progress-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 10; }
+	.progress-ring .ring-fg { fill: none; stroke: #F0D590; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+	.progress-ring .label {
+		position: absolute; inset: 0;
+		display: flex; flex-direction: column;
+		align-items: center; justify-content: center;
+		color: #fff;
+	}
+	.progress-ring .pct {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 38px;
+		font-weight: 600;
+		line-height: 1;
+	}
+	.progress-ring .pct-label {
+		font-size: 10px;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		opacity: 0.85;
+		margin-top: 4px;
+	}
 
-	/* --- Section grid (2 colonnes desktop) --- */
-	.db-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 22px; }
-	@media (max-width: 980px) { .db-grid { grid-template-columns: 1fr; } }
+	/* ---- 3 STATS clefs (au lieu de 6) ---- */
+	.db-key-stats {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+		margin-bottom: 28px;
+	}
+	.db-stat-key {
+		background: #fff;
+		border-radius: 14px;
+		padding: 22px 24px;
+		border: 1px solid #EAE0D5;
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		transition: transform 0.2s, box-shadow 0.2s;
+	}
+	.db-stat-key:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 24px rgba(139,26,43,0.08);
+	}
+	.db-stat-key .ico {
+		width: 48px; height: 48px;
+		border-radius: 12px;
+		display: flex; align-items: center; justify-content: center;
+		flex-shrink: 0;
+	}
+	.db-stat-key .ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+	.db-stat-key.picks .ico { background: #FDF7F2; color: #8B1A2B; }
+	.db-stat-key.guests .ico { background: #FBF6EC; color: #B8922F; }
+	.db-stat-key.invites .ico { background: #FDFAF6; color: #6a5a4e; }
+	.db-stat-key .v {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 2rem;
+		color: #2A1E16;
+		font-weight: 600;
+		line-height: 1;
+	}
+	.db-stat-key .l {
+		font-size: 12px;
+		color: #8B7A6E;
+		margin-top: 4px;
+		letter-spacing: 0.5px;
+	}
 
-	.db-card { background: var(--white); border-radius: var(--radius-lg); padding: 24px 26px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 20px; }
-	.db-card h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--primary-dark); margin: 0 0 4px; font-weight: 600; }
-	.db-card .subtitle { color: var(--text-muted); font-size: 13px; margin: 0 0 18px; }
+	/* ---- Steps tracker compact ---- */
+	.db-section { background: #fff; border-radius: 16px; padding: 26px 28px; border: 1px solid #EAE0D5; margin-bottom: 22px; }
+	.db-section h2 {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 1.5rem;
+		color: #5C0E1B;
+		margin: 0 0 4px;
+		font-weight: 600;
+	}
+	.db-section .subtitle { color: #8B7A6E; font-size: 13px; margin: 0 0 20px; }
 
-	/* --- Wedding progress --- */
-	.progress-bar-bg { background: var(--cream-dark); height: 12px; border-radius: 50px; overflow: hidden; margin: 12px 0 18px; }
-	.progress-bar-fill { background: linear-gradient(90deg, var(--gold) 0%, var(--gold-dark) 100%); height: 100%; border-radius: 50px; transition: width 0.6s ease; }
+	.steps-flow {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 8px;
+		position: relative;
+	}
+	.steps-flow::before {
+		content: "";
+		position: absolute;
+		top: 18px;
+		left: 8%; right: 8%;
+		height: 2px;
+		background: #F0E5D6;
+		z-index: 0;
+	}
+	.step-mini {
+		text-align: center;
+		position: relative;
+		z-index: 1;
+	}
+	.step-mini .dot {
+		width: 36px; height: 36px;
+		border-radius: 50%;
+		margin: 0 auto 10px;
+		display: flex; align-items: center; justify-content: center;
+		background: #fff;
+		border: 2px solid #DCC9B6;
+		color: #8B7A6E;
+		font-weight: 700;
+		font-size: 14px;
+		font-family: 'Cormorant Garamond', serif;
+	}
+	.step-mini.done .dot { background: #3D8B5E; border-color: #3D8B5E; color: #fff; }
+	.step-mini.in-progress .dot { background: #D4A853; border-color: #D4A853; color: #fff; }
+	.step-mini.current .dot { background: #fff; border-color: #8B1A2B; color: #8B1A2B; box-shadow: 0 0 0 4px rgba(139,26,43,0.12); }
+	.step-mini .label {
+		font-size: 11px;
+		color: #5a4a3e;
+		font-weight: 600;
+		line-height: 1.3;
+		max-width: 100px;
+		margin: 0 auto;
+	}
+	.step-mini .meta { font-size: 10px; color: #8B7A6E; margin-top: 3px; }
 
-	.steps-list { display: block; }
+	/* ---- Two-column secondary content ---- */
+	.db-secondary {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 22px;
+	}
 
-	/* === STEP : layout flex robuste === */
-	.step {
-		display: flex !important;
+	.list-item {
+		display: flex;
 		align-items: center;
 		gap: 14px;
-		width: 100%;
-		box-sizing: border-box;
-		padding: 14px 16px;
-		margin-bottom: 10px;
-		background: var(--cream);
-		border-radius: var(--radius-md);
-		border: 1px solid var(--border-light);
+		padding: 12px 14px;
+		border-radius: 10px;
+		border: 1px solid #F5EEE5;
+		margin-bottom: 8px;
+		text-decoration: none;
+		color: inherit;
+		transition: all 0.2s;
 	}
-	.step:last-child { margin-bottom: 0; }
-	.step:hover { border-color: var(--gold-light); }
-
-	.step > .check {
-		flex: 0 0 30px;
-		width: 30px; height: 30px; border-radius: 50%;
-		display: flex !important; align-items: center; justify-content: center;
-		font-weight: 700; font-size: 14px;
-		background: var(--white); border: 2px solid var(--border);
-		color: var(--text-muted);
-	}
-
-	.step > .step-content {
-		flex: 1 1 auto;
-		min-width: 0;
-		overflow: hidden;
-	}
-	.step .step-title { font-size: 14px; color: var(--text-body); font-weight: 600; line-height: 1.3; margin: 0; }
-	.step .step-meta  { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.2; }
-
-	.step > .step-tail {
-		flex: 0 0 auto;
-		display: flex !important;
-		gap: 6px;
-		align-items: center;
-		flex-wrap: wrap;
-		justify-content: flex-end;
-	}
-	.step .step-state {
+	.list-item:hover { border-color: #DCC9B6; background: #FDFAF6; }
+	.list-item .badge-cat {
 		font-size: 10px;
-		font-weight: 700;
-		padding: 3px 10px;
-		border-radius: 50px;
-		text-transform: uppercase;
-		letter-spacing: 0.4px;
-		white-space: nowrap;
-	}
-	.step .step-action {
-		font-size: 10.5px;
-		font-weight: 600;
-		cursor: pointer;
+		color: #8B1A2B;
+		background: #FDF7F2;
 		padding: 4px 10px;
 		border-radius: 50px;
-		background: var(--primary-soft);
-		color: var(--primary);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		flex-shrink: 0;
+	}
+	.list-item .name { flex: 1; font-size: 14px; font-weight: 500; color: #2A1E16; }
+	.list-item .price { font-size: 13px; color: #B8922F; font-weight: 600; }
+	.list-item .score-pill {
+		background: linear-gradient(135deg, #8B1A2B, #D4A853);
+		color: #fff;
+		padding: 4px 10px;
+		border-radius: 50px;
+		font-size: 11px;
+		font-weight: 700;
+	}
+	.see-more {
+		display: block;
+		text-align: center;
+		padding: 10px;
+		color: #8B1A2B;
+		font-size: 13px;
+		font-weight: 600;
 		text-decoration: none;
-		white-space: nowrap;
+		border-top: 1px solid #F5EEE5;
+		margin-top: 6px;
 	}
-	.step .step-action:hover { background: var(--primary); color: #fff; }
+	.see-more:hover { background: #FDFAF6; }
+	.empty-state { text-align: center; padding: 28px 18px; color: #8B7A6E; font-size: 14px; }
+	.empty-state a { color: #8B1A2B; font-weight: 600; }
 
-	/* Etats */
-	.step.done            { background: var(--success-light); border-color: var(--success); }
-	.step.done > .check   { background: var(--success); color: #fff; border-color: var(--success); }
-	.step.done .step-title{ color: var(--sage-dark); }
-	.step.done .step-state{ background: var(--success); color: #fff; }
-
-	.step.in-progress           { background: #FFF7E0; border-color: var(--gold-light); }
-	.step.in-progress > .check  { background: var(--gold); color: #fff; border-color: var(--gold); }
-	.step.in-progress .step-title { color: var(--gold-dark); }
-	.step.in-progress .step-state { background: var(--gold); color: #fff; }
-
-	.step.todo .step-state { background: var(--border); color: var(--text-muted); }
-
-	/* Sur tres petit ecran : la queue passe sous le contenu */
-	@media (max-width: 540px) {
-		.step { flex-wrap: wrap; }
-		.step > .step-tail { width: 100%; padding-left: 44px; justify-content: flex-start; }
+	/* ---- Countdown wedding ---- */
+	.db-countdown {
+		background: linear-gradient(135deg, #FFF8E8 0%, #F0D590 100%);
+		border-radius: 16px;
+		padding: 20px 26px;
+		margin-bottom: 22px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		border: 1px solid #D4A853;
+	}
+	.db-countdown .ct-icon {
+		width: 52px; height: 52px;
+		background: #fff;
+		border-radius: 14px;
+		display: flex; align-items: center; justify-content: center;
+		color: #B8922F;
+		flex-shrink: 0;
+	}
+	.db-countdown .ct-icon svg { width: 28px; height: 28px; }
+	.db-countdown .ct-text { flex: 1; }
+	.db-countdown .ct-days {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 28px;
+		font-weight: 700;
+		color: #5C0E1B;
+		line-height: 1;
+	}
+	.db-countdown .ct-label {
+		font-size: 13px;
+		color: #6B5410;
+		margin-top: 4px;
+	}
+	.db-countdown .ct-date {
+		font-size: 13px;
+		color: #6B5410;
+		text-align: right;
+	}
+	.db-countdown .ct-date strong { color: #5C0E1B; font-size: 16px; display: block; font-family: 'Cormorant Garamond', serif; }
+	@media (max-width: 600px) {
+		.db-countdown { flex-direction: column; text-align: center; }
+		.db-countdown .ct-date { text-align: center; }
 	}
 
-	/* --- Next actions --- */
-	.action-list { display: flex; flex-direction: column; gap: 10px; }
-	.action-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, var(--gold-soft), #FEF3E0); border: 1px solid var(--gold-light); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition-fast); text-decoration: none; color: inherit; }
-	.action-item:hover { transform: translateX(4px); box-shadow: var(--shadow-sm); }
-	.action-item .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--white); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: var(--shadow-sm); }
-	.action-item .body { flex: 1; }
-	.action-item .body h5 { margin: 0; font-size: 14px; color: var(--text-dark); font-weight: 600; }
-	.action-item .body p { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
-	.action-item .arrow { color: var(--gold-dark); font-size: 18px; font-weight: 700; }
+	/* ---- Notification badge dans la navbar (positionnement relatif) ---- */
+	.menu-bar nav span { position: relative; }
+	.nav-badge {
+		display: inline-block;
+		background: #B83B5E;
+		color: #fff;
+		font-size: 9px;
+		font-weight: 700;
+		padding: 2px 6px;
+		border-radius: 50px;
+		margin-left: 4px;
+		vertical-align: top;
+	}
 
-	/* --- Recent picks --- */
-	.pick-mini { display: flex; gap: 12px; padding: 12px 14px; background: var(--cream); border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 8px; align-items: center; }
-	.pick-mini .cat-tag { background: var(--gold); color: #fff; padding: 2px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-	.pick-mini .name { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--text-dark); font-weight: 600; flex: 1; }
-	.pick-mini .price { font-size: 12px; color: var(--gold-dark); font-weight: 600; }
+	/* ---- Budget card --- */
+	.budget-bar {
+		display: flex;
+		justify-content: space-between;
+		padding: 10px 0;
+		border-bottom: 1px solid #F5EEE5;
+		font-size: 14px;
+	}
+	.budget-bar:last-child { border-bottom: 0; }
+	.budget-bar .lab { color: #8B7A6E; }
+	.budget-bar .val { color: #2A1E16; font-weight: 600; }
+	.budget-bar.total .val {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 22px;
+		color: #8B1A2B;
+	}
 
-	/* --- Top recos mini --- */
-	.reco-mini { display: flex; gap: 10px; padding: 12px; background: linear-gradient(180deg, #fff, var(--cream)); border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 8px; align-items: center; }
-	.reco-mini .score { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 12px; font-weight: 700; min-width: 50px; text-align: center; }
-	.reco-mini .body { flex: 1; }
-	.reco-mini .body strong { display: block; font-size: 13.5px; color: var(--text-dark); }
-	.reco-mini .body small { color: var(--text-muted); font-size: 11.5px; }
-
-	/* --- Budget --- */
-	.budget-card { background: linear-gradient(135deg, #FFF8EE, #F4EFE6); border: 1px solid var(--gold-light); }
-	.budget-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed rgba(184,146,47,0.3); font-size: 14px; }
-	.budget-row:last-child { border-bottom: none; padding-top: 12px; }
-	.budget-row .lab { color: var(--text-muted); }
-	.budget-row .val { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text-dark); font-weight: 600; }
-	.budget-row.total .val { color: var(--gold-dark); font-size: 1.5rem; }
-
-	/* --- Quick actions --- */
-	.shortcuts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-	@media (max-width: 600px) { .shortcuts { grid-template-columns: repeat(2, 1fr); } }
-	.shortcut { padding: 14px 10px; background: var(--white); border: 1px solid var(--border-light); border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: var(--transition); text-decoration: none; color: inherit; }
-	.shortcut:hover { transform: translateY(-2px); border-color: var(--gold); box-shadow: var(--shadow-sm); background: var(--gold-soft); }
-	.shortcut .ico { font-size: 22px; display: block; margin-bottom: 6px; }
-	.shortcut .label { font-size: 11.5px; color: var(--text-body); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-
-	/* --- Empty state for sections without data --- */
-	.empty { text-align: center; padding: 22px 16px; color: var(--text-muted); font-size: 13px; font-style: italic; }
-	.empty a { color: var(--primary); font-weight: 600; }
+	@media (max-width: 980px) {
+		.db-hero { grid-template-columns: 1fr; text-align: center; }
+		.db-hero .progress-ring { margin: 0 auto; }
+		.db-key-stats { grid-template-columns: 1fr; }
+		.db-secondary { grid-template-columns: 1fr; }
+		.steps-flow { grid-template-columns: repeat(3, 1fr); row-gap: 18px; }
+		.steps-flow::before { display: none; }
+	}
+	@media (max-width: 600px) {
+		.db-wrap { padding: 18px 16px 60px; }
+		.db-hero { padding: 28px 24px; }
+		.db-hero h1 { font-size: 1.9rem; }
+	}
 	</style>
 </head>
 <body>
@@ -191,6 +389,7 @@
 			<span onclick="location.href='vendors.html'">Prestataires</span>
 			<span onclick="location.href='guests.html'">Invités</span>
 			<span onclick="location.href='invitations.html'">Invitations</span>
+			<span onclick="location.href='assistant.html'">Assistante AYORA</span>
 		</nav>
 		<div class="user-info">
 			<span id="userName"></span>
@@ -201,191 +400,186 @@
 
 	<div class="db-wrap">
 
-		<!-- HERO welcome -->
+		<!-- Countdown : affiche si une date de mariage est dans le questionnaire -->
+		<div class="db-countdown" id="weddingCountdown" style="display:none;">
+			<div class="ct-icon">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="3" y="4" width="18" height="18" rx="2"/>
+					<line x1="16" y1="2" x2="16" y2="6"/>
+					<line x1="8" y1="2" x2="8" y2="6"/>
+					<line x1="3" y1="10" x2="21" y2="10"/>
+					<path d="M8 14l3 3 5-5" stroke-width="2"/>
+				</svg>
+			</div>
+			<div class="ct-text">
+				<div class="ct-days" id="ctDays">—</div>
+				<div class="ct-label" id="ctLabel">avant le grand jour</div>
+			</div>
+			<div class="ct-date">
+				<strong id="ctDate">—</strong>
+				<span id="ctDateMeta">—</span>
+			</div>
+		</div>
+
+		<!-- =================================================== -->
+		<!-- ZONE 1 : HERO + Prochaine action (le focus principal) -->
+		<!-- =================================================== -->
 		<div class="db-hero">
-			<span class="acc">— Tableau de bord —</span>
-			<h1 id="heroTitle">Bonjour…</h1>
-			<p id="heroMsg">Voici où vous en êtes dans l'organisation de votre mariage.</p>
-			<div class="progress-mini">
-				<span>Avancement global</span>
-				<strong id="heroPct">—</strong>
+			<div>
+				<span class="acc">Votre prochaine étape</span>
+				<h1 id="nextActionTitle">Bonjour…</h1>
+				<p class="next-action-text" id="nextActionDesc">Chargement de votre planning…</p>
+				<a class="hero-cta" id="nextActionCta" href="questionnaire.html">
+					<span id="nextActionBtnText">Commencer</span>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+				</a>
+				<a class="skip-link" id="nextActionSkip" href="#" style="display:none;">Voir un autre conseil</a>
+			</div>
+			<div class="progress-ring">
+				<svg viewBox="0 0 120 120">
+					<circle class="ring-bg" cx="60" cy="60" r="50"/>
+					<circle class="ring-fg" id="ringFg" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+				</svg>
+				<div class="label">
+					<div class="pct" id="heroPct">—</div>
+					<div class="pct-label">Avancement</div>
+				</div>
 			</div>
 		</div>
 
-		<!-- STATS 6 cartes -->
-		<div class="db-stats">
-			<div class="db-stat recos">
-				<div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></div>
-				<div class="v" id="statRecos">—</div>
-				<div class="l">Recommandations</div>
+		<!-- =================================================== -->
+		<!-- ZONE 1.5 : Conseil du jour de l'Assistante AYORA     -->
+		<!-- =================================================== -->
+		<div class="db-assistant-card" id="ayoraAssistantCard">
+			<div class="av">A</div>
+			<div class="body">
+				<span class="acc">Conseil AYORA</span>
+				<h3>Besoin d'aide maintenant&nbsp;?</h3>
+				<p id="ayoraSuggestion">
+					Je peux t'aider à répartir ton budget, préparer ta checklist, comparer des prestataires ou choisir une salle.
+					Pose-moi une question dans la langue qui te convient — français, darija ou mélange.
+				</p>
 			</div>
-			<div class="db-stat picks">
-				<div class="ico"><svg viewBox="0 0 24 24"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14M9 8l3 11M15 8l-3 11"/></svg></div>
-				<div class="v" id="statPicks">—</div>
-				<div class="l">Mes choix</div>
+			<a class="db-assistant-cta" href="assistant.html">
+				Parler à AYORA
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+				</svg>
+			</a>
+		</div>
+
+		<!-- =================================================== -->
+		<!-- ZONE 2 : 3 stats CLES (pas 6)                        -->
+		<!-- =================================================== -->
+		<div class="db-key-stats">
+			<div class="db-stat-key picks">
+				<div class="ico"><svg viewBox="0 0 24 24"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14"/></svg></div>
+				<div>
+					<div class="v" id="statPicks">—</div>
+					<div class="l">Prestataires retenus</div>
+				</div>
 			</div>
-			<div class="db-stat guests">
+			<div class="db-stat-key guests">
 				<div class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3 2.7-5.2 6-5.2s6 2.2 6 5.2"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.7.4 4.5 2 4.5 4.5"/></svg></div>
-				<div class="v" id="statGuests">—</div>
-				<div class="l">Invités</div>
+				<div>
+					<div class="v" id="statGuests">—</div>
+					<div class="l">Invités ajoutés</div>
+				</div>
 			</div>
-			<div class="db-stat invites">
+			<div class="db-stat-key invites">
 				<div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
-				<div class="v" id="statInvSent">—</div>
-				<div class="l">Invitations envoyées</div>
-			</div>
-			<div class="db-stat remaining">
-				<div class="ico"><svg viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M6 2v4c0 3 3 4 3 6s-3 3-3 6v4M18 2v4c0 3-3 4-3 6s3 3 3 6v4"/></svg></div>
-				<div class="v" id="statRemaining">—</div>
-				<div class="l">Restantes</div>
-			</div>
-			<div class="db-stat progress">
-				<div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 13h2M3 10h18"/></svg></div>
-				<div class="v" id="statBudget">—</div>
-				<div class="l">Budget restant</div>
+				<div>
+					<div class="v" id="statInvSent">—</div>
+					<div class="l">Invitations envoyées</div>
+				</div>
 			</div>
 		</div>
 
-		<!-- 2 cols : progression + actions -->
-		<div class="db-grid">
-			<div>
-				<!-- Progression du mariage -->
-				<div class="db-card">
-					<h2>Progression de votre mariage</h2>
-					<p class="subtitle">Suivez les grandes étapes de votre organisation.</p>
-					<div class="progress-bar-bg">
-						<div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
-					</div>
-					<div class="steps-list" id="stepsList"></div>
-				</div>
+		<!-- =================================================== -->
+		<!-- ZONE 3 : Tracker en flow horizontal compact         -->
+		<!-- =================================================== -->
+		<div class="db-section">
+			<h2>Étapes de votre mariage</h2>
+			<p class="subtitle">Une vue d'ensemble de votre progression.</p>
+			<div class="steps-flow" id="stepsList"></div>
+		</div>
 
-				<!-- Mes derniers choix -->
-				<div class="db-card">
-					<h2>Vos derniers choix de prestataires</h2>
-					<p class="subtitle">Les prestataires que vous avez retenus parmi vos recommandations.</p>
-					<div id="recentPicks">
-						<div class="empty">Chargement…</div>
-					</div>
-				</div>
-
-				<!-- Top recommandations -->
-				<div class="db-card">
-					<h2>Vos meilleures recommandations</h2>
-					<p class="subtitle">Aperçu des prestataires les plus compatibles avec votre profil.</p>
-					<div id="topRecos">
-						<div class="empty">Chargement…</div>
-					</div>
+		<!-- =================================================== -->
+		<!-- ZONE 4 : Détails secondaires (2 colonnes)           -->
+		<!-- =================================================== -->
+		<div class="db-secondary">
+			<div class="db-section">
+				<h2>Vos derniers choix</h2>
+				<p class="subtitle">Les prestataires que vous avez retenus.</p>
+				<div id="recentPicks">
+					<div class="empty-state">Chargement…</div>
 				</div>
 			</div>
 
-			<div>
-				<!-- Prochaines actions -->
-				<div class="db-card">
-					<h2>Vos prochains pas</h2>
-					<p class="subtitle">Continuez à avancer dans votre organisation.</p>
-					<div class="action-list" id="actionList"></div>
-				</div>
-
-				<!-- Budget -->
-				<div class="db-card budget-card">
-					<h2>Budget mariage</h2>
-					<p class="subtitle">Vos engagements financiers en un coup d'œil.</p>
-					<div class="budget-row">
-						<span class="lab">Budget total</span>
-						<span class="val" id="budgetTotal">—</span>
-					</div>
-					<div class="budget-row">
-						<span class="lab">Estimé engagé</span>
-						<span class="val" id="budgetSpent">—</span>
-					</div>
-					<div class="budget-row total">
-						<span class="lab">Budget restant</span>
-						<span class="val" id="budgetLeft">—</span>
-					</div>
-				</div>
-
-				<!-- Invités & invitations -->
-				<div class="db-card">
-					<h2>Invités &amp; invitations</h2>
-					<p class="subtitle">Suivi de votre liste d'invités.</p>
-					<div class="budget-row">
-						<span class="lab">Invités ajoutés</span>
-						<span class="val" id="gGuests">—</span>
-					</div>
-					<div class="budget-row">
-						<span class="lab">Envoyées</span>
-						<span class="val" id="gSent">—</span>
-					</div>
-					<div class="budget-row total">
-						<span class="lab">Restantes</span>
-						<span class="val" id="gRemaining">—</span>
-					</div>
-				</div>
-
-				<!-- Raccourcis rapides -->
-				<div class="db-card">
-					<h2>Raccourcis</h2>
-					<p class="subtitle">Accès rapide aux fonctionnalités.</p>
-					<div class="shortcuts">
-						<a class="shortcut" href="recommendations.html"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></span><span class="label">Recos</span></a>
-						<a class="shortcut" href="mychoices.html"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14"/></svg></span><span class="label">Mes choix</span></a>
-						<a class="shortcut" href="vendors.html"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v3H9zM9 10h6M9 14h6M9 18h4"/></svg></span><span class="label">Prestataires</span></a>
-						<a class="shortcut" href="guests.html"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3 2.7-5.2 6-5.2s6 2.2 6 5.2"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.7.4 4.5 2 4.5 4.5"/></svg></span><span class="label">Invités</span></a>
-						<a class="shortcut" href="invitations.html"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><span class="label">Invitations</span></a>
-						<a class="shortcut" href="questionnaire.html"><span class="ico"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13l2 2 4-4"/></svg></span><span class="label">Questionnaire</span></a>
-					</div>
+			<div class="db-section">
+				<h2>Top recommandations</h2>
+				<p class="subtitle">Les prestataires les plus compatibles avec votre profil.</p>
+				<div id="topRecos">
+					<div class="empty-state">Chargement…</div>
 				</div>
 			</div>
+		</div>
+
+		<!-- Budget (en dessous, optionnel/discret) -->
+		<div class="db-section" id="budgetCard" style="display:none;">
+			<h2>Budget estimé</h2>
+			<p class="subtitle">Vos engagements financiers en un coup d'œil.</p>
+			<div class="budget-bar"><span class="lab">Budget total prévu</span><span class="val" id="budgetTotal">—</span></div>
+			<div class="budget-bar"><span class="lab">Engagé via prestataires retenus</span><span class="val" id="budgetSpent">—</span></div>
+			<div class="budget-bar total"><span class="lab">Budget restant</span><span class="val" id="budgetLeft">—</span></div>
 		</div>
 
 	</div>
 
-	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
 
 	<script src="js/api.js"></script>
+	<script src="js/format.js"></script>
+	<script src="js/ayora-ui.js"></script>
+	<script src="js/assistant.js?v=2"></script>
+	<script src="js/assistant-floating.js?v=2" data-ayora-page="dashboard"></script>
 	<script>
-	/* ============================================================
-	   Dashboard v2 — flux de donnees
-	   ------------------------------------------------------------
-	   1. checkAuth() lit le user du localStorage (firstName, plan)
-	   2. /api/auth/me     -> plan, invitationsSent, remaining
-	   3. /api/questionnaire -> completed + budgetTotal
-	   4. /api/recommendations -> nb total recos + top 3
-	   5. /api/picks       -> liste des picks (regroupes par categorie)
-	   6. /api/guests      -> liste des invites
-	   7. computeProgress  -> 6 etapes : compte / questionnaire /
-	                          recos vues / picks / invites / invitations
-	   8. computeBudget    -> total, somme des prixMin des picks, restant
-	   ============================================================ */
-	var user = checkAuth(); if (user) applyAccountHeader(user);
+	// Pull the deterministic "suggestion of the day" once the page is ready.
+	document.addEventListener('DOMContentLoaded', function() {
+		var el = document.getElementById('ayoraSuggestion');
+		if (el && window.AyoraAssistant) AyoraAssistant.loadSuggestionOfTheDay(el);
+	});
+	</script>
+	<script>
+	var user = checkAuth();
+	if (user) applyAccountHeader(user);
 	if (user) {
-		var firstName = user.firstName || 'Aya';
+		var firstName = user.firstName || '';
 		document.getElementById('userName').textContent = firstName;
-		document.getElementById('heroTitle').textContent = 'Bonjour ' + firstName;
+		document.getElementById('nextActionTitle').textContent = 'Bonjour ' + firstName;
 		applyPlanBadge(user.subscriptionType);
 	}
 
-	var STATE = {
-		plan: 'FREE',
-		invSent: 0,
-		invRemaining: 10,
-		qa: null,
-		recos: [],
-		picks: [],
-		guests: []
-	};
+	var STATE = { plan: 'FREE', invSent: 0, invRemaining: 10, qa: null, recos: [], picks: [], guests: [], devisCount: 0, rdvCount: 0 };
 
 	function applyPlanBadge(plan) {
 		var p = (plan || 'FREE').toUpperCase();
-		var badge = document.getElementById('userBadge');
-		if (badge) {
-			badge.textContent = p;
-			badge.className = 'badge-' + p.toLowerCase();
-		}
+		var b = document.getElementById('userBadge');
+		if (b) { b.textContent = p; b.className = 'badge-' + p.toLowerCase(); }
 	}
 
 	loadAll();
-
 	function loadAll() {
 		var p1 = api.get('/api/auth/me').then(function(d){
 			if (d && d.user) {
@@ -397,58 +591,96 @@
 				}
 			}
 		}).catch(function(){});
-
 		var p2 = api.get('/api/questionnaire').then(function(d){
 			if (d && d.completed) STATE.qa = d;
 		}).catch(function(){});
-
 		var p3 = api.get('/api/recommendations').then(function(d){
 			if (Array.isArray(d)) STATE.recos = d;
 			else if (d && Array.isArray(d.all)) STATE.recos = d.all;
 			else if (d && d.blocks && Array.isArray(d.blocks.topPicks)) STATE.recos = d.blocks.topPicks;
 			else STATE.recos = [];
 		}).catch(function(){ STATE.recos = []; });
-
 		var p4 = api.get('/api/picks').then(function(d){
 			STATE.picks = (d && d.picks) ? d.picks : [];
 		}).catch(function(){ STATE.picks = []; });
-
 		var p5 = api.get('/api/guests').then(function(d){
 			STATE.guests = Array.isArray(d) ? d : [];
 		}).catch(function(){ STATE.guests = []; });
-
-		Promise.all([p1, p2, p3, p4, p5]).then(render);
+		// Devis + RDV pour les badges de notifications navbar (cliente : ses propres pending)
+		var p6 = api.get('/api/auth/devis-list').then(function(d){
+			if (Array.isArray(d)) STATE.devisCount = d.filter(function(x){ return x.statut === 'EN_ATTENTE'; }).length;
+		}).catch(function(){ STATE.devisCount = 0; });
+		var p7 = api.get('/api/auth/rdv-list').then(function(d){
+			if (Array.isArray(d)) STATE.rdvCount = d.filter(function(x){ return x.statut === 'EN_ATTENTE'; }).length;
+		}).catch(function(){ STATE.rdvCount = 0; });
+		Promise.all([p1, p2, p3, p4, p5, p6, p7]).then(render);
 	}
 
 	function render() {
-		document.getElementById('statRecos').textContent = STATE.recos.length;
 		document.getElementById('statPicks').textContent = STATE.picks.length;
 		document.getElementById('statGuests').textContent = STATE.guests.length;
 		document.getElementById('statInvSent').textContent = STATE.invSent;
-		document.getElementById('statRemaining').textContent =
-			(STATE.invRemaining < 0) ? 'Illimité' : STATE.invRemaining;
+
+		// === Countdown jusqu'au mariage (si date renseignée) ===
+		renderCountdown();
+		// === Badges de notifications sur la navbar (devis + RDV en attente) ===
+		renderNavBadges();
 
 		var budget = computeBudget();
-		document.getElementById('statBudget').textContent =
-			(budget.total > 0) ? formatCompact(budget.left) : '—';
-		document.getElementById('budgetTotal').textContent = formatPrice(budget.total);
-		document.getElementById('budgetSpent').textContent = formatPrice(budget.spent);
-		document.getElementById('budgetLeft').textContent = formatPrice(budget.left);
-
-		document.getElementById('gGuests').textContent = STATE.guests.length;
-		document.getElementById('gSent').textContent = STATE.invSent;
-		document.getElementById('gRemaining').textContent =
-			(STATE.invRemaining < 0) ? 'Illimité' : STATE.invRemaining;
+		if (budget.total > 0) {
+			document.getElementById('budgetCard').style.display = 'block';
+			document.getElementById('budgetTotal').textContent = formatPrice(budget.total);
+			document.getElementById('budgetSpent').textContent = formatPrice(budget.spent);
+			document.getElementById('budgetLeft').textContent = formatPrice(budget.left);
+		}
 
 		var progress = computeProgress();
 		document.getElementById('heroPct').textContent = progress.pct + '%';
-		document.getElementById('progressBar').style.width = progress.pct + '%';
+		var ring = document.getElementById('ringFg');
+		var circ = 2 * Math.PI * 50;
+		ring.style.strokeDasharray = circ;
+		ring.style.strokeDashoffset = circ * (1 - progress.pct / 100);
 		renderSteps(progress.steps);
-		document.getElementById('heroMsg').textContent = progress.message;
-
-		renderActions(progress);
+		updateNextAction(progress);
 		renderRecentPicks();
 		renderTopRecos();
+	}
+
+	function updateNextAction(progress) {
+		// Détermine la prochaine action utile
+		var next = null;
+		for (var i = 0; i < progress.steps.length; i++) {
+			if (progress.steps[i].state !== 'done') {
+				next = progress.steps[i];
+				break;
+			}
+		}
+		var titleEl = document.getElementById('nextActionTitle');
+		var descEl = document.getElementById('nextActionDesc');
+		var ctaEl = document.getElementById('nextActionCta');
+		var btnText = document.getElementById('nextActionBtnText');
+
+		if (!next) {
+			titleEl.textContent = 'Bravo, tout est prêt !';
+			descEl.textContent = 'Plus qu\'à savourer le grand jour. N\'hésitez pas à ajuster vos choix si besoin.';
+			ctaEl.href = 'mychoices.html';
+			btnText.textContent = 'Voir mes choix';
+			return;
+		}
+		var firstName = user && user.firstName ? user.firstName : 'à vous';
+		var dict = {
+			account:       { t: 'Bonjour '+firstName, d: 'Bienvenue sur Ayora.', cta: 'questionnaire.html', txt: 'Commencer' },
+			questionnaire: { t: 'Personnalisons votre mariage', d: 'Répondez au questionnaire en ~8 minutes pour recevoir des recommandations sur mesure.', cta: 'questionnaire.html', txt: 'Remplir le questionnaire' },
+			recos:         { t: 'Vos recommandations sont prêtes', d: 'Découvrez les prestataires que notre IA a sélectionnés pour vous.', cta: 'recommendations.html', txt: 'Voir mes recommandations' },
+			picks:         { t: 'Choisissez vos prestataires', d: 'Retenez 1 prestataire par catégorie pour finaliser votre sélection.', cta: 'recommendations.html', txt: 'Faire mes choix' },
+			guests:        { t: 'Préparez votre liste d\'invités', d: 'Ajoutez vos invités pour pouvoir leur envoyer des invitations personnalisées.', cta: 'guests.html', txt: 'Ajouter mes invités' },
+			invites:       { t: 'Envoyez vos invitations', d: 'Vos modèles élégants sont prêts. Plus qu\'un clic pour les envoyer.', cta: 'invitations.html', txt: 'Envoyer mes invitations' }
+		};
+		var info = dict[next.key] || dict.questionnaire;
+		titleEl.textContent = info.t;
+		descEl.textContent = info.d;
+		ctaEl.href = info.cta;
+		btnText.textContent = info.txt;
 	}
 
 	function computeProgress() {
@@ -457,63 +689,26 @@
 		var picksCount = STATE.picks.length;
 		var recosCount = STATE.recos.length;
 
-		// === Calcul d'etat pour chaque etape : 'done' / 'in-progress' / 'todo' ===
-		// Une etape est 'done' seulement si elle est REELLEMENT terminee (pas juste commencee).
-		// 'in-progress' = il y a un debut mais incomplet.
-		// 'todo' = rien n'est commence.
-
-		// Compte cree : binaire (done si user)
 		var stAccount = user ? 'done' : 'todo';
-
-		// Questionnaire : binaire (completed=true)
 		var stQa = (STATE.qa && STATE.qa.completed) ? 'done' : 'todo';
-
-		// Recos consultees : done si on a au moins 1 recommandation
 		var stRecos = recosCount > 0 ? 'done' : 'todo';
-
-		// Picks : done si on a 6+ choix (1 par categorie principale), in-progress si 1-5, todo si 0
 		var stPicks = picksCount === 0 ? 'todo' : (picksCount >= 6 ? 'done' : 'in-progress');
 
-		// Tolerance ±20% autour du nombre d'invites prevu (questionnaire).
-		// Ex : 250 invites prevus -> intervalle acceptable [200 - 300]
-		// L'etape devient 'done' des que le compte atteint la borne basse.
 		var lowerBound = nbInvitesTarget > 0 ? Math.floor(nbInvitesTarget * 0.8) : 0;
-		var upperBound = nbInvitesTarget > 0 ? Math.ceil(nbInvitesTarget * 1.2)  : 0;
-		var rangeLabel = nbInvitesTarget > 0 ? '[' + lowerBound + '-' + upperBound + ']' : '';
-
-		// Invites :
-		//   todo  : 0 invite
-		//   done  : nbInvitesTarget renseigne ET guestsCount >= borne basse
-		//   in-progress : sinon (compte > 0 mais sous la borne basse)
-		var stGuests;
-		if (guestsCount === 0) stGuests = 'todo';
-		else if (nbInvitesTarget > 0 && guestsCount >= lowerBound) stGuests = 'done';
-		else stGuests = 'in-progress';
-
-		// Invitations envoyees : meme logique de tolerance ±20%
-		var stInvites;
-		if (STATE.invSent === 0) stInvites = 'todo';
-		else if (nbInvitesTarget > 0 && STATE.invSent >= lowerBound) stInvites = 'done';
-		else stInvites = 'in-progress';
-
-		var metaPicks = picksCount + ' choix';
-		var metaGuests = nbInvitesTarget > 0
-			? guestsCount + ' / ' + rangeLabel + ' invités'
-			: guestsCount + ' invités';
-		var metaInvites = nbInvitesTarget > 0
-			? STATE.invSent + ' / ' + rangeLabel + ' envoyées'
-			: STATE.invSent + ' envoyées';
+		var stGuests = guestsCount === 0 ? 'todo' :
+		               (nbInvitesTarget > 0 && guestsCount >= lowerBound ? 'done' : 'in-progress');
+		var stInvites = STATE.invSent === 0 ? 'todo' :
+		                (nbInvitesTarget > 0 && STATE.invSent >= lowerBound ? 'done' : 'in-progress');
 
 		var steps = [
-			{ key:'account',       title:'Compte créé',                meta:'',           state:stAccount },
-			{ key:'questionnaire', title:'Questionnaire complété',     meta:'',           state:stQa,      action:'questionnaire.html' },
-			{ key:'recos',         title:'Recommandations consultées', meta:recosCount + ' disponibles', state:stRecos,   action:'recommendations.html' },
-			{ key:'picks',         title:'Prestataires choisis',       meta:metaPicks,    state:stPicks,   action:'recommendations.html' },
-			{ key:'guests',        title:'Invités ajoutés',            meta:metaGuests,   state:stGuests,  action:'guests.html' },
-			{ key:'invites',       title:'Invitations envoyées',       meta:metaInvites,  state:stInvites, action:'invitations.html' }
+			{ key:'account',       label:'Compte',          state:stAccount,  meta:'' },
+			{ key:'questionnaire', label:'Questionnaire',   state:stQa,       meta:'' },
+			{ key:'recos',         label:'Recommandations', state:stRecos,    meta: recosCount > 0 ? recosCount+' dispo' : '' },
+			{ key:'picks',         label:'Choix',           state:stPicks,    meta: picksCount > 0 ? picksCount+' retenus' : '' },
+			{ key:'guests',        label:'Invités',         state:stGuests,   meta: guestsCount > 0 ? guestsCount+' ajoutés' : '' },
+			{ key:'invites',       label:'Invitations',     state:stInvites,  meta: STATE.invSent > 0 ? STATE.invSent+' envoyées' : '' }
 		];
 
-		// Calcul du % d'avancement : done = 1 / in-progress = 0.5 / todo = 0
 		var sum = 0;
 		for (var i = 0; i < steps.length; i++) {
 			if (steps[i].state === 'done') sum += 1;
@@ -521,110 +716,48 @@
 		}
 		var pct = Math.round((sum / steps.length) * 100);
 
-		var msg;
-		if (pct === 100) msg = "Tout est prêt — il ne reste plus qu'à savourer le grand jour !";
-		else if (pct >= 70) msg = "Vous y êtes presque ! Encore quelques détails à finaliser.";
-		else if (pct >= 40) msg = "Excellente progression — continuons sur cette lancée.";
-		else if (pct >= 20) msg = "Bon début ! Voici les prochaines actions à mener.";
-		else msg = "Bienvenue ! Commençons par le questionnaire pour personnaliser votre mariage.";
-
-		return { pct: pct, steps: steps, message: msg };
+		return { pct: pct, steps: steps };
 	}
 
 	function renderSteps(steps) {
-		var labels = { 'done':'Terminé', 'in-progress':'En cours', 'todo':'À faire' };
+		// La premiere etape non-done devient "current" (mise en evidence)
+		var foundCurrent = false;
 		var html = '';
 		for (var i = 0; i < steps.length; i++) {
 			var s = steps[i];
-			var st = s.state || 'todo';
-			var icon = (st === 'done') ? '✓' : (st === 'in-progress' ? '●' : (i+1));
-			html += '<div class="step ' + st + '">';
-			html += '<div class="check">' + icon + '</div>';
-			html += '<div class="step-content">';
-			html += '<div class="step-title">' + s.title + '</div>';
-			if (s.meta) html += '<div class="step-meta">' + s.meta + '</div>';
-			html += '</div>';
-			html += '<div class="step-tail">';
-			html += '<span class="step-state">' + labels[st] + '</span>';
-			if (st !== 'done' && s.action) {
-				html += '<a class="step-action" href="' + s.action + '">Faire</a>';
+			var cls = s.state;
+			if (!foundCurrent && s.state !== 'done') {
+				cls = 'current';
+				foundCurrent = true;
 			}
-			html += '</div>';
+			var icon = (s.state === 'done') ? '✓' : (i + 1);
+			html += '<div class="step-mini ' + cls + '">';
+			html += '<div class="dot">' + icon + '</div>';
+			html += '<div class="label">' + s.label + '</div>';
+			if (s.meta) html += '<div class="meta">' + s.meta + '</div>';
 			html += '</div>';
 		}
 		document.getElementById('stepsList').innerHTML = html;
 	}
 
-	function renderActions(progress) {
-		var actions = [];
-		var s = progress.steps;
-		var done = function(idx) { return s[idx].state === 'done'; };
-
-		// Bibliotheque d'icones SVG sobres (lineart). Pas d'emojis.
-		var ICO = {
-			doc:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13l2 2 4-4"/></svg>',
-			ring:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l3-4h8l3 4-7 11z"/><path d="M5 8h14"/></svg>',
-			people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3 2.7-5.2 6-5.2s6 2.2 6 5.2"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5c2.7.4 4.5 2 4.5 4.5"/></svg>',
-			mail:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
-			crown:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4 4 5-7 5 7 4-4-2 12H5z"/></svg>',
-			star:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .9-4.4 4.4 1 6-5.2-2.9-5.2 2.9 1-6L3.4 9.5l6-.9z"/></svg>',
-			check:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>'
-		};
-
-		if (!done(1)) {
-			actions.push({ ico:ICO.doc, title:'Compléter le questionnaire', desc:'Indispensable pour des recommandations personnalisées.', href:'questionnaire.html' });
-		}
-		if (done(1) && !done(3)) {
-			actions.push({ ico:ICO.ring, title:'Choisir vos prestataires', desc:'3 propositions par catégorie sont prêtes pour vous.', href:'recommendations.html' });
-		}
-		if (done(1) && !done(4)) {
-			actions.push({ ico:ICO.people, title:'Ajouter vos invités', desc:'Préparez votre liste avant les envois.', href:'guests.html' });
-		}
-		if (s[4].state !== 'todo' && !done(5)) {
-			actions.push({ ico:ICO.mail, title:'Envoyer les invitations', desc:'Vos modèles sont prêts, plus qu\'à cliquer.', href:'invitations.html' });
-		}
-		if (STATE.plan === 'FREE') {
-			actions.push({ ico:ICO.crown, title:'Passer à Pro ou Premium', desc:'Débloquez tous les modèles d\'invitations.', href:'premium.html' });
-		}
-		if (done(3) && STATE.picks.length < 6) {
-			actions.push({ ico:ICO.star, title:'Compléter votre sélection', desc:'Vous avez retenu ' + STATE.picks.length + ' prestataire' + (STATE.picks.length>1?'s':'') + ' — explorez plus de catégories.', href:'recommendations.html' });
-		}
-		actions = actions.slice(0, 4);
-
-		var html = '';
-		if (actions.length === 0) {
-			html = '<div class="empty"><span class="empty-ico" style="display:inline-block;color:var(--success);vertical-align:middle;margin-right:8px;">' + ICO.check + '</span>Bravo, tout est en ordre.</div>';
-		} else {
-			for (var i = 0; i < actions.length; i++) {
-				var a = actions[i];
-				html += '<a class="action-item" href="' + a.href + '">';
-				html += '<div class="ico">' + a.ico + '</div>';
-				html += '<div class="body"><h5>' + a.title + '</h5><p>' + a.desc + '</p></div>';
-				html += '<div class="arrow">→</div>';
-				html += '</a>';
-			}
-		}
-		document.getElementById('actionList').innerHTML = html;
-	}
-
 	function renderRecentPicks() {
 		var c = document.getElementById('recentPicks');
 		if (STATE.picks.length === 0) {
-			c.innerHTML = '<div class="empty">Aucun prestataire retenu pour le moment. <a href="recommendations.html">Voir les recommandations →</a></div>';
+			c.innerHTML = '<div class="empty-state">Aucun prestataire retenu pour le moment.<br><a href="recommendations.html">Voir mes recommandations →</a></div>';
 			return;
 		}
 		var html = '';
 		var lim = Math.min(4, STATE.picks.length);
 		for (var i = 0; i < lim; i++) {
 			var p = STATE.picks[i];
-			html += '<div class="pick-mini">';
-			html += '<span class="cat-tag">' + (p.category || '') + '</span>';
+			html += '<a href="mychoices.html" class="list-item">';
+			html += '<span class="badge-cat">' + (p.category || '') + '</span>';
 			html += '<span class="name">' + (p.vendorName || '') + '</span>';
 			html += '<span class="price">' + formatPrice(p.prixMin) + '</span>';
-			html += '</div>';
+			html += '</a>';
 		}
 		if (STATE.picks.length > 4) {
-			html += '<div class="empty" style="padding:8px;"><a href="mychoices.html">Voir mes ' + STATE.picks.length + ' choix →</a></div>';
+			html += '<a class="see-more" href="mychoices.html">Voir mes ' + STATE.picks.length + ' choix →</a>';
 		}
 		c.innerHTML = html;
 	}
@@ -632,23 +765,21 @@
 	function renderTopRecos() {
 		var c = document.getElementById('topRecos');
 		if (STATE.recos.length === 0) {
-			c.innerHTML = '<div class="empty">Complétez le questionnaire pour découvrir vos recommandations. <a href="questionnaire.html">Y aller →</a></div>';
+			c.innerHTML = '<div class="empty-state">Complétez le questionnaire pour découvrir vos recommandations.<br><a href="questionnaire.html">Y aller →</a></div>';
 			return;
 		}
-		var sorted = STATE.recos.slice().sort(function(a,b){
-			return (b.score || 0) - (a.score || 0);
-		});
+		var sorted = STATE.recos.slice().sort(function(a,b){ return (b.score || 0) - (a.score || 0); });
 		var html = '';
 		var lim = Math.min(3, sorted.length);
 		for (var i = 0; i < lim; i++) {
 			var r = sorted[i];
-			html += '<div class="reco-mini">';
-			html += '<span class="score">' + Math.round(r.score || 0) + '%</span>';
-			html += '<div class="body"><strong>' + (r.vendorName || '') + '</strong>';
-			html += '<small>' + (r.category || '') + ' · ' + formatPrice(r.prixMin) + '</small></div>';
-			html += '</div>';
+			html += '<a class="list-item" href="recommendations.html">';
+			html += '<span class="score-pill">' + Math.round(r.score || 0) + '%</span>';
+			html += '<span class="name">' + (r.vendorName || '') + '</span>';
+			html += '<span class="price">' + formatPrice(r.prixMin) + '</span>';
+			html += '</a>';
 		}
-		html += '<div class="empty" style="padding:8px;"><a href="recommendations.html">Voir toutes mes recommandations →</a></div>';
+		html += '<a class="see-more" href="recommendations.html">Toutes mes recommandations →</a>';
 		c.innerHTML = html;
 	}
 
@@ -661,12 +792,63 @@
 		return { total: total, spent: spent, left: Math.max(0, total - spent) };
 	}
 
-	function formatCompact(n) {
-		if (!n) return '0';
-		if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
-		if (n >= 1000)    return Math.round(n/1000) + 'k';
-		return Math.round(n) + '';
+	function renderCountdown() {
+		var dateStr = STATE.qa && STATE.qa.dateMariage;
+		var box = document.getElementById('weddingCountdown');
+		if (!dateStr || !window.AyoraFmt) { box.style.display = 'none'; return; }
+		var days = AyoraFmt.daysUntil(dateStr);
+		if (days == null) { box.style.display = 'none'; return; }
+		box.style.display = 'flex';
+
+		var ctDays = document.getElementById('ctDays');
+		var ctLabel = document.getElementById('ctLabel');
+		var ctDate = document.getElementById('ctDate');
+		var ctDateMeta = document.getElementById('ctDateMeta');
+
+		if (days < 0) {
+			ctDays.textContent = 'Mariage';
+			ctLabel.textContent = 'célébré il y a ' + Math.abs(days) + ' jour' + (Math.abs(days)>1?'s':'') + ' 💍';
+		} else if (days === 0) {
+			ctDays.textContent = "C'est aujourd'hui !";
+			ctLabel.textContent = 'Profitez de votre grand jour 💍';
+		} else if (days === 1) {
+			ctDays.textContent = 'Demain';
+			ctLabel.textContent = 'le grand jour arrive';
+		} else if (days < 30) {
+			ctDays.textContent = days + ' jours';
+			ctLabel.textContent = 'avant le grand jour';
+		} else if (days < 90) {
+			ctDays.textContent = days + ' jours';
+			ctLabel.textContent = 'avant le grand jour';
+		} else {
+			ctDays.textContent = AyoraFmt.timeUntil(dateStr);
+			ctLabel.textContent = 'avant le grand jour';
+		}
+
+		ctDate.textContent = AyoraFmt.dateLong(dateStr);
+		var ville = (STATE.qa && STATE.qa.notesSpeciales) ? extractFromNotes(STATE.qa.notesSpeciales, 'villeMariage') : '';
+		ctDateMeta.textContent = ville ? ('à ' + AyoraFmt.capitalize(ville)) : '';
+	}
+
+	function extractFromNotes(json, key) {
+		if (!json) return '';
+		try {
+			var o = JSON.parse(json);
+			return o[key] || '';
+		} catch(e) { return ''; }
+	}
+
+	function renderNavBadges() {
+		// Compteur cumulé pour les éléments en attente côté CLIENT.
+		// On affiche un badge "•" simple si > 0 (visuel discret) ou le nombre.
+		var nav = document.querySelectorAll('.menu-bar nav span');
+		// "Recommandations" : nb de recos non vues (approximation = total recos si pas tracking côté serveur)
+		// "Invités" : OK pas de badge
+		// On garde simple : si devisCount + rdvCount > 0, on l'affiche dans le badge user (haut droit)
+		// Pour ne pas trop polluer, on n'ajoute pas de badge ici par défaut.
+		// Cette fonction est un hook pour future extension.
 	}
 	</script>
+	<script src="js/account-menu.js?v=1"></script>
 </body>
 </html>
