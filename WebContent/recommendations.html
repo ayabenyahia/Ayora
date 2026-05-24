@@ -2,12 +2,39 @@
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Ayora - Recommandations personnalisées</title>
-	<link rel="stylesheet" href="css/styles.css?v=26">
+	<link rel="stylesheet" href="css/styles.css?v=44">
+	<link rel="stylesheet" href="css/account.css?v=1">
+	<link rel="stylesheet" href="css/assistant.css?v=4">
 	<style>
 		.reco-layout { display:grid; grid-template-columns:300px 1fr; gap:20px; padding:20px; align-items:flex-start; }
-		@media (max-width: 980px) { .reco-layout { grid-template-columns: 1fr; } }
+		@media (max-width: 980px) { .reco-layout { grid-template-columns: 1fr; padding:14px; } }
+		/* Mobile : sidebar profil deplacee en bas (apres les cartes), summary
+		   plus compacte, tabs scrollables horizontalement. */
+		@media (max-width: 768px) {
+			.reco-layout { padding:10px; gap:14px; }
+			.reco-layout > aside { order: 2; }   /* sidebar va apres main */
+			.profile-card { position: static; padding:14px; }
+			.summary-bar { padding:14px 16px; gap:8px; }
+			.summary-bar h2 { font-size:1.15rem; }
+			.summary-bar .stat .num { font-size:1.2rem; }
+			.summary-bar .stat .lab { font-size:10px; letter-spacing:.6px; }
+			/* On masque 2 stats sur 4 sur mobile (top + bon plan suffisent) */
+			.summary-bar .stat:nth-child(5),
+			.summary-bar .stat:nth-child(6) { display:none; }
+			#aiExplainer { padding:12px; font-size:12px; }
+			#aiExplainer .tag { font-size:11px; padding:2px 8px; }
+			.tabs { flex-wrap:nowrap; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
+			.tabs button { flex-shrink:0; font-size:12px; padding:7px 12px; }
+			.block { padding:16px; }
+			.cards-grid { grid-template-columns: 1fr; gap:14px; }
+		}
 
 		.profile-card { background:var(--white); border-radius:var(--radius-lg); padding:22px; box-shadow:var(--shadow-md); position:sticky; top:80px; }
 		.profile-card h3 { font-size:1.25rem; margin-bottom:14px; color:var(--primary-dark); border-bottom:2px solid var(--gold); padding-bottom:8px; }
@@ -134,7 +161,7 @@
 </head>
 <body>
 
-	<div class="menu-bar">
+		<div class="menu-bar">
 		<div class="logo" onclick="location.href='dashboard.html'">Ayora<span>.ma</span></div>
 		<nav>
 			<span onclick="location.href='dashboard.html'">Tableau de bord</span>
@@ -143,6 +170,7 @@
 			<span onclick="location.href='vendors.html'">Prestataires</span>
 			<span onclick="location.href='guests.html'">Invités</span>
 			<span onclick="location.href='invitations.html'">Invitations</span>
+			<span onclick="location.href='assistant.html'">Assistante AYORA</span>
 		</nav>
 		<div class="user-info">
 			<span id="userName"></span>
@@ -167,28 +195,43 @@
 
 		<!-- MAIN : blocs de recommandations -->
 		<main>
-			<div class="summary-bar">
-				<div>
-					<h2>Recommandations personnalisées par l'IA Ayora</h2>
-					<p style="opacity:0.85;font-size:13px;margin:4px 0 0;">Comparaison de votre profil avec chaque prestataire sur 6 critères, puis sélection des 3 meilleurs par catégorie.</p>
+			<!-- ============================================================ -->
+			<!-- AYORA Recommendation Hero — single consolidated card        -->
+			<!-- (was previously 3 blocks: hero + agent card + summary-bar). -->
+			<!-- Contains: badge, personalised title, lede, criteria chips, -->
+			<!-- two CTAs, and a one-line agent quote with a tiny avatar.    -->
+			<!-- ============================================================ -->
+			<section class="reco-hero reco-hero-compact" id="recoHero" aria-labelledby="recoHeroTitle">
+				<span class="reco-hero-badge">AYORA · Sélection personnalisée</span>
+				<h1 id="recoHeroTitle">Je prépare votre sélection…</h1>
+				<p class="reco-hero-lede" id="recoHeroLede">
+					AYORA croise vos préférences avec les caractéristiques disponibles des prestataires
+					pour mettre en avant les options les plus proches de vos besoins.
+				</p>
+				<div class="reco-hero-chips" id="recoHeroChips"></div>
+
+				<!-- One-line agent quote (folded in instead of a separate card) -->
+				<div class="reco-hero-quote" id="recoHeroQuote">
+					<span class="quote-avatar" aria-hidden="true">A</span>
+					<span class="quote-text" id="ayoraAgentMessage">J'étudie vos préférences pour préparer une sélection cohérente avec votre mariage…</span>
+					<span class="quote-status" id="ayoraAgentStatus">Analyse en cours</span>
 				</div>
+
+				<div class="reco-hero-actions">
+					<a href="questionnaire.html" class="btn-primary">Affiner mes critères</a>
+					<button type="button" class="btn-secondary"
+						onclick="window.AyoraAgent && AyoraAgent.openWithMessage('Pourquoi avez-vous sélectionné ces prestataires pour mon mariage ?')">
+						Poser une question à AYORA
+					</button>
+				</div>
+			</section>
+
+			<!-- Tight stats row, no title (the hero above does the job). -->
+			<div class="reco-stats-row">
 				<div class="stat"><span class="num" id="statTotal">—</span><span class="lab">Prestataires</span></div>
 				<div class="stat"><span class="num" id="statTop">—</span><span class="lab">Top match</span></div>
 				<div class="stat"><span class="num" id="statValue">—</span><span class="lab">Bon plan</span></div>
 				<div class="stat"><span class="num" id="statChic">—</span><span class="lab">Premium</span></div>
-			</div>
-
-			<div id="aiExplainer" style="background:var(--white);border-radius:var(--radius-lg);padding:14px 18px;box-shadow:var(--shadow-md);margin-bottom:18px;border-left:4px solid var(--gold);font-size:13px;color:var(--text-body);">
-				<strong style="color:var(--primary-dark);">Comment l'IA Ayora calcule votre score</strong>
-				<span style="color:var(--text-muted);"> — moyenne pondérée sur 6 critères de compatibilité (calcul local, sans service externe) :</span>
-				<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px;">
-					<span class="tag eco">Budget · 30%</span>
-					<span class="tag">Style · 25%</span>
-					<span class="tag priority">Ville · 15%</span>
-					<span class="tag priority">Invités · 15%</span>
-					<span class="tag luxe">Luxe · 10%</span>
-					<span class="tag">Qualité · 5%</span>
-				</div>
 			</div>
 
 			<div class="tabs" id="blockTabs"></div>
@@ -197,13 +240,33 @@
 				<div class="spinner"></div>
 				<p>Chargement de vos recommandations…</p>
 			</div>
+
+			<!-- Discrete, user-facing explainer (replaces the old k-NN block) -->
+			<details class="reco-explainer-fold">
+				<summary>Comment mes recommandations sont-elles préparées&nbsp;?</summary>
+				<div class="reco-explainer-body">
+					<p>
+						AYORA compare automatiquement vos préférences avec les caractéristiques disponibles
+						des prestataires afin de mettre en avant les options les plus proches de vos besoins.
+						Vos choix restent modifiables à tout moment.
+					</p>
+					<p>
+						La sélection prend en compte plusieurs critères&nbsp;: votre budget, le style de mariage que
+						vous imaginez, votre ville de réception, le nombre d'invités prévus, le type de lieu que
+						vous préférez, ainsi que vos priorités principales (qualité du repas, ambiance, photos…).
+					</p>
+					<p>
+						Aucune donnée n'est envoyée à un service externe&nbsp;: vos préférences servent uniquement
+						à comparer les prestataires déjà enregistrés dans AYORA.
+					</p>
+				</div>
+			</details>
 		</main>
 
 	</div>
 
-	<footer><p>Ayora.ma &copy; 2026 - Planification de mariage à Fès</p></footer>
-
 	<script src="js/api.js"></script>
+	<script src="js/vendor-card.js?v=45"></script>
 	<script>
 	var user = checkAuth(); if (user) applyAccountHeader(user);
 	if (user) document.getElementById('userName').textContent = user.firstName;
@@ -237,8 +300,7 @@
 
 	function loadRecommendations(qs) {
 		var url = '/api/recommendations' + (qs || '');
-		document.getElementById('blocksContainer').innerHTML =
-			'<div class="loading"><div class="spinner"></div><p>Chargement…</p></div>';
+		document.getElementById('blocksContainer').innerHTML = skeletonGridHtml(6);
 		api.get(url).then(function(data) {
 			if (!data || data.completed === false) {
 				renderEmpty();
@@ -246,11 +308,13 @@
 			}
 			STATE = data;
 			renderProfile(data.profile);
+			renderAyoraHero(data.profile, data.all || [], (data.counts && data.counts.filtered) || 0);
 			populateCategoryFilter(data.categories);
 			renderTabs(data.blocks);
 			renderActiveBlock();
 			updateStats();
 		}).catch(function(err) {
+			renderAyoraHero(null, [], 0, /*hasError*/true);
 			document.getElementById('blocksContainer').innerHTML =
 				'<div class="empty-block">Aucune recommandation disponible. <a href="questionnaire.html">Remplissez le questionnaire</a> pour en obtenir.</div>';
 		});
@@ -258,13 +322,180 @@
 
 	function renderEmpty() {
 		document.getElementById('profileBody').innerHTML = '<p>Aucun questionnaire trouvé.</p>';
+		renderAyoraHero(null, [], 0, /*hasError*/false, /*noQuestionnaire*/true);
 		document.getElementById('blocksContainer').innerHTML =
 			'<div class="empty-block">Pour obtenir des recommandations personnalisées, <a href="questionnaire.html">remplissez d\'abord le questionnaire</a>.</div>';
+	}
+
+	// =========================================================
+	// AYORA Hero + Agent — premium intro rendered with real data
+	// from the user's questionnaire. No invented facts, no jargon.
+	// =========================================================
+	function renderAyoraHero(profile, recs, totalCount, hasError, noQuestionnaire) {
+		var hero = document.getElementById('recoHero');
+		var titleEl = document.getElementById('recoHeroTitle');
+		var ledeEl = document.getElementById('recoHeroLede');
+		var chipsEl = document.getElementById('recoHeroChips');
+		var msgEl = document.getElementById('ayoraAgentMessage');
+		var statusEl = document.getElementById('ayoraAgentStatus');
+		if (!hero || !titleEl || !ledeEl || !chipsEl) return;
+
+		var firstName = (user && user.firstName) || '';
+		var p = profile || {};
+
+		// ---- Title (personalised on first name when available) ----------
+		titleEl.textContent = firstName
+			? firstName + ', j\'ai trouvé des options pensées pour votre mariage'
+			: 'J\'ai trouvé des options qui correspondent à votre mariage';
+
+		// ---- Lede sentence (built from real profile fields) -------------
+		if (noQuestionnaire) {
+			ledeEl.textContent = 'Complétez votre questionnaire de mariage pour que je puisse vous proposer une sélection vraiment adaptée à vos envies.';
+			statusEl.textContent = 'En attente';
+			statusEl.style.background = 'var(--gold-soft)';
+			statusEl.style.color = 'var(--gold-dark)';
+			msgEl.textContent = 'Pour préparer une sélection réellement personnelle, j\'ai besoin de quelques informations sur votre mariage. Lancez le questionnaire et je vous accompagne ensuite étape par étape.';
+			chipsEl.innerHTML = '';
+			return;
+		}
+		if (hasError) {
+			ledeEl.textContent = 'Je n\'ai pas pu récupérer vos recommandations pour l\'instant. Vérifiez votre connexion ou réessayez dans un instant.';
+			statusEl.textContent = 'Connexion perdue';
+			msgEl.textContent = 'Je n\'arrive pas à charger vos données. Réessayez après avoir vérifié votre accès.';
+			chipsEl.innerHTML = '';
+			return;
+		}
+
+		var ctxFragments = [];
+		if (p.budgetTier || p.budgetTotal) ctxFragments.push('de votre budget');
+		var styleNice = humanStyle(p.style);
+		if (styleNice) ctxFragments.push('de votre style ' + styleNice);
+		var lieuNice = humanLieu(p.lieuType);
+		if (lieuNice) ctxFragments.push('de votre préférence pour ' + lieuNice);
+		if (p.userCity) ctxFragments.push('de votre réception à ' + capitalize(p.userCity));
+
+		var ledeText;
+		if (ctxFragments.length >= 2) {
+			ledeText = 'En tenant compte ' + ctxFragments.slice(0, 3).join(', ')
+				+ ', voici les prestataires qui semblent les plus adaptés à vos priorités.';
+		} else if (ctxFragments.length === 1) {
+			ledeText = 'En tenant compte ' + ctxFragments[0]
+				+ ', voici une première sélection à explorer. Vous pouvez affiner vos critères pour préciser les résultats.';
+		} else {
+			ledeText = 'À partir de vos préférences, j\'ai préparé une sélection de prestataires à explorer pour construire le mariage qui vous ressemble.';
+		}
+		ledeEl.textContent = ledeText;
+
+		// ---- Criteria chips (max 5 visible, the rest collapsed) ---------
+		chipsEl.innerHTML = '';
+		var chips = buildChips(p);
+		var visible = chips.slice(0, 5);
+		for (var i = 0; i < visible.length; i++) chipsEl.appendChild(visible[i].el);
+		if (chips.length > 5) {
+			var more = document.createElement('span');
+			more.className = 'reco-chip more';
+			more.textContent = '+ ' + (chips.length - 5) + ' critère' + (chips.length - 5 > 1 ? 's' : '');
+			chipsEl.appendChild(more);
+		}
+
+		// ---- Agent card status + message --------------------------------
+		statusEl.textContent = 'Analyse terminée';
+		statusEl.style.background = 'var(--success-light)';
+		statusEl.style.color = 'var(--success)';
+
+		if (!recs.length) {
+			msgEl.textContent = 'Je n\'ai pas encore trouvé d\'option suffisamment proche de vos critères. Ajustons ensemble un ou deux choix pour découvrir de nouvelles possibilités.';
+		} else if (recs.length < 4) {
+			msgEl.textContent = 'J\'ai trouvé ' + recs.length + ' option' + (recs.length > 1 ? 's' : '')
+				+ ' qui respectent vos critères actuels. Vous pouvez élargir un peu votre budget ou ajuster un choix pour découvrir davantage de possibilités.';
+		} else {
+			var pieces = [];
+			if (lieuNice) pieces.push('votre préférence pour ' + lieuNice);
+			if (p.userCity) pieces.push('votre réception à ' + capitalize(p.userCity));
+			if (p.budgetTier === 'SERRE' || p.budgetTier === 'CONFORTABLE') pieces.push('votre attention au budget');
+			else if (p.budgetTotal) pieces.push('la gamme de budget indiquée');
+			var lead = 'J\'ai étudié vos préférences et sélectionné ' + recs.length + ' prestataires pour votre mariage.';
+			var why = pieces.length
+				? ' ' + capitalize(pieces[0]) + (pieces.length > 1 ? ' et ' + pieces.slice(1).join(', ') : '')
+				  + ' ' + (pieces.length > 1 ? 'ont' : 'a') + ' guidé cette sélection.'
+				: '';
+			msgEl.textContent = lead + why;
+		}
+	}
+
+	function buildChips(p) {
+		var chips = [];
+		function addChip(icon, label) {
+			if (!label) return;
+			var el = document.createElement('span');
+			el.className = 'reco-chip';
+			el.innerHTML = icon + '<span>' + escapeHtml(label) + '</span>';
+			chips.push({ label: label, el: el });
+		}
+		var ic = {
+			wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V6a2 2 0 0 0-2-2H4a2 2 0 0 0 0 4h16a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6"/><path d="M16 12h4"/></svg>',
+			star:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+			pin:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+			users:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+			home:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+			heart:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+			music:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'
+		};
+
+		if (p.budgetTier || p.budgetTotal) {
+			var tierLabel = ({SERRE:'Budget maîtrisé', CONFORTABLE:'Budget confortable', GENEREUX:'Budget généreux', ILLIMITE:'Sans contrainte budgétaire'})[p.budgetTier];
+			addChip(ic.wallet, tierLabel || 'Budget pris en compte');
+		}
+		var styleNice = humanStyle(p.style);
+		if (styleNice) addChip(ic.star, 'Style : ' + capitalize(styleNice));
+		var lieuNice = humanLieu(p.lieuType);
+		if (lieuNice) addChip(ic.home, 'Lieu : ' + capitalize(lieuNice));
+		if (p.userCity) addChip(ic.pin, 'Ville : ' + capitalize(p.userCity));
+		if (p.nbInvites > 0) addChip(ic.users, p.nbInvites + ' invités');
+		if (p.ambiance) addChip(ic.heart, 'Ambiance : ' + capitalize(p.ambiance.toLowerCase().replace(/_/g, ' ')));
+		if (p.typeMusique) addChip(ic.music, capitalize(p.typeMusique.toLowerCase().replace(/_/g, ' ')));
+		return chips;
+	}
+
+	function humanStyle(s) {
+		if (!s) return '';
+		return ({
+			TRADITIONNEL: 'traditionnel',
+			MODERNE: 'moderne',
+			MIXTE: 'classique modernisé',
+			LUXE: 'luxueux',
+			SIMPLE: 'simple et raffiné',
+			INTIME: 'intime'
+		})[s] || s.toLowerCase();
+	}
+	function humanLieu(l) {
+		if (!l) return '';
+		return ({
+			RIAD: 'un riad élégant',
+			SALLE: 'une salle de fête moderne',
+			JARDIN: 'un cadre extérieur en jardin',
+			PISCINE: 'un lieu avec piscine',
+			HOTEL: 'un hôtel ou un resort',
+			DOMICILE: 'une réception à domicile',
+			MIXTE: 'un lieu polyvalent'
+		})[l] || '';
+	}
+	function capitalize(s) {
+		if (!s) return '';
+		s = s.toString();
+		return s.charAt(0).toUpperCase() + s.slice(1);
+	}
+	function escapeHtml(s) {
+		return String(s == null ? '' : s)
+			.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	}
 
 	function renderProfile(p) {
 		if (!p) return;
 		var rows = [];
+		// Lieu en premier : c'est le critere le plus visible/important pour le client.
+		if (p.lieuType)      rows.push(['Type de lieu', humanize(p.lieuType)]);
+		if (p.userCity)      rows.push(['Ville', p.userCity]);
 		if (p.style)         rows.push(['Style mariage', humanize(p.style)]);
 		if (p.ambiance)      rows.push(['Ambiance', humanize(p.ambiance)]);
 		if (p.niveauLuxe)    rows.push(['Niveau de luxe', humanize(p.niveauLuxe)]);
@@ -276,6 +507,7 @@
 		if (p.budgetPerGuest) rows.push(['Budget / invité', formatPrice(p.budgetPerGuest)]);
 		if (p.typeMusique)   rows.push(['Musique', humanize(p.typeMusique)]);
 		if (p.typeCuisine)   rows.push(['Cuisine', humanize(p.typeCuisine)]);
+		if (p.halalStrict)   rows.push(['Halal', humanize(p.halalStrict)]);
 		if (p.prefDecoration)rows.push(['Décoration', humanize(p.prefDecoration)]);
 		if (p.styleNeggafa)  rows.push(['Neggafa', humanize(p.styleNeggafa) + ' / ' + p.nbTenuesNeggafa + ' tenues']);
 
@@ -486,95 +718,15 @@
 	}
 
 	function cardHtml(r) {
-		var sc = Math.round(r.score);
-		var ribbonClass = sc >= 85 ? 'excellent' : sc >= 70 ? 'good' : sc >= 55 ? 'ok' : 'low';
-		var gShort = r.gamme === 'ECONOMIQUE' ? 'eco' : r.gamme === 'MOYEN' ? 'moyen' : r.gamme === 'PREMIUM' ? 'premium' : '';
-		var gammeClass = gShort ? 'gamme-' + gShort : '';
-		var gammeLabel = r.gamme === 'ECONOMIQUE' ? 'Économique' : r.gamme === 'MOYEN' ? 'Moyenne' : r.gamme === 'PREMIUM' ? 'Premium' : (r.gamme || '');
-
-		// Tags
-		var tagsHtml = '';
-		if (r.tags && r.tags.length) {
-			for (var i = 0; i < r.tags.length; i++) {
-				var t = r.tags[i];
-				var cls = 'tag';
-				if (/coup de coeur/i.test(t)) cls += ' coup';
-				else if (/luxe|premium|chic/i.test(t)) cls += ' luxe';
-				else if (/budget|qualite|prix|petit/i.test(t)) cls += ' eco';
-				else if (/hors budget/i.test(t)) cls += ' alert';
-				else if (/priorit/i.test(t)) cls += ' priority';
-				tagsHtml += '<span class="' + cls + '">' + t + '</span>';
-			}
-		}
-
-		// Sub-scores : les 6 critères de compatibilité de l'IA Ayora
-		var subs = '';
-		var keys = [
-			['scoreBudget','Budget','30%'],
-			['scoreStyle','Style','25%'],
-			['scoreCity','Ville','15%'],
-			['scoreGuestCount','Invités','15%'],
-			['scoreLuxe','Luxe','10%'],
-			['scoreQuality','Qualité','5%']
-		];
-		for (var k = 0; k < keys.length; k++) {
-			var v = Math.round(r[keys[k][0]] || 0);
-			subs += '<div class="subscore"><span style="min-width:64px;" title="Poids ' + keys[k][2] + '">' + keys[k][1] + '</span><div class="bar"><div style="width:' + v + '%;"></div></div><span class="sval">' + v + '</span></div>';
-		}
-
-		// Contact bar : icones unifiees (phone, WhatsApp, Instagram, mail)
-		var ICO_PHONE = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2a11.7 11.7 0 0 0 3.7.6c.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.7.1.3 0 .7-.2 1L6.6 10.8z"/></svg></span>';
-		var ICO_WA = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.4-2 1.4-.5.1-1.2.1-2-.1a13 13 0 0 1-5.7-3.3 7 7 0 0 1-1.6-2.7c0-.7.4-1.3.7-1.6.2-.2.4-.3.6-.3l.5-.1c.2 0 .3.1.5.4l.7 1.7c.1.2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6.4.6 1 1.4 1.6 2 1 .9 1.8 1.2 2.1 1.4.2.1.4.1.5-.1l.7-.8c.2-.2.4-.2.6-.1l1.7.8c.2.1.4.2.4.4.1.2.1.5 0 .7z"/></svg></span>';
-		var ICO_IG = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1a6.6 6.6 0 0 1 2.2.4 4.5 4.5 0 0 1 2.3 2.3c.2.6.4 1.2.4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8a6.6 6.6 0 0 1-.4 2.2 4.5 4.5 0 0 1-2.3 2.3c-.6.2-1.2.4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1a6.6 6.6 0 0 1-2.2-.4 4.5 4.5 0 0 1-2.3-2.3c-.2-.6-.4-1.2-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c0-1 .2-1.6.4-2.2A4.5 4.5 0 0 1 5 2.7c.6-.2 1.2-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-.9 0-1.4.2-1.7.3-.4.2-.7.4-1 .7s-.5.6-.7 1c-.1.3-.3.8-.3 1.7-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c0 .9.2 1.4.3 1.7.2.4.4.7.7 1s.6.5 1 .7c.3.1.8.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c.9 0 1.4-.2 1.7-.3.4-.2.7-.4 1-.7s.5-.6.7-1c.1-.3.3-.8.3-1.7.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c0-.9-.2-1.4-.3-1.7a2.7 2.7 0 0 0-.7-1c-.3-.3-.6-.5-1-.7-.3-.1-.8-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 8a3.1 3.1 0 1 0 0-6.2 3.1 3.1 0 0 0 0 6.2zm6.2-8.2a1.1 1.1 0 1 1-2.3 0 1.1 1.1 0 0 1 2.3 0z"/></svg></span>';
-		var ICO_LINK = '<span class="ico"><svg viewBox="0 0 24 24"><path d="M10.6 13.4a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.7 1.7 1.4 1.4 1.7-1.7a2 2 0 0 1 2.8 2.8l-3 3a2 2 0 0 1-2.8 0l-1.4 1.5zm2.8-2.8a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.7-1.7-1.4-1.4-1.7 1.7a2 2 0 0 1-2.8-2.8l3-3a2 2 0 0 1 2.8 0l1.4-1.5z"/></svg></span>';
-
-		var contacts = '<div class="contact-bar">';
-		if (r.phone) {
-			var clean = r.phone.replace(/[^\d+]/g,'');
-			var wa = clean.replace(/^0/,'212');
-			contacts += '<a href="tel:' + clean + '" title="Appeler ' + r.phone + '">' + ICO_PHONE + '<span class="lab">Appeler</span></a>';
-			contacts += '<a href="https://wa.me/' + wa + '" target="_blank" rel="noopener" title="WhatsApp">' + ICO_WA + '<span class="lab">WhatsApp</span></a>';
-		} else {
-			contacts += '<a class="disabled" title="Pas de numéro">' + ICO_PHONE + '<span class="lab">Téléphone</span></a>';
-		}
-		if (r.instagram) {
-			var ig = r.instagram.replace('@','').trim();
-			contacts += '<a href="https://instagram.com/' + ig + '" target="_blank" rel="noopener" title="@' + ig + ' sur Instagram">' + ICO_IG + '<span class="lab">Instagram</span></a>';
-		} else {
-			contacts += '<a class="disabled" title="Pas d\'Instagram">' + ICO_IG + '<span class="lab">Instagram</span></a>';
-		}
-		contacts += '</div>';
-
-		// Prix : on n'affiche que "À partir de X DHS" (pas de fourchette haute)
-		var priceLine = 'À partir de ' + formatPrice(r.prixMin);
-
-		var ICO_STAR = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:var(--gold);vertical-align:-2px;"><path d="M12 2l2.6 6 6.4.6-4.8 4.4 1.4 6.4L12 16.6 6.4 19.4 7.8 13 3 8.6l6.4-.6z"/></svg>';
-		var ICO_PIN = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;"><path d="M12 22s7-7.6 7-13a7 7 0 1 0-14 0c0 5.4 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>';
-		var rating = (r.rating && r.rating > 0) ? ICO_STAR + ' ' + r.rating + ' (' + (r.nbAvis||0) + ' avis)' : '';
-
-		// Bouton "Choisir" — tient compte de l'état déjà choisi
+		// Delegate au composant partage (js/vendor-card.js). On lui passe le
+		// bouton d'action specifique a cette page (Choisir / Retenu).
 		var picked = STATE.pickedVendorIds && STATE.pickedVendorIds.indexOf(r.vendorId) >= 0;
-		var pickBtn = picked
-			? '<button class="pick-btn picked" disabled>✓ Retenu</button>'
-			: '<button class="pick-btn" onclick="pickVendor(' + r.vendorId + ',\'' + (r.vendorName||'').replace(/\'/g,"\\'") + '\',\'' + (r.category||'').replace(/\'/g,"\\'") + '\')">Choisir ce prestataire</button>';
-
-		return '<article class="reco-card' + (picked ? ' is-picked' : '') + '">' +
-			'<div class="score-ribbon ' + ribbonClass + '">' + sc + '%</div>' +
-			(picked ? '<div class="picked-badge">✓ Choisi</div>' : '') +
-			'<div class="reco-cat">' + (r.category || '') + '</div>' +
-			'<h4>' + (r.vendorName || '') + '</h4>' +
-			'<div class="reco-meta">' +
-				'<span class="' + gammeClass + '">● ' + gammeLabel + '</span>' +
-				(r.city ? '<span>' + ICO_PIN + ' ' + r.city + '</span>' : '') +
-				(rating ? '<span>' + rating + '</span>' : '') +
-			'</div>' +
-			(tagsHtml ? '<div class="reco-tags">' + tagsHtml + '</div>' : '') +
-			'<div class="reco-price">' + priceLine + '</div>' +
-			'<div class="subscores">' + subs + '</div>' +
-			'<div class="reco-raison">' + (r.raison || '') + '</div>' +
-			contacts +
-			pickBtn +
-		'</article>';
+		var name = (r.vendorName || '').replace(/'/g, "\\'");
+		var cat  = (r.category || '').replace(/'/g, "\\'");
+		var actionHtml = picked
+			? '<button class="pick-btn picked" disabled>&#10003; Retenu</button>'
+			: '<button class="pick-btn" onclick="pickVendor(' + r.vendorId + ',\'' + name + '\',\'' + cat + '\')">Choisir ce prestataire</button>';
+		return AyoraCard.render(r, { picked: picked, actionHtml: actionHtml, showScore: true, showAyoraOpinion: true });
 	}
 
 	// === Choisir un prestataire (POST /api/picks) ===
@@ -615,13 +767,26 @@
 	}
 
 	function refreshRecommendations() {
-		document.getElementById('blocksContainer').innerHTML =
-			'<div class="loading"><div class="spinner"></div><p>Recalcul à partir du questionnaire…</p></div>';
+		document.getElementById('blocksContainer').innerHTML = skeletonGridHtml(6);
 		api.post('/api/recommendations/refresh', {}).then(function() {
 			loadRecommendations('');
 		}).catch(function() {
 			loadRecommendations('');
 		});
+	}
+
+	function skeletonGridHtml(n) {
+		var card = '<article class="ayora-skel-card">' +
+			'<div class="ayora-skel cover"></div>' +
+			'<div class="ayora-skel title"></div>' +
+			'<div class="ayora-skel line"></div>' +
+			'<div class="ayora-skel line short"></div>' +
+			'<div class="ayora-skel line"></div>' +
+			'</article>';
+		var out = '<div class="ayora-skel-grid" aria-live="polite" aria-busy="true">';
+		for (var i = 0; i < n; i++) out += card;
+		out += '</div>';
+		return out;
 	}
 
 	function updateStats() {
@@ -632,5 +797,23 @@
 		document.getElementById('statChic').textContent = ((STATE.blocks && STATE.blocks.mostChic) || []).length;
 	}
 	</script>
+
+	<script src="js/ayora-ui.js"></script>
+	<script src="js/assistant.js?v=2"></script>
+	<script src="js/assistant-floating.js?v=2" data-ayora-page="vendors"></script>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="footer-brand">Ayora<span>.ma</span></div>
+			<nav class="footer-links">
+				<a href="cgu.html">CGU</a>
+				<a href="confidentialite.html">Confidentialité</a>
+				<a href="mentions.html">Mentions légales</a>
+				<a href="contact.html">Contact</a>
+			</nav>
+			<div class="footer-copy">© 2026 Ayora.ma — Tous droits réservés</div>
+		</div>
+	</footer>
+	<script src="js/account-menu.js?v=1"></script>
 </body>
 </html>
