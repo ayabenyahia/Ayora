@@ -300,3 +300,37 @@ body.ax-body .site-footer { margin-top: 60px; }
 }
 .ax-hero-state.is-calm .ax-state-icon { background: var(--ax-sage); color: #fff; }
 .ax-hero-state strong { color: var(--ax-gold-400); font-weight: 700; }
+.ax-hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+.ax-btn {
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: .3px;
+	padding: 11px 20px;
+	border-radius: 10px;
+	cursor: pointer;
+	border: 1.5px solid transparent;
+	display: inline-flex; align-items: center; gap: 8px;
+	transition: all .18s ease;
+	text-decoration: none;
+}
+.ax-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; }
+.ax-btn-primary {
+	background: var(--ax-gold-400);
+	color: var(--ax-burgundy-900);
+	border-color: var(--ax-gold-400);
+}
+.ax-btn-primary:hover { background: #E5B96A; box-shadow: 0 8px 18px rgba(212,168,83,.3); }
+.ax-btn-ghost-light {
+	background: transparent;
+	color: #fff;
+	border-color: rgba(255,255,255,.3);
+}
+.ax-btn-ghost-light:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.55); }
+.ax-btn-ghost {
+	background: #fff;
+	color: var(--ax-burgundy-700);
+	border-color: var(--ax-line);
+}
+.ax-btn-ghost:hover { border-color: var(--ax-gold-400); background: var(--ax-ivory-100); }
+
