@@ -52,3 +52,17 @@ Chaque section liste : nom de la colonne, type, contraintes, sémantique, et où
 | `statut` | ENUM('EN_ATTENTE','ACCEPTE','REFUSE') | statut admin |
 | `reponse_prestataire` | TEXT | optionnel |
 | `created_at` | DATETIME | tri timeline |
+
+## `rendez_vous`
+
+| Colonne | Type | Sémantique |
+|---|---|---|
+| `id` | INT PK | identifiant |
+| `client_id` | FK users.id | client |
+| `vendor_id` | FK vendors.id | prestataire |
+| `date_rdv` | DATE | jour |
+| `heure_rdv` | VARCHAR(8) | heure HH:MM |
+| `lieu` | VARCHAR(200) | lieu de RDV |
+| `note` | TEXT | note libre |
+| `statut` | ENUM('EN_ATTENTE','CONFIRME','ANNULE') | statut admin |
+| `created_at` | DATETIME | tri timeline |
