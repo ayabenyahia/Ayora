@@ -54,3 +54,12 @@ Cliquer un chip filtre la liste par catégorie. Le bouton *Examiner* ouvre la fi
    - `POST /api/admin/users/{id}/role` (rôle)
    - `POST /api/admin/users/{id}/plan` (plan)
 4. La table `subscriptions` est synchronisée côté serveur.
+
+## Traitement d'un devis
+
+1. Onglet *Devis & RDV* → sous-onglet *Demandes de devis*.
+2. Filtrer par statut `EN_ATTENTE`.
+3. Actions disponibles par ligne :
+   - *Accepter* → `PUT /api/admin/devis/{id}/status` avec `ACCEPTE`.
+   - *Refuser* → `PUT /api/admin/devis/{id}/status` avec `REFUSE`.
+4. Le dashboard se rafraîchit (KPI Demandes, Santé).
