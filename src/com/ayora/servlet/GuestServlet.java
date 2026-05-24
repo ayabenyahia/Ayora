@@ -8,18 +8,20 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.GuestDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.Guest;
 import com.ayora.util.JsonUtil;
 
 @WebServlet("/api/guests/*")
 public class GuestServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private GuestDao guestDao;
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		guestDao = new GuestDao();
+		this.metier = AppWiring.getMetier();
 	}
 
 	@Override
@@ -31,7 +33,7 @@ public class GuestServlet extends HttpServlet {
 		}
 
 		int userId = (int) session.getAttribute("userId");
-		List<Guest> guests = guestDao.findByUserId(userId);
+		List<Guest> guests = metier.getGuestsByUser(userId);
 
 		StringBuilder json = new StringBuilder("[");
 		for (int i = 0; i < guests.size(); i++) {
@@ -77,7 +79,7 @@ public class GuestServlet extends HttpServlet {
 			guest.setGroupe("AUTRES");
 		}
 
-		int guestId = guestDao.create(guest);
+		int guestId = metier.addGuest(guest);
 		if (guestId == -1) {
 			JsonUtil.sendError(response, 500, "Erreur lors de l'ajout de l'invite");
 			return;
@@ -110,7 +112,7 @@ public class GuestServlet extends HttpServlet {
 		}
 
 		String body = JsonUtil.readRequestBody(request);
-		Guest guest = guestDao.findById(guestId);
+		Guest guest = metier.getGuest(guestId);
 		if (guest == null) {
 			JsonUtil.sendError(response, 404, "Invite non trouve");
 			return;
@@ -132,7 +134,7 @@ public class GuestServlet extends HttpServlet {
 		String note = JsonUtil.getStringValue(body, "note");
 		if (note != null) guest.setNote(note);
 
-		boolean success = guestDao.update(guest);
+		boolean success = metier.updateGuest(guest);
 		if (success) {
 			JsonUtil.sendSuccess(response, "Invite mis a jour");
 		} else {
@@ -162,7 +164,7 @@ public class GuestServlet extends HttpServlet {
 			return;
 		}
 
-		boolean success = guestDao.delete(guestId);
+		boolean success = metier.deleteGuest(guestId);
 		if (success) {
 			JsonUtil.sendSuccess(response, "Invite supprime");
 		} else {
