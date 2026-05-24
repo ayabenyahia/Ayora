@@ -197,6 +197,76 @@
 					<div class="ax-tl" id="axActivityList">
 						<div class="adm-loading"><div class="spinner"></div></div>
 					</div>
+				</div>
+			</article>
+		</section>
+
+		<!-- ============ ONGLETS GESTION (existant, harmonisé) ============ -->
+		<div class="adm-tabs">
+			<button class="adm-tab active" data-tab="users"    onclick="switchTab('users')">Utilisateurs</button>
+			<button class="adm-tab"        data-tab="vendors"  onclick="switchTab('vendors')">Prestataires</button>
+			<button class="adm-tab"        data-tab="devis"    onclick="switchTab('devis')">Devis &amp; RDV</button>
+			<button class="adm-tab"        data-tab="activity" onclick="switchTab('activity')">Activité détaillée</button>
+		</div>
+
+		<div id="tab-users" class="tab-pane">
+			<div class="adm-filters">
+				<input type="text" class="search-box" id="usrQ" placeholder="Rechercher : nom, email, téléphone…" oninput="debouncedReloadUsers()">
+				<select id="usrRole" onchange="reloadUsers()">
+					<option value="">Tous les rôles</option>
+					<option value="CLIENT">Clients</option>
+					<option value="PRESTATAIRE">Prestataires</option>
+					<option value="ADMIN">Admins</option>
+				</select>
+				<select id="usrPlan" onchange="reloadUsers()">
+					<option value="">Tous les plans</option>
+					<option value="FREE">FREE</option>
+					<option value="PRO">PRO</option>
+					<option value="PREMIUM">PREMIUM</option>
+				</select>
+				<select id="usrQuest" onchange="reloadUsers()">
+					<option value="">Questionnaire (tous)</option>
+					<option value="1">Complété</option>
+					<option value="0">Non complété</option>
+				</select>
+				<select id="usrActive" onchange="reloadUsers()">
+					<option value="">Statut (tous)</option>
+					<option value="1">Actif</option>
+					<option value="0">Suspendu</option>
+				</select>
+				<button class="clear-btn" onclick="clearUsersFilters()">Réinitialiser</button>
+				<button class="export-btn" onclick="exportUsersCSV()">Exporter CSV</button>
+			</div>
+			<div class="adm-table-wrap" id="usersTableWrap">
+				<div class="adm-loading"><div class="spinner"></div>Chargement…</div>
+			</div>
+		</div>
+
+		<div id="tab-vendors" class="tab-pane" style="display:none;">
+			<div class="adm-filters">
+				<input type="text" class="search-box" id="vndQ" placeholder="Rechercher : nom, ville, tag…" oninput="debouncedReloadVendors()">
+				<select id="vndCat" onchange="reloadVendors()">
+					<option value="">Toutes catégories</option>
+					<option value="11">Salle de fête</option>
+					<option value="12">Traiteur</option>
+					<option value="1">Neggafa</option>
+					<option value="2">Maquillage &amp; coiffure</option>
+					<option value="4">Photographe</option>
+					<option value="6">Cake designer</option>
+					<option value="7">Issawa</option>
+					<option value="8">Orchestre</option>
+					<option value="9">Décoration</option>
+					<option value="13">Myadi / Tyafer</option>
+					<option value="14">DJ</option>
+					<option value="16">Hennaya</option>
+				</select>
+				<select id="vndGamme" onchange="reloadVendors()">
+					<option value="">Toutes gammes</option>
+					<option value="ECONOMIQUE">Économique</option>
+					<option value="MOYEN">Moyen</option>
+					<option value="PREMIUM">Premium</option>
+				</select>
+				<select id="vndActive" onchange="reloadVendors()">
 </main>
 </body>
 </html>
