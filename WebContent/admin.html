@@ -297,6 +297,38 @@
 					<option value="CONFIRME">Confirmé</option>
 					<option value="ANNULE">Annulé</option>
 				</select>
-</main>
+			</div>
+			<div class="adm-table-wrap" id="devisTableWrap">
+				<div class="adm-loading"><div class="spinner"></div>Chargement…</div>
+			</div>
+		</div>
+
+		<div id="tab-activity" class="tab-pane" style="display:none;">
+			<div class="adm-table-wrap" style="padding: 22px 28px;">
+				<div class="ax-tl" id="timelineList">
+					<div class="adm-loading"><div class="spinner"></div>Chargement…</div>
+				</div>
+			</div>
+		</div>
+
+	</main>
+
+	<!-- ============ DRAWER (édition user/vendor) ============ -->
+	<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+	<aside class="drawer" id="drawer" role="dialog" aria-modal="true">
+		<div class="drawer-head">
+			<div>
+				<h2 id="drawerTitle">Fiche</h2>
+				<div class="sub" id="drawerSubtitle"></div>
+			</div>
+			<button class="drawer-close" onclick="closeDrawer()" aria-label="Fermer">
+				<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+			</button>
+		</div>
+		<div class="drawer-body" id="drawerBody"></div>
+		<div class="drawer-actions" id="drawerActions"></div>
+	</aside>
+
+	<!-- ============ MODAL CONFIRMATION ============ -->
 </body>
 </html>
