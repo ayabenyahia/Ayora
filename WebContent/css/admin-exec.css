@@ -49,3 +49,17 @@ body.ax-body .site-footer { margin-top: 60px; }
 	padding: 24px 32px 80px;
 }
 
+/* ===========================================================
+ * 1. TOPBAR ADMIN
+ * =========================================================== */
+.ax-topbar {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 12px 24px;
+	background: #fff;
+	border-bottom: 1px solid var(--ax-line);
+	position: sticky; top: 0;
+	z-index: 80;
+	box-shadow: 0 1px 0 rgba(26,10,20,.04);
+}
