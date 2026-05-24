@@ -8,22 +8,22 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.VendorDao;
-import com.ayora.dao.RecommendationDao;
-import com.ayora.model.Vendor;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.Recommendation;
+import com.ayora.model.User;
+import com.ayora.model.Vendor;
 import com.ayora.util.JsonUtil;
 
 @WebServlet("/api/vendor-portal/*")
 public class VendorPortalServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private VendorDao vendorDao;
-	private RecommendationDao recommendationDao;
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		vendorDao = new VendorDao();
-		recommendationDao = new RecommendationDao();
+		this.metier = AppWiring.getMetier();
 	}
 
 	@Override
@@ -54,9 +54,7 @@ public class VendorPortalServlet extends HttpServlet {
 	}
 
 	private void handleDashboard(HttpServletRequest request, HttpServletResponse response, int userId) throws IOException {
-		// Recuperer le vendor_id depuis la session ou le user
-		com.ayora.dao.UserDao userDao = new com.ayora.dao.UserDao();
-		com.ayora.model.User user = userDao.findById(userId);
+		User user = metier.getUserById(userId);
 
 		if (user == null || user.getVendorId() <= 0) {
 			JsonUtil.sendJson(response, "{\"vendor\":null,\"message\":\"Aucun prestataire lie a ce compte\"}");
@@ -64,7 +62,7 @@ public class VendorPortalServlet extends HttpServlet {
 		}
 
 		int vendorId = user.getVendorId();
-		Vendor vendor = vendorDao.findById(vendorId);
+		Vendor vendor = metier.getVendor(vendorId);
 
 		if (vendor == null) {
 			JsonUtil.sendJson(response, "{\"vendor\":null,\"message\":\"Prestataire non trouve\"}");
@@ -72,7 +70,7 @@ public class VendorPortalServlet extends HttpServlet {
 		}
 
 		// Recuperer les recommandations pour ce vendor
-		List<Recommendation> recs = recommendationDao.findByVendorId(vendorId);
+		List<Recommendation> recs = metier.getRecommendationsByVendor(vendorId);
 		int totalRecs = recs.size();
 		int viewedRecs = 0;
 		for (Recommendation r : recs) {
