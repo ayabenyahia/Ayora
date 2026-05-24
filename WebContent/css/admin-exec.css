@@ -186,3 +186,31 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-topbar-user .ax-user-info span { font-size: 10px; color: var(--ax-text-mute); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
 .ax-topbar-user .ax-caret { width: 12px; height: 12px; stroke: var(--ax-text-mute); stroke-width: 2; fill: none; flex-shrink: 0; }
 
+.ax-topbar-menu {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 32px;
+	width: 220px;
+	background: #fff;
+	border: 1px solid var(--ax-line);
+	border-radius: 12px;
+	box-shadow: var(--ax-shadow-3);
+	padding: 6px;
+	display: none;
+	z-index: 90;
+}
+.ax-topbar-menu.is-open { display: block; }
+.ax-topbar-menu a {
+	display: flex; align-items: center; gap: 10px;
+	padding: 9px 12px;
+	font-size: 13px;
+	color: var(--ax-text);
+	text-decoration: none;
+	border-radius: 8px;
+	cursor: pointer;
+}
+.ax-topbar-menu a:hover { background: var(--ax-ivory-100); color: var(--ax-burgundy-700); }
+.ax-topbar-menu a.danger { color: var(--ax-red); }
+.ax-topbar-menu a.danger:hover { background: var(--ax-red-soft); }
+.ax-topbar-menu hr { border: none; height: 1px; background: var(--ax-line); margin: 6px 4px; }
+
