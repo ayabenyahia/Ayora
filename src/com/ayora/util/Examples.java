@@ -1,8 +1,7 @@
 package com.ayora.util;
 
 /**
- * Exemples d'utilisation de la facade Database, alignes sur le cours
- * p01-jdbc (com.esisa.jee.jdbc.Examples).
+ * Demo CLI de la facade Database.
  *
  * Permet de tester rapidement la connexion et les operations basiques
  * sur la base ayora_db sans demarrer Tomcat. A executer avec :
@@ -53,9 +52,14 @@ public class Examples {
 
 	/** Exemple 2 : chercher les prestataires contenant 'Festin'. */
 	void exp02() {
-		System.out.println("\n=== exp02 : prestataires Festin ===");
-		String[][] data = db.selectByKeyword("vendors", "name", "Festin");
-		print(data);
+		System.out.println("\n=== exp02 : prestataires Festin (via PreparedStatement) ===");
+		// Anciennement : selectByKeyword (supprime - vecteur d'injection SQL).
+		// Maintenant : queryList + PreparedStatement, securise.
+		java.util.List<String[]> rows = db.queryList(
+			"SELECT id, name, city FROM vendors WHERE LOWER(name) LIKE ? LIMIT 5",
+			rs -> new String[]{ String.valueOf(rs.getInt(1)), rs.getString(2), rs.getString(3) },
+			"%festin%");
+		for (String[] r : rows) System.out.println("  " + java.util.Arrays.toString(r));
 	}
 
 	public static void main(String[] args) {
