@@ -1,15 +1,14 @@
 package com.ayora.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
-import com.ayora.model.Recommendation;
-import com.ayora.util.DatabaseConnection;
 
-public class RecommendationDao {
+import com.ayora.model.Recommendation;
+import com.ayora.util.Database;
+
+/** DAO de l'entite Recommendation. */
+public class RecommendationDao implements IDao {
 
 	private static final String SELECT_BASE = "SELECT r.*, "
 			+ "v.name AS vendor_name, v.category_id AS v_cat_id, "
@@ -21,82 +20,34 @@ public class RecommendationDao {
 			+ "JOIN vendors v ON r.vendor_id = v.id "
 			+ "JOIN vendor_categories vc ON v.category_id = vc.id ";
 
-	public RecommendationDao() {
+	private final Database db;
+
+	public RecommendationDao(Database db) {
+		this.db = db;
 	}
 
 	public List<Recommendation> findByUserId(int userId) {
-		List<Recommendation> list = new Vector<Recommendation>();
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = SELECT_BASE + "WHERE r.user_id = ? ORDER BY r.score DESC";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				list.add(mapRecommendation(rs));
-			}
-		} catch (SQLException e) {
-			System.out.println("## Erreur findByUserId recommendations : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return list;
+		return db.queryList(
+			SELECT_BASE + "WHERE r.user_id = ? ORDER BY r.score DESC",
+			this::mapRecommendation, userId);
 	}
 
 	public List<Recommendation> findByVendorId(int vendorId) {
-		List<Recommendation> list = new Vector<Recommendation>();
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = SELECT_BASE + "WHERE r.vendor_id = ? ORDER BY r.score DESC";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, vendorId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				list.add(mapRecommendation(rs));
-			}
-		} catch (SQLException e) {
-			System.out.println("## Erreur findByVendorId recommendations : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return list;
+		return db.queryList(
+			SELECT_BASE + "WHERE r.vendor_id = ? ORDER BY r.score DESC",
+			this::mapRecommendation, vendorId);
 	}
 
 	public boolean create(Recommendation rec) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "INSERT INTO recommendations (user_id, vendor_id, score, raison) VALUES (?, ?, ?, ?)";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, rec.getUserId());
-			ps.setInt(2, rec.getVendorId());
-			ps.setDouble(3, rec.getScore());
-			ps.setString(4, rec.getRaison());
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur create recommendation : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return false;
+		return db.executeUpdate(
+			"INSERT INTO recommendations (user_id, vendor_id, score, raison) VALUES (?, ?, ?, ?)",
+			rec.getUserId(), rec.getVendorId(), rec.getScore(), rec.getRaison()) > 0;
 	}
 
 	public boolean deleteByUserId(int userId) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "DELETE FROM recommendations WHERE user_id = ?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
-			return ps.executeUpdate() >= 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur deleteByUserId recommendations : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return false;
+		// >= 0 : DELETE peut retourner 0 lignes si l'utilisateur n'avait
+		// pas encore de recommendations (1er appel) : on considere ca un succes.
+		return db.executeUpdate("DELETE FROM recommendations WHERE user_id = ?", userId) >= 0;
 	}
 
 	private Recommendation mapRecommendation(ResultSet rs) throws SQLException {
