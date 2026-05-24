@@ -8,25 +8,21 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.QuestionnaireDao;
-import com.ayora.dao.UserDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.QuestionnaireAnswer;
 import com.ayora.model.Recommendation;
-import com.ayora.service.RecommendationService;
 import com.ayora.util.JsonUtil;
 
 @WebServlet("/api/questionnaire/*")
 public class QuestionnaireServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private QuestionnaireDao questionnaireDao;
-	private UserDao userDao;
-	private RecommendationService recommendationService;
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		questionnaireDao = new QuestionnaireDao();
-		userDao = new UserDao();
-		recommendationService = new RecommendationService();
+		this.metier = AppWiring.getMetier();
 	}
 
 	@Override
@@ -38,7 +34,7 @@ public class QuestionnaireServlet extends HttpServlet {
 		}
 
 		int userId = (int) session.getAttribute("userId");
-		QuestionnaireAnswer answer = questionnaireDao.findByUserId(userId);
+		QuestionnaireAnswer answer = metier.getQuestionnaire(userId);
 
 		if (answer == null) {
 			JsonUtil.sendJson(response, "{\"completed\":false}");
@@ -70,14 +66,7 @@ public class QuestionnaireServlet extends HttpServlet {
 
 		QuestionnaireAnswer answer = parseAnswer(body, userId);
 
-		// Verifier si une reponse existe deja
-		QuestionnaireAnswer existing = questionnaireDao.findByUserId(userId);
-		boolean success;
-		if (existing != null) {
-			success = questionnaireDao.update(answer);
-		} else {
-			success = questionnaireDao.create(answer);
-		}
+		boolean success = metier.saveQuestionnaire(answer);
 
 		if (!success) {
 			JsonUtil.sendError(response, 500, "Erreur lors de la sauvegarde du questionnaire");
@@ -85,10 +74,10 @@ public class QuestionnaireServlet extends HttpServlet {
 		}
 
 		// Marquer le questionnaire comme complete
-		userDao.updateQuestionnaireStatus(userId, true);
+		metier.markQuestionnaireCompleted(userId, true);
 
 		// Generer les recommandations
-		List<Recommendation> recommendations = recommendationService.generateRecommendations(userId, answer);
+		List<Recommendation> recommendations = metier.generateRecommendations(userId, answer);
 
 		// Construire la reponse
 		StringBuilder json = new StringBuilder();
@@ -216,7 +205,7 @@ public class QuestionnaireServlet extends HttpServlet {
 		String lieuNom = JsonUtil.getStringValue(body, "lieuMariageNom");
 		if (lieuNom == null) lieuNom = "";
 
-		QuestionnaireAnswer existing = questionnaireDao.findByUserId(userId);
+		QuestionnaireAnswer existing = metier.getQuestionnaire(userId);
 		if (existing == null) {
 			JsonUtil.sendError(response, 400, "Remplissez d'abord le questionnaire");
 			return;
@@ -226,7 +215,7 @@ public class QuestionnaireServlet extends HttpServlet {
 		String updated = upsertJsonField(notes, "lieuMariageNom", lieuNom);
 		existing.setNotesSpeciales(updated);
 
-		boolean ok = questionnaireDao.update(existing);
+		boolean ok = metier.saveQuestionnaire(existing);
 		if (!ok) {
 			JsonUtil.sendError(response, 500, "Echec mise a jour du lieu");
 			return;
