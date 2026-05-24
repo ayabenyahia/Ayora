@@ -8,8 +8,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.ayora.dao.UserPickDao;
-import com.ayora.dao.VendorDao;
+import com.ayora.config.AppWiring;
+import com.ayora.metier.IAyoraMetier;
 import com.ayora.model.UserPick;
 import com.ayora.model.Vendor;
 import com.ayora.util.JsonUtil;
@@ -25,14 +25,13 @@ import com.ayora.util.JsonUtil;
  */
 @WebServlet("/api/picks/*")
 public class UserPickServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-	private UserPickDao pickDao;
-	private VendorDao vendorDao;
+	private IAyoraMetier metier;
 
 	@Override
 	public void init() throws ServletException {
-		pickDao = new UserPickDao();
-		vendorDao = new VendorDao();
+		this.metier = AppWiring.getMetier();
 	}
 
 	@Override
@@ -44,7 +43,22 @@ public class UserPickServlet extends HttpServlet {
 			return;
 		}
 		int userId = (int) session.getAttribute("userId");
-		List<UserPick> picks = pickDao.findByUserId(userId);
+		List<UserPick> picks = metier.getPicksByUser(userId);
+
+		// Enrichit chaque pick avec les champs media via VendorDao (lecture
+		// defensive : null si la migration media n'a pas ete jouee). N+1
+		// borne par le nombre de picks (max ~1 par categorie), donc
+		// negligeable. Le UI utilise photoUrl/galleryUrls/reelUrl pour le
+		// rendu de la card.
+		for (int i = 0; i < picks.size(); i++) {
+			UserPick p = picks.get(i);
+			Vendor v = metier.getVendor(p.getVendorId());
+			if (v != null) {
+				p.setVendorPhotoUrl(v.getPhotoUrl());
+				p.setVendorGalleryUrls(v.getGalleryUrls());
+				p.setVendorReelUrl(v.getReelUrl());
+			}
+		}
 
 		StringBuilder sb = new StringBuilder("{\"picks\":[");
 		for (int i = 0; i < picks.size(); i++) {
@@ -70,12 +84,12 @@ public class UserPickServlet extends HttpServlet {
 			JsonUtil.sendError(response, 400, "vendorId requis");
 			return;
 		}
-		Vendor v = vendorDao.findById(vendorId);
+		Vendor v = metier.getVendor(vendorId);
 		if (v == null) {
 			JsonUtil.sendError(response, 404, "Prestataire introuvable");
 			return;
 		}
-		boolean ok = pickDao.pick(userId, vendorId, v.getCategoryId());
+		boolean ok = metier.pickVendor(userId, vendorId, v.getCategoryId());
 		if (!ok) {
 			JsonUtil.sendError(response, 500, "Echec de la sauvegarde du choix");
 			return;
@@ -102,7 +116,7 @@ public class UserPickServlet extends HttpServlet {
 		}
 		try {
 			int vendorId = Integer.parseInt(path.substring(1));
-			boolean ok = pickDao.unpick(userId, vendorId);
+			boolean ok = metier.unpickVendor(userId, vendorId);
 			JsonUtil.sendJson(response, "{\"success\":" + ok + "}");
 		} catch (NumberFormatException e) {
 			JsonUtil.sendError(response, 400, "vendorId invalide");
@@ -112,18 +126,22 @@ public class UserPickServlet extends HttpServlet {
 	private String toJson(UserPick p) {
 		return "{"
 			+ "\"vendorId\":" + p.getVendorId()
-			+ ",\"vendorName\":\"" + JsonUtil.escapeJson(safe(p.getVendorName())) + "\""
-			+ ",\"category\":\"" + JsonUtil.escapeJson(safe(p.getVendorCategory())) + "\""
+			+ ",\"vendorName\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorName())) + "\""
+			+ ",\"category\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorCategory())) + "\""
 			+ ",\"categoryId\":" + p.getCategoryId()
-			+ ",\"gamme\":\"" + JsonUtil.escapeJson(safe(p.getVendorGamme())) + "\""
+			+ ",\"gamme\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorGamme())) + "\""
 			+ ",\"prixMin\":" + p.getVendorPrixMin()
-			+ ",\"city\":\"" + JsonUtil.escapeJson(safe(p.getVendorCity())) + "\""
-			+ ",\"phone\":\"" + JsonUtil.escapeJson(safe(p.getVendorPhone())) + "\""
-			+ ",\"instagram\":\"" + JsonUtil.escapeJson(safe(p.getVendorInstagram())) + "\""
-			+ ",\"description\":\"" + JsonUtil.escapeJson(safe(p.getVendorDescription())) + "\""
-			+ ",\"pickedAt\":\"" + JsonUtil.escapeJson(safe(p.getPickedAt())) + "\""
+			+ ",\"city\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorCity())) + "\""
+			+ ",\"phone\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorPhone())) + "\""
+			+ ",\"instagram\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorInstagram())) + "\""
+			+ ",\"description\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorDescription())) + "\""
+			+ ",\"rating\":" + p.getVendorRating()
+			+ ",\"nbAvis\":" + p.getVendorNbAvis()
+			+ ",\"photoUrl\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorPhotoUrl())) + "\""
+			+ ",\"galleryUrls\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorGalleryUrls())) + "\""
+			+ ",\"reelUrl\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getVendorReelUrl())) + "\""
+			+ ",\"pickedAt\":\"" + JsonUtil.escapeJson(JsonUtil.safe(p.getPickedAt())) + "\""
 			+ "}";
 	}
 
-	private String safe(String s) { return s != null ? s : ""; }
 }
