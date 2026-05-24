@@ -636,3 +636,34 @@ body.ax-body .site-footer { margin-top: 60px; }
 .ax-empty p { margin: 0; font-size: 13px; color: var(--ax-text-mute); }
 
 /* Santé */
+.ax-health-list { display: flex; flex-direction: column; gap: 16px; }
+.ax-health-row { display: flex; flex-direction: column; gap: 6px; }
+.ax-health-row .ax-h-top {
+	display: flex; justify-content: space-between; align-items: baseline;
+	font-size: 13px;
+	color: var(--ax-text);
+}
+.ax-health-row .ax-h-top strong { font-weight: 600; }
+.ax-health-row .ax-h-top span { font-family: var(--ax-serif); font-size: 15px; font-weight: 600; color: var(--ax-burgundy-700); }
+.ax-health-bar {
+	width: 100%;
+	height: 8px;
+	background: var(--ax-ivory-200);
+	border-radius: 50px;
+	overflow: hidden;
+}
+.ax-health-bar > div {
+	height: 100%;
+	border-radius: 50px;
+	transition: width .5s ease;
+}
+.ax-health-row.sage  .ax-health-bar > div { background: linear-gradient(90deg, var(--ax-sage), #4FB87E); }
+.ax-health-row.gold  .ax-health-bar > div { background: linear-gradient(90deg, var(--ax-gold-500), var(--ax-gold-400)); }
+.ax-health-row.amber .ax-health-bar > div { background: linear-gradient(90deg, var(--ax-amber), #E48555); }
+.ax-health-row.red   .ax-health-bar > div { background: linear-gradient(90deg, var(--ax-red), #D14242); }
+.ax-health-row .ax-h-meta {
+	font-size: 11px;
+	color: var(--ax-text-mute);
+	letter-spacing: .3px;
+}
+
