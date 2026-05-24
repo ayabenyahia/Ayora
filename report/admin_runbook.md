@@ -79,3 +79,10 @@ Cliquer un chip filtre la liste par catégorie. Le bouton *Examiner* ouvre la fi
 2. Cliquer *Exporter CSV*.
 3. Le front appelle `/api/admin/users?perPage=10000&...` puis génère un blob CSV téléchargeable.
 4. Le fichier est nommé `ayora-utilisateurs-YYYY-MM-DD.csv` (UTF-8 avec BOM).
+
+## Export CSV prestataires
+
+1. Onglet *Prestataires* → appliquer les filtres (catégorie, gamme, statut).
+2. Cliquer *Exporter CSV*.
+3. Le fichier inclut : id, nom, catégorie, ville, gamme, prix_min, prix_max, téléphone, email, instagram, rating, nb_avis, actif, complétude.
+4. Fichier nommé `ayora-prestataires-YYYY-MM-DD.csv`.
