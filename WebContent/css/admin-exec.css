@@ -517,3 +517,40 @@ body.ax-body .site-footer { margin-top: 60px; }
 	color: var(--ax-text-mute);
 	margin-top: 2px;
 	line-height: 1.4;
+}
+.ax-card-head-text { min-width: 0; }
+.ax-card-body { padding: 18px 24px 22px; }
+
+/* Priorités */
+.ax-prio-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.ax-chip {
+	font-family: inherit;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--ax-text-mute);
+	padding: 7px 14px;
+	border-radius: 50px;
+	background: var(--ax-ivory-100);
+	border: 1px solid transparent;
+	cursor: pointer;
+	transition: all .15s;
+	letter-spacing: .3px;
+}
+.ax-chip:hover { background: var(--ax-ivory-200); color: var(--ax-burgundy-700); }
+.ax-chip.is-active {
+	background: var(--ax-burgundy-700);
+	color: #fff;
+	border-color: var(--ax-burgundy-700);
+}
+.ax-chip .ax-chip-count {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 1px 7px;
+	border-radius: 50px;
+	background: rgba(0,0,0,.08);
+	font-size: 10.5px;
+	font-weight: 700;
+}
+.ax-chip.is-active .ax-chip-count { background: rgba(255,255,255,.18); }
+
+.ax-prio-list { display: flex; flex-direction: column; gap: 10px; }
