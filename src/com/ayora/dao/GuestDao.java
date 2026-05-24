@@ -1,143 +1,54 @@
 package com.ayora.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Vector;
+
 import com.ayora.model.Guest;
-import com.ayora.util.DatabaseConnection;
+import com.ayora.util.Database;
 
-public class GuestDao {
+/** DAO de l'entite Guest. */
+public class GuestDao implements IDao {
 
-	public GuestDao() {
+	private final Database db;
+
+	public GuestDao(Database db) {
+		this.db = db;
 	}
 
 	public List<Guest> findByUserId(int userId) {
-		List<Guest> list = new Vector<Guest>();
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "SELECT * FROM guests WHERE user_id = ? ORDER BY last_name, first_name";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				list.add(mapGuest(rs));
-			}
-		} catch (SQLException e) {
-			System.out.println("## Erreur findByUserId guests : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return list;
+		return db.queryList(
+			"SELECT * FROM guests WHERE user_id = ? ORDER BY last_name, first_name",
+			this::mapGuest, userId);
 	}
 
 	public Guest findById(int id) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "SELECT * FROM guests WHERE id = ?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, id);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				return mapGuest(rs);
-			}
-		} catch (SQLException e) {
-			System.out.println("## Erreur findById guest : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return null;
+		return db.queryOne(
+			"SELECT * FROM guests WHERE id = ?",
+			this::mapGuest, id);
 	}
 
-	public int create(Guest guest) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "INSERT INTO guests (user_id, first_name, last_name, phone, email, groupe, nb_personnes, note) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-			ps.setInt(1, guest.getUserId());
-			ps.setString(2, guest.getFirstName());
-			ps.setString(3, guest.getLastName());
-			ps.setString(4, guest.getPhone());
-			ps.setString(5, guest.getEmail());
-			ps.setString(6, guest.getGroupe());
-			ps.setInt(7, guest.getNbPersonnes());
-			ps.setString(8, guest.getNote());
-			ps.executeUpdate();
-			ResultSet keys = ps.getGeneratedKeys();
-			if (keys.next()) {
-				return keys.getInt(1);
-			}
-		} catch (SQLException e) {
-			System.out.println("## Erreur create guest : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return -1;
+	public int create(Guest g) {
+		return db.insertReturningKey(
+			"INSERT INTO guests (user_id, first_name, last_name, phone, email, groupe, nb_personnes, note) "
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+			g.getUserId(), g.getFirstName(), g.getLastName(), g.getPhone(),
+			g.getEmail(), g.getGroupe(), g.getNbPersonnes(), g.getNote());
 	}
 
-	public boolean update(Guest guest) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "UPDATE guests SET first_name=?, last_name=?, phone=?, email=?, groupe=?, nb_personnes=?, note=? WHERE id=?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setString(1, guest.getFirstName());
-			ps.setString(2, guest.getLastName());
-			ps.setString(3, guest.getPhone());
-			ps.setString(4, guest.getEmail());
-			ps.setString(5, guest.getGroupe());
-			ps.setInt(6, guest.getNbPersonnes());
-			ps.setString(7, guest.getNote());
-			ps.setInt(8, guest.getId());
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur update guest : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return false;
+	public boolean update(Guest g) {
+		return db.executeUpdate(
+			"UPDATE guests SET first_name=?, last_name=?, phone=?, email=?, groupe=?, nb_personnes=?, note=? WHERE id=?",
+			g.getFirstName(), g.getLastName(), g.getPhone(), g.getEmail(),
+			g.getGroupe(), g.getNbPersonnes(), g.getNote(), g.getId()) > 0;
 	}
 
 	public boolean delete(int id) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "DELETE FROM guests WHERE id = ?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, id);
-			return ps.executeUpdate() > 0;
-		} catch (SQLException e) {
-			System.out.println("## Erreur delete guest : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return false;
+		return db.executeUpdate("DELETE FROM guests WHERE id = ?", id) > 0;
 	}
 
 	public int countByUserId(int userId) {
-		Connection connection = null;
-		try {
-			connection = DatabaseConnection.getConnection();
-			String sql = "SELECT COUNT(*) FROM guests WHERE user_id = ?";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt(1);
-			}
-		} catch (SQLException e) {
-			System.out.println("## Erreur countByUserId : " + e.getMessage());
-		} finally {
-			DatabaseConnection.closeConnection(connection);
-		}
-		return 0;
+		return db.queryInt("SELECT COUNT(*) FROM guests WHERE user_id = ?", userId);
 	}
 
 	private Guest mapGuest(ResultSet rs) throws SQLException {
