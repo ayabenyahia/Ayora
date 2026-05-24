@@ -37,3 +37,18 @@ Chaque section liste : nom de la colonne, type, contraintes, sémantique, et où
 | `rating` | DECIMAL(3,2) | nullable | colonne *Note* |
 | `nb_avis` | INT | DEFAULT 0 | drawer |
 | `is_active` | TINYINT | DEFAULT 1 | badge Actif/Inactif |
+
+## `demandes_devis`
+
+| Colonne | Type | Sémantique |
+|---|---|---|
+| `id` | INT PK | identifiant |
+| `client_id` | FK users.id | client demandeur |
+| `vendor_id` | FK vendors.id | prestataire ciblé |
+| `budget_min` / `budget_max` | DECIMAL | fourchette budgétaire en DHS |
+| `message` | TEXT | message du client |
+| `date_mariage` | DATE | date prévue |
+| `nb_invites` | INT | volume invités |
+| `statut` | ENUM('EN_ATTENTE','ACCEPTE','REFUSE') | statut admin |
+| `reponse_prestataire` | TEXT | optionnel |
+| `created_at` | DATETIME | tri timeline |
